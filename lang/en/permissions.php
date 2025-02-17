@@ -5,7 +5,8 @@ return [
         'equipements' => 'Equipment Management',
         'roles' => 'Role Management',
         'users' => 'User Management',
-        'settings' => 'System Settings'
+        'settings' => 'System Settings',
+        'tickets' => 'Ticket Management'
     ],
     'equipements.view' => 'View equipment',
     'equipements.create' => 'Create equipment',
@@ -21,5 +22,9 @@ return [
     'users.delete' => 'Delete users',
     'settings.view' => 'View settings',
     'settings.edit' => 'Edit settings',
-    'dashboard.view' => 'Access dashboard'
+    'dashboard.view' => 'Access dashboard',
+    'tickets.view' => 'View tickets',
+    'tickets.create' => 'Create tickets',
+    'tickets.edit' => 'Edit tickets',
+    'tickets.delete' => 'Delete tickets'
 ];

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
-use App\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -55,11 +55,24 @@ class RoleController extends Controller
 
     public function edit(Role $role): Response
     {
+        $permissions = Permission::all();
+        $rolePermissions = $role->permissions->pluck('name')->toArray();
+
+        $formattedPermissions = $permissions->map(function ($permission) use ($rolePermissions) {
+            return [
+                'id' => $permission->name,
+                'name' => $permission->name,
+                'granted' => in_array($permission->name, $rolePermissions)
+            ];
+        });
+
         return Inertia::render('Roles/Edit', [
-            'role' => $role->load(['permissions' => function($query) {
-                $query->select('permissions.id', 'permissions.name', 'permissions.description', 'granted');
-            }]),
-            'permissions' => Permission::select('id', 'name', 'description')->get(),
+            'role' => [
+                'id' => $role->id,
+                'name' => $role->name,
+                'description' => $role->description
+            ],
+            'permissions' => $formattedPermissions
         ]);
     }
 
@@ -69,8 +82,6 @@ class RoleController extends Controller
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
             'description' => 'nullable|string|max:255',
             'permissions' => 'required|array',
-            'permissions.*.id' => 'required|exists:permissions,id',
-            'permissions.*.granted' => 'required|boolean',
         ]);
 
         $role->update([
@@ -78,13 +89,15 @@ class RoleController extends Controller
             'description' => $validated['description'],
         ]);
 
-        $role->permissions()->detach();
-        
-        foreach ($validated['permissions'] as $permission) {
-            $role->permissions()->attach($permission['id'], [
-                'granted' => $permission['granted'],
-            ]);
-        }
+        // Filtrer les permissions accordées
+        $grantedPermissions = collect($request->permissions)
+            ->filter(function ($permission) {
+                return $permission['granted'];
+            })
+            ->pluck('id')
+            ->toArray();
+
+        $role->syncPermissions($grantedPermissions);
 
         return redirect()->route('roles.index')
             ->with('message', 'Rôle mis à jour avec succès.');

@@ -5,7 +5,8 @@ return [
         'equipements' => 'Ausrüstungsverwaltung',
         'roles' => 'Rollenverwaltung',
         'users' => 'Benutzerverwaltung',
-        'settings' => 'Systemeinstellungen'
+        'settings' => 'Systemeinstellungen',
+        'tickets' => 'Ticketverwaltung'
     ],
     'equipements.view' => 'Ausrüstung anzeigen',
     'equipements.create' => 'Ausrüstung erstellen',
@@ -21,5 +22,9 @@ return [
     'users.delete' => 'Benutzer löschen',
     'settings.view' => 'Einstellungen anzeigen',
     'settings.edit' => 'Einstellungen bearbeiten',
-    'dashboard.view' => 'Dashboard zugreifen'
+    'dashboard.view' => 'Dashboard zugreifen',
+    'tickets.view' => 'Tickets anzeigen',
+    'tickets.create' => 'Tickets erstellen',
+    'tickets.edit' => 'Tickets bearbeiten',
+    'tickets.delete' => 'Tickets löschen'
 ];

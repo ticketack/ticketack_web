@@ -29,6 +29,22 @@ const selectedItem = ref(null);
 const suggestions = ref([]);
 const isLoading = ref(false);
 const showDropdown = ref(false);
+const blurTimeout = ref(null);
+
+const handleFocus = () => {
+    if (blurTimeout.value) {
+        window.clearTimeout(blurTimeout.value);
+        blurTimeout.value = null;
+    }
+    showDropdown.value = true;
+};
+
+const handleBlur = () => {
+    blurTimeout.value = window.setTimeout(() => {
+        showDropdown.value = false;
+        blurTimeout.value = null;
+    }, 200);
+};
 
 const debouncedSearch = debounce(async (searchQuery) => {
     if (searchQuery.length < props.minChars) {
@@ -86,8 +102,8 @@ watch(query, (newValue) => {
                 v-model="query"
                 :placeholder="placeholder"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                @focus="showDropdown = true"
-                @blur="setTimeout(() => showDropdown = false, 200)"
+                @focus="handleFocus"
+                @blur="handleBlur"
             >
             <div v-if="selectedItem || query" class="absolute inset-y-0 right-0 flex items-center pr-2">
                 <button

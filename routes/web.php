@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EquipementController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TicketDocumentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,10 +37,23 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'show'])
             ->name('tickets.show');
 
+        Route::get('/tickets/{ticket}/documents', [\App\Http\Controllers\TicketController::class, 'documents'])
+            ->name('tickets.documents');
+
         Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.edit'])->group(function () {
             Route::put('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'update'])
                 ->name('tickets.update');
+
+            // Routes pour les documents
+            Route::post('/tickets/{ticket}/documents', [TicketDocumentController::class, 'store'])
+                ->name('tickets.documents.store');
+            Route::delete('/tickets/{ticket}/documents/{document}', [TicketDocumentController::class, 'destroy'])
+                ->name('tickets.documents.destroy');
         });
+
+        // Route de téléchargement (accessible à tous ceux qui peuvent voir les tickets)
+        Route::get('/tickets/{ticket}/documents/{document}/download', [TicketDocumentController::class, 'download'])
+            ->name('tickets.documents.download');
     });
 
     // Route de la documentation API
@@ -80,14 +94,23 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Routes pour la gestion des rôles (admin uniquement)
-    Route::middleware([\App\Http\Middleware\CheckPermission::class . ':roles.view'])->group(function () {
+    Route::group(['middleware' => ['role_or_permission:admin|roles.view']], function () {
         Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
-        Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
-        Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
         Route::get('/roles/{role}', [RoleController::class, 'show'])->name('roles.show');
-        Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
-        Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
-        Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+
+        Route::group(['middleware' => ['role_or_permission:admin|roles.create']], function () {
+            Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+            Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+        });
+
+        Route::group(['middleware' => ['role_or_permission:admin|roles.edit']], function () {
+            Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+            Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+        });
+
+        Route::group(['middleware' => ['role_or_permission:admin|roles.delete']], function () {
+            Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+        });
     });
 
     // Routes pour la gestion des utilisateurs (admin uniquement)

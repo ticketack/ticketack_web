@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Ticket extends Model
 {
@@ -50,23 +51,31 @@ class Ticket extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function assignee(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'assigned_to');
-    }
-
     public function logs(): HasMany
     {
-        return $this->hasMany(TicketLog::class);
+        return $this->hasMany(TicketLog::class)->with('user')->latest();
     }
 
-    public function addLog(string $type, string $message, array $properties = null): void
+    public function addLog(string $type, string $message, array $properties = []): void
     {
         $this->logs()->create([
             'user_id' => auth()->id(),
             'type' => $type,
             'message' => $message,
-            'properties' => $properties,
+            'properties' => $properties
         ]);
     }
+
+    public function documents(): BelongsToMany
+    {
+        return $this->belongsToMany(TicketDocument::class, 'ticket_document')
+            ->withTimestamps();
+    }
+
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+
 }

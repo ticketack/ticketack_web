@@ -104,6 +104,12 @@ const formatDate = (date) => {
 };
 
 const updateStatus = () => {
-    form.put(route('tickets.update', props.ticket.id));
+    form.put(route('tickets.update', props.ticket.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            // Recharger la page pour voir les changements
+            window.location.reload();
+        }
+    });
 };
 </script>

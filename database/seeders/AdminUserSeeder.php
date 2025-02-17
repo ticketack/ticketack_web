@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
@@ -21,9 +22,9 @@ class AdminUserSeeder extends Seeder
         ]);
 
         // Attribution du rôle admin
-        $adminRole = \App\Models\Role::where('name', 'admin')->first();
+        $adminRole = Role::where('name', 'admin')->first();
         if ($adminRole) {
-            $sysadmin->roles()->attach($adminRole->id);
+            $sysadmin->assignRole($adminRole);
         }
     }
 }

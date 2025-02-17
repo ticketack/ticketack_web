@@ -5,8 +5,11 @@ return [
         'title' => 'Tableau de bord',
         'statistics' => 'Statistiques',
         'total_equipment' => 'Nombre total d\'Équipements',
-        'latest_products' => 'Derniers produits',
-        'recent_activity' => 'Activité récente'
+        'latest_products' => 'Derniers Équipements',
+        'ticket_stats' => 'Statistiques des tickets',
+        'total_tickets' => 'Nombre total de tickets',
+        'by_status' => 'Par statut',
+        'by_priority' => 'Par priorité'
     ],
     'auth' => [
         'login' => [

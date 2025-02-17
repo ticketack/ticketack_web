@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -36,7 +36,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'roles' => 'required|array',
-            'roles.*' => 'exists:roles,id',
+            'roles.*' => 'exists:roles,name',
         ]);
 
         $user = User::create([
@@ -45,7 +45,7 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        $user->roles()->attach($validated['roles']);
+        $user->assignRole($validated['roles']);
 
         return redirect()->route('users.index')
             ->with('message', 'Utilisateur créé avec succès.');
@@ -71,7 +71,7 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8|confirmed',
             'roles' => 'required|array',
-            'roles.*' => 'exists:roles,id',
+            'roles.*' => 'exists:roles,name',
         ]);
 
         $user->update([
@@ -85,7 +85,7 @@ class UserController extends Controller
             ]);
         }
 
-        $user->roles()->sync($validated['roles']);
+        $user->syncRoles($validated['roles']);
 
         return redirect()->route('users.index')
             ->with('message', 'Utilisateur mis à jour avec succès.');

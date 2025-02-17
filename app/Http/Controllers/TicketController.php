@@ -5,13 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\TicketStatus;
+use App\Models\TicketDocument;
+use App\Services\TicketDocumentService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Inertia\Response;
 
 class TicketController extends Controller
 {
+    public function documents(Ticket $ticket): Response
+    {
+        return Inertia::render('Tickets/Steps/AddDocuments', [
+            'ticket' => $ticket
+        ]);
+    }
+
     use AuthorizesRequests;
 
     public function index()
@@ -25,7 +35,7 @@ class TicketController extends Controller
             $query->where('created_by', $user->id);
         }
 
-        $tickets = $query->latest()->paginate(10);
+        $tickets = $query->latest()->paginate(50);
 
         return Inertia::render('Tickets/Index', [
             'tickets' => $tickets,
@@ -43,6 +53,8 @@ class TicketController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info('Création de ticket - données reçues:', $request->all());
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -51,6 +63,11 @@ class TicketController extends Controller
             'equipement_id' => 'nullable|exists:equipements,id',
             'due_date' => 'nullable|date',
         ]);
+
+        // Traiter la date d'échéance
+        if (empty($validated['due_date'])) {
+            unset($validated['due_date']);
+        }
 
         $status = TicketStatus::where('is_default', true)->first();
 
@@ -62,15 +79,19 @@ class TicketController extends Controller
 
         $ticket->addLog('created', 'Ticket créé');
 
-        return redirect()->route('tickets.show', $ticket)
-            ->with('success', 'Ticket créé avec succès.');
+        \Log::info('Ticket créé avec succès:', ['ticket_id' => $ticket->id]);
+
+        return redirect()->route('tickets.create')->with([
+            'success' => 'Ticket créé avec succès',
+            'ticket' => $ticket
+        ]);
     }
 
     public function show(Ticket $ticket)
     {
         $this->authorize('view', $ticket);
 
-        $ticket->load(['category', 'status', 'creator', 'assignee', 'equipement', 'logs.user']);
+        $ticket->load(['category', 'status', 'creator', 'assignee', 'equipement', 'logs.user', 'documents']);
 
         return Inertia::render('Tickets/Show', [
             'ticket' => $ticket,
@@ -82,26 +103,29 @@ class TicketController extends Controller
     {
         $this->authorize('update', $ticket);
 
+        \Log::info('Mise à jour du ticket - données reçues:', $request->all());
+
         $validated = $request->validate([
-            'status_id' => 'sometimes|required|exists:ticket_statuses,id',
-            'assigned_to' => 'nullable|exists:users,id',
-            'priority' => 'sometimes|required|in:low,medium,high,critical',
-            'due_date' => 'nullable|date',
+            'status_id' => 'required|exists:ticket_statuses,id'
         ]);
 
         $oldStatus = $ticket->status;
+        $newStatus = TicketStatus::findOrFail($validated['status_id']);
         
-        $ticket->update($validated);
+        if ($oldStatus->id !== $newStatus->id) {
+            $ticket->update([
+                'status_id' => $newStatus->id
+            ]);
 
-        if ($request->has('status_id') && $oldStatus->id !== $validated['status_id']) {
-            $newStatus = TicketStatus::find($validated['status_id']);
             $ticket->addLog('status_changed', "Statut changé de {$oldStatus->name} à {$newStatus->name}");
+            
+            \Log::info('Statut du ticket mis à jour:', [
+                'ticket_id' => $ticket->id,
+                'old_status' => $oldStatus->name,
+                'new_status' => $newStatus->name
+            ]);
         }
 
-        if ($request->has('assigned_to')) {
-            $ticket->addLog('assigned', "Ticket assigné à " . ($ticket->assignee->name ?? 'personne'));
-        }
-
-        return back()->with('success', 'Ticket mis à jour avec succès.');
+        return back()->with('success', 'Statut du ticket mis à jour avec succès.');
     }
 }

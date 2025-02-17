@@ -40,7 +40,7 @@
                             <div>
                                 <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $page.props.translations.pages.roles.edit.permissions }}</h3>
                                 <div class="space-y-6">
-                                    <template v-for="group in ['equipements', 'roles', 'users', 'settings']" :key="group">
+                                    <template v-for="group in ['equipements', 'roles', 'users', 'tickets', 'settings']" :key="group">
                                         <div v-if="hasPermissionsForGroup(group)" class="space-y-2">
                                             <h4 class="font-medium text-gray-700">{{ getGroupTranslation(group) }}</h4>
                                             <div class="ml-4 space-y-2">
@@ -48,7 +48,7 @@
                                                     <input
                                                         type="checkbox"
                                                         :id="'permission-' + permission.id"
-                                                        v-model="form.permissions[permission.id].granted"
+                                                        v-model="permission.granted"
                                                         class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
                                                         :disabled="role.name === 'admin'"
                                                     >
@@ -66,7 +66,7 @@
                             <div class="flex items-center justify-end mt-4">
                                 <Link
                                     :href="route('roles.index')"
-                                    class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors mr-4"
+                                    class="inline-flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors mr-4"
                                 >
                                     {{ $page.props.translations.pages.roles.edit.cancel }}
                                 </Link>
@@ -117,26 +117,30 @@ const getGroupTranslation = (group) => {
 };
 
 const getTranslatedPermission = (permission) => {
-    // D'abord, essayons d'utiliser les traductions du fichier de langue
-    const translations = page.props.translations[page.props.locale];
-    if (translations?.permissions?.[permission.name]) {
-        return translations.permissions[permission.name];
+    // Debug
+    console.log('Permission:', permission);
+    console.log('Translations:', page.props.translations.permissions);
+
+    // Utiliser les traductions du fichier permissions.php
+    if (permission.name in page.props.translations.permissions) {
+        return page.props.translations.permissions[permission.name];
     }
-    // Sinon, utilisons la description de la permission
-    return permission.description || permission.name;
+
+    // Fallback pour les permissions qui n'ont pas de traduction
+    const [group, action] = permission.name.split('.');
+    if (group in page.props.translations.permissions.groups) {
+        const groupTranslation = page.props.translations.permissions.groups[group];
+        const actionTranslation = action.charAt(0).toUpperCase() + action.slice(1);
+        return `${actionTranslation} - ${groupTranslation}`;
+    }
+
+    return permission.name;
 };
 
 const form = useForm({
     name: props.role.name,
     description: props.role.description,
-    permissions: props.permissions.reduce((acc, permission) => {
-        const rolePermission = props.role.permissions.find(p => p.id === permission.id);
-        acc[permission.id] = {
-            id: permission.id,
-            granted: rolePermission ? !!rolePermission.pivot.granted : false
-        };
-        return acc;
-    }, {})
+    permissions: props.permissions
 });
 
 const submit = () => {

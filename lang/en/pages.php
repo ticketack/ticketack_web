@@ -6,7 +6,10 @@ return [
         'statistics' => 'Statistics',
         'total_equipment' => 'Total Equipment',
         'latest_products' => 'Latest Products',
-        'recent_activity' => 'Recent Activity'
+        'ticket_stats' => 'Ticket Statistics',
+        'total_tickets' => 'Total Tickets',
+        'by_status' => 'By Status',
+        'by_priority' => 'By Priority'
     ],
     'auth' => [
         'login' => [
