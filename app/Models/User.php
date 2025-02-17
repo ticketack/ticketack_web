@@ -6,40 +6,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
-    {
-        return $this->belongsToMany(Role::class);
-    }
-
-    public function hasPermissionTo(string $permission): bool
-    {
-        return $this->roles()
-            ->whereHas('permissions', function ($query) use ($permission) {
-                $query->where('permissions.name', $permission)
-                    ->where('permission_role.granted', true);
-            })
-            ->exists();
-    }
-
-    public function can($abilities, $arguments = [])
-    {
-        if (is_string($abilities)) {
-            // Débogage
-            \Log::info('Checking permission: ' . $abilities);
-            \Log::info('User roles: ' . $this->roles()->pluck('name')->implode(', '));
-            $hasPermission = $this->hasPermissionTo($abilities);
-            \Log::info('Has permission: ' . ($hasPermission ? 'true' : 'false'));
-            return $hasPermission;
-        }
-        return false;
-    }
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.

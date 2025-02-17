@@ -17,6 +17,7 @@ class EquipementsSeeder extends Seeder
             'designation' => 'Usine de Production',
             'marque' => 'ID Ingénierie',
             'modele' => 'Site Principal',
+            'serial_number' => 'USINE001',
             'image' => null,
             'icone' => 1
         ]);
@@ -26,6 +27,7 @@ class EquipementsSeeder extends Seeder
             'designation' => 'Ligne de Production 1',
             'marque' => 'Siemens',
             'modele' => 'LP2000',
+            'serial_number' => 'LP2000-001',
             'image' => null,
             'icone' => 2,
             'parent_id' => $usine->id
@@ -35,6 +37,7 @@ class EquipementsSeeder extends Seeder
             'designation' => 'Ligne de Production 2',
             'marque' => 'ABB',
             'modele' => 'LP3000',
+            'serial_number' => 'LP3000-001',
             'image' => null,
             'icone' => 2,
             'parent_id' => $usine->id
@@ -45,6 +48,7 @@ class EquipementsSeeder extends Seeder
             'designation' => 'Robot de Soudure',
             'marque' => 'KUKA',
             'modele' => 'KR500',
+            'serial_number' => 'KR500-RS001',
             'image' => null,
             'icone' => 3,
             'parent_id' => $ligne1->id
@@ -54,6 +58,7 @@ class EquipementsSeeder extends Seeder
             'designation' => 'Convoyeur',
             'marque' => 'Festo',
             'modele' => 'CT100',
+            'serial_number' => 'CT100-RS001',
             'image' => null,
             'icone' => 4,
             'parent_id' => $ligne1->id
@@ -64,6 +69,7 @@ class EquipementsSeeder extends Seeder
             'designation' => 'Machine de Découpe',
             'marque' => 'Trumpf',
             'modele' => 'TruLaser 3030',
+            'serial_number' => '123456789',
             'image' => null,
             'icone' => 5,
             'parent_id' => $ligne2->id
@@ -73,6 +79,7 @@ class EquipementsSeeder extends Seeder
             'designation' => 'Station de Contrôle',
             'marque' => 'Zeiss',
             'modele' => 'Contura G2',
+            'serial_number' => '123456788',
             'image' => null,
             'icone' => 6,
             'parent_id' => $ligne2->id

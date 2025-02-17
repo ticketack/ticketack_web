@@ -5,7 +5,8 @@ return [
         'equipements' => 'Gestion des équipements',
         'roles' => 'Gestion des rôles',
         'users' => 'Gestion des utilisateurs',
-        'settings' => 'Paramètres du système'
+        'settings' => 'Paramètres du système',
+        'tickets' => 'Gestion des tickets'
     ],
     'equipements.view' => 'Consulter les équipements',
     'equipements.create' => 'Créer des équipements',
@@ -21,5 +22,9 @@ return [
     'users.delete' => 'Supprimer les utilisateurs',
     'settings.view' => 'Consulter les paramètres',
     'settings.edit' => 'Modifier les paramètres',
-    'dashboard.view' => 'Accéder au tableau de bord'
+    'dashboard.view' => 'Accéder au tableau de bord',
+    'tickets.view' => 'Consulter les tickets',
+    'tickets.create' => 'Créer des tickets',
+    'tickets.edit' => 'Modifier les tickets',
+    'tickets.delete' => 'Supprimer les tickets'
 ];

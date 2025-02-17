@@ -21,6 +21,27 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'ind
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
+    // Routes des tickets
+    Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.view'])->group(function () {
+        Route::get('/tickets', [\App\Http\Controllers\TicketController::class, 'index'])
+            ->name('tickets.index');
+
+        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.create'])->group(function () {
+            Route::get('/tickets/create', [\App\Http\Controllers\TicketController::class, 'create'])
+                ->name('tickets.create');
+            Route::post('/tickets', [\App\Http\Controllers\TicketController::class, 'store'])
+                ->name('tickets.store');
+        });
+
+        Route::get('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'show'])
+            ->name('tickets.show');
+
+        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.edit'])->group(function () {
+            Route::put('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'update'])
+                ->name('tickets.update');
+        });
+    });
+
     // Route de la documentation API
     Route::get('/api/documentation', [\App\Http\Controllers\ApiDocumentationController::class, 'index'])
         ->name('api.documentation');
@@ -31,6 +52,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Routes des équipements avec groupe de middleware
     Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipements.view'])->group(function () {
+        Route::get('equipements/search', [EquipementController::class, 'search'])
+            ->name('equipements.search');
         Route::get('equipements', [EquipementController::class, 'index'])
             ->name('equipements.index');
 

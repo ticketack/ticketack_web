@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             EquipementsSeeder::class,
             SettingsSeeder::class,
+            TicketStatusAndCategorySeeder::class,
         ]);
     }
 }

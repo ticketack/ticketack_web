@@ -79,26 +79,8 @@ class HandleInertiaRequests extends Middleware
             return [];
         }
 
-        $permissions = [
-            'dashboard.view',
-            'equipements.view',
-            'equipements.create',
-            'equipements.edit',
-            'equipements.delete',
-            'roles.view',
-            'roles.create',
-            'roles.edit',
-            'roles.delete',
-            'users.view',
-            'users.create',
-            'users.edit',
-            'users.delete',
-            'settings.view',
-            'settings.edit',
-        ];
-
-        return collect($permissions)->mapWithKeys(function ($permission) use ($request) {
-            return [$permission => $request->user()->hasPermissionTo($permission)];
+        return $request->user()->getAllPermissions()->pluck('name')->mapWithKeys(function ($permission) {
+            return [$permission => true];
         })->all();
     }
 }

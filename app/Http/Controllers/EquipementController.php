@@ -8,9 +8,31 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\JsonResponse;
 
 class EquipementController extends Controller
 {
+    public function search(Request $request): JsonResponse
+    {
+        $query = $request->get('query');
+        $equipements = [];
+
+        if (strlen($query) >= 3) {
+            $equipements = Equipement::where('designation', 'like', "%{$query}%")
+                ->orWhere('serial_number', 'like', "%{$query}%")
+                ->limit(10)
+                ->get()
+                ->map(function ($equipement) {
+                    return [
+                        'id' => $equipement->id,
+                        'text' => $equipement->designation . ' (' . $equipement->serial_number . ')',
+                    ];
+                });
+        }
+
+        return response()->json(['results' => $equipements]);
+    }
+
     public function index(): Response
     {
         $equipements = Equipement::with('allChildren')

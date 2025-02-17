@@ -2,35 +2,42 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
-class RolesAndPermissionsSeeder extends Seeder
+class PermissionsSeeder extends Seeder
 {
     public function run(): void
     {
-        // Réinitialiser les caches
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-
-        // Création des permissions
+        // Créer les permissions
         $permissions = [
+            // Dashboard
             'dashboard.view',
+
+            // Équipements
             'equipements.view',
             'equipements.create',
             'equipements.edit',
             'equipements.delete',
+
+            // Rôles
             'roles.view',
             'roles.create',
             'roles.edit',
             'roles.delete',
+
+            // Utilisateurs
             'users.view',
             'users.create',
             'users.edit',
             'users.delete',
+
+            // Paramètres
             'settings.view',
             'settings.edit',
+
+            // Tickets
             'tickets.view',
             'tickets.create',
             'tickets.edit',
@@ -42,24 +49,18 @@ class RolesAndPermissionsSeeder extends Seeder
             Permission::findOrCreate($permission);
         }
 
-        // Création des rôles
+        // Créer les rôles
         $admin = Role::findOrCreate('admin');
         $tiers = Role::findOrCreate('tiers');
 
-        // Attribution des permissions aux rôles
-        $admin->givePermissionTo($permissions);
+        // Attribuer toutes les permissions à l'admin
+        $admin->syncPermissions($permissions);
 
-        // Les tiers peuvent voir le dashboard et gérer leurs tickets
-        $tiers->givePermissionTo([
+        // Attribuer les permissions de base aux tiers
+        $tiers->syncPermissions([
             'dashboard.view',
             'tickets.view',
             'tickets.create',
         ]);
-
-        // Attribution du rôle admin à l'utilisateur admin@example.com
-        $adminUser = User::where('email', 'admin@example.com')->first();
-        if ($adminUser) {
-            $adminUser->assignRole('admin');
-        }
     }
 }

@@ -14,7 +14,8 @@ class Equipement extends Model
         'modele',
         'image',
         'icone',
-        'parent_id'
+        'parent_id',
+        'serial_number'
     ];
 
     public function parent(): BelongsTo
