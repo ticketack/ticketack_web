@@ -12,9 +12,14 @@ class SetLocale
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $language = Setting::where('key', 'language')->first()?->value ?? 'fr';
+        // Priorité à la session, puis à la base de données, puis par défaut
+        $language = session()->get('locale') ?? 
+                   Setting::where('key', 'language')->first()?->value ?? 
+                   'fr';
+
         App::setLocale($language);
-        session()->put('locale', $language);
+        \Carbon\Carbon::setLocale($language);
+        setlocale(LC_TIME, $language.'_'.strtoupper($language).'.UTF-8');
         
         return $next($request);
     }

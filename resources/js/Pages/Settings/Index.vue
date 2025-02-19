@@ -47,27 +47,15 @@ const form = useForm({
 });
 
 const handleLanguageChange = (event) => {
-    console.log('Language changed to:', event.target.value);
     const newLanguage = event.target.value;
     
     // Créer un nouveau formulaire avec seulement la langue
     const languageForm = useForm({
-        language: newLanguage,
-        company_name: form.company_name
+        language: newLanguage
     });
     
-    console.log('Sending form data:', languageForm.data());
-    
-    languageForm.post('/settings', {
-        preserveScroll: true,
-        onSuccess: (response) => {
-            console.log('Language update successful, response:', response);
-            window.location.reload();
-        },
-        onError: (errors) => {
-            console.error('Language update failed:', errors);
-        }
-    });
+    // Envoyer la requête POST
+    languageForm.post(route('settings.store'));
 };
 
 const languages = [

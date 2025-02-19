@@ -1,11 +1,39 @@
 <?php
 
 return [
+    'comments' => [
+        'title' => 'Kommentare',
+        'no_comments' => 'Noch keine Kommentare',
+        'add' => 'Kommentar hinzufügen',
+        'placeholder' => 'Schreiben Sie Ihren Kommentar hier...',
+        'attachments' => 'Anhängen',
+        'add_files' => 'Dateien hinzufügen',
+        'confirm_delete' => 'Möchten Sie diesen Kommentar wirklich löschen?',
+        'max_size' => 'maximale Größe',
+        'accepted_formats' => 'Akzeptierte Formate',
+        'success' => [
+            'added' => 'Kommentar erfolgreich hinzugefügt',
+            'deleted' => 'Kommentar erfolgreich gelöscht'
+        ],
+        'error' => [
+            'add' => 'Fehler beim Hinzufügen des Kommentars',
+            'delete' => 'Fehler beim Löschen des Kommentars'
+        ]
+    ],
     'dashboard' => [
         'title' => 'Dashboard',
         'statistics' => 'Statistiken',
         'total_equipment' => 'Gesamtausrüstung',
-        'latest_products' => 'Neueste Produkte',
+        'total_users' => 'Gesamtanzahl der Benutzer',
+        'equipment_stats' => 'Ausrüstungsstatistiken',
+        'most_tickets' => 'Ausrüstung mit den meisten Tickets',
+        'least_tickets' => 'Ausrüstung mit den wenigsten Tickets',
+        'ticket_count' => 'Ticketanzahl: :count',
+        'ticket_stats' => 'Ticket-Statistiken',
+        'total_tickets' => 'Gesamtanzahl der Tickets',
+        'by_status' => 'Nach Status',
+        'by_priority' => 'Nach Priorität',
+        'tickets_over_time' => 'Ticketentwicklung der letzten 30 Tage',
         'recent_activity' => 'Letzte Aktivität'
     ],
     'auth' => [
@@ -172,16 +200,28 @@ return [
         'create' => [
             'title' => 'Rolle erstellen',
             'name' => 'Name',
+            'description' => 'Beschreibung',
             'permissions' => 'Berechtigungen',
             'save' => 'Speichern',
-            'cancel' => 'Abbrechen'
+            'cancel' => 'Abbrechen',
+            'create' => 'Erstellen'
         ],
         'edit' => [
             'title' => 'Rolle bearbeiten',
             'name' => 'Name',
+            'description' => 'Beschreibung',
             'permissions' => 'Berechtigungen',
             'save' => 'Speichern',
             'cancel' => 'Abbrechen'
+        ],
+        'show' => [
+            'title' => 'Rollendetails',
+            'name' => 'Name',
+            'description' => 'Beschreibung',
+            'no_description' => 'Keine Beschreibung',
+            'permissions' => 'Berechtigungen',
+            'edit' => 'Bearbeiten',
+            'back' => 'Zurück'
         ],
         'delete' => [
             'confirm_title' => 'Rolle löschen',
@@ -328,6 +368,24 @@ return [
                 ],
                 'delete' => [
                     'description' => 'Bestehende Ausrüstung löschen'
+                ]
+            ],
+            'tickets' => [
+                'title' => 'Tickets',
+                'list' => [
+                    'description' => 'Ruft die vollständige Liste der Tickets ab.'
+                ],
+                'create' => [
+                    'description' => 'Neues Ticket erstellen'
+                ],
+                'show' => [
+                    'description' => 'Ruft die Details eines bestimmten Tickets ab.'
+                ],
+                'update' => [
+                    'description' => 'Informationen eines bestehenden Tickets aktualisieren'
+                ],
+                'delete' => [
+                    'description' => 'Bestehendes Ticket löschen'
                 ]
             ]
         ],

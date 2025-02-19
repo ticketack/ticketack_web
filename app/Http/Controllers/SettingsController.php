@@ -116,30 +116,20 @@ class SettingsController extends Controller
 
             \DB::commit();
 
-            // Mettre à jour la langue dans la session et l'application
-            session()->put('locale', $validated['language']);
-            app()->setLocale($validated['language']);
-            \Carbon\Carbon::setLocale($validated['language']);
-            setlocale(LC_TIME, $validated['language'].'_'.strtoupper($validated['language']).'.UTF-8');
-
-            \Log::info('Session and app locale:', [
-                'session_locale' => session()->get('locale'),
-                'app_locale' => app()->getLocale(),
-                'db_language' => Setting::where('key', 'language')->first()?->value
-            ]);
-
-            // Récupérer les paramètres mis à jour
-            $settings = Setting::pluck('value', 'key')->all();
-            $logo = $settings['logo'] ?? null;
-
-            return redirect()->route('settings.index')->with([
-                'success' => 'Paramètres mis à jour avec succès',
-                'settings' => [
-                    'company_name' => $settings['company_name'] ?? '',
-                    'logo' => $logo,
-                    'language' => $settings['language'] ?? 'fr'
-                ]
-            ]);
+            // Mettre à jour la langue
+            $newLanguage = $validated['language'];
+            session(['locale' => $newLanguage]);
+            app()->setLocale($newLanguage);
+            
+            // Forcer un rechargement complet de la page
+            return redirect()->route('settings.index')
+                ->with('success', 'Paramètres mis à jour avec succès')
+                ->with('settings', [
+                    'company_name' => Setting::where('key', 'company_name')->first()?->value ?? '',
+                    'logo' => Setting::where('key', 'logo')->first()?->value ?? null,
+                    'language' => $newLanguage
+                ])
+                ->header('X-Inertia-Location', route('settings.index'));
 
         } catch (\Exception $e) {
             \DB::rollback();

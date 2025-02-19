@@ -30,8 +30,20 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        // La langue est déjà configurée par le middleware SetLocale
-        $language = app()->getLocale();
+        $language = $request->session()->get('locale', config('app.locale'));
+        app()->setLocale($language);
+        \Carbon\Carbon::setLocale($language);
+        setlocale(LC_TIME, $language.'_'.strtoupper($language).'.UTF-8');
+
+        // Recharger les traductions
+        app()->forgetInstance('translator');
+        app()->instance('translator', new \Illuminate\Translation\Translator(
+            new \Illuminate\Translation\FileLoader(
+                new \Illuminate\Filesystem\Filesystem(),
+                base_path('lang')
+            ),
+            $language
+        ));
 
         // Récupérer le logo depuis la base de données
         $logo = null;

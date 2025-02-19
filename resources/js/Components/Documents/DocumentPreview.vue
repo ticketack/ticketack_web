@@ -49,6 +49,8 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
     document: {
         type: Object,

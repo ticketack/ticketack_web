@@ -1,15 +1,40 @@
 <?php
 
 return [
+    'comments' => [
+        'title' => 'Commentaires',
+        'no_comments' => 'Aucun commentaire pour le moment',
+        'add' => 'Ajouter un commentaire',
+        'placeholder' => 'Écrivez votre commentaire ici...',
+        'attachments' => 'Pièces jointes',
+        'add_files' => 'Ajouter des fichiers',
+        'confirm_delete' => 'Êtes-vous sûr de vouloir supprimer ce commentaire ?',
+        'max_size' => 'Taille maximale',
+        'accepted_formats' => 'Formats acceptés',
+        'success' => [
+            'added' => 'Commentaire ajouté avec succès',
+            'deleted' => 'Commentaire supprimé avec succès'
+        ],
+        'error' => [
+            'add' => 'Une erreur est survenue lors de l\'ajout du commentaire',
+            'delete' => 'Erreur lors de la suppression du commentaire',
+            'file_size' => 'La taille du fichier dépasse la limite de 10 MB'
+        ]
+    ],
     'dashboard' => [
         'title' => 'Tableau de bord',
         'statistics' => 'Statistiques',
         'total_equipment' => 'Nombre total d\'Équipements',
-        'latest_products' => 'Derniers Équipements',
+        'total_users' => 'Nombre total d\'Utilisateurs',
+        'equipment_stats' => 'Statistiques d\'Équipements',
+        'most_tickets' => 'Équipements avec le plus de tickets',
+        'least_tickets' => 'Équipements avec le moins de tickets',
+        'ticket_count' => 'Nombre de tickets : :count',
         'ticket_stats' => 'Statistiques des tickets',
         'total_tickets' => 'Nombre total de tickets',
         'by_status' => 'Par statut',
-        'by_priority' => 'Par priorité'
+        'by_priority' => 'Par priorité',
+        'tickets_over_time' => 'Évolution des tickets sur les 30 derniers jours'
     ],
     'auth' => [
         'login' => [
@@ -150,16 +175,28 @@ return [
         'create' => [
             'title' => 'Créer un rôle',
             'name' => 'Nom',
+            'description' => 'Description',
             'permissions' => 'Permissions',
             'save' => 'Enregistrer',
-            'cancel' => 'Annuler'
+            'cancel' => 'Annuler',
+            'create' => 'Créer'
         ],
         'edit' => [
             'title' => 'Modifier le rôle',
             'name' => 'Nom',
+            'description' => 'Description',
             'permissions' => 'Permissions',
             'save' => 'Enregistrer',
             'cancel' => 'Annuler'
+        ],
+        'show' => [
+            'title' => 'Détails du rôle',
+            'name' => 'Nom',
+            'description' => 'Description',
+            'no_description' => 'Aucune description',
+            'permissions' => 'Permissions',
+            'edit' => 'Modifier',
+            'back' => 'Retour'
         ],
         'delete' => [
             'confirm_title' => 'Supprimer le rôle',
@@ -220,6 +257,7 @@ return [
             'confirm' => 'Supprimer'
         ]
     ],
+
 
     'api_doc' => [
         'title' => 'Documentation API',
@@ -306,6 +344,24 @@ return [
                 ],
                 'delete' => [
                     'description' => 'Supprimez un équipement existant'
+                ]
+            ],
+            'tickets' => [
+                'title' => 'Tickets',
+                'list' => [
+                    'description' => 'Récupère la liste complète des tickets.'
+                ],
+                'create' => [
+                    'description' => 'Créez un nouveau ticket'
+                ],
+                'show' => [
+                    'description' => 'Récupère les détails d\'un ticket spécifique.'
+                ],
+                'update' => [
+                    'description' => 'Mettez à jour les informations d\'un ticket existant'
+                ],
+                'delete' => [
+                    'description' => 'Supprimez un ticket existant'
                 ]
             ]
         ],

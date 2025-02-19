@@ -1,14 +1,25 @@
 <template>
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex justify-between">
+            <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     Tickets
                 </h2>
-                <Link :href="route('tickets.create')" 
-                    class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
-                    Nouveau Ticket
-                </Link>
+                <div class="flex items-center space-x-4">
+                    <button
+                        @click="showFilters = true"
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                        <svg class="-ml-0.5 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                        Filtres
+                    </button>
+                    <Link :href="route('tickets.create')" 
+                        class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
+                        Nouveau Ticket
+                    </Link>
+                </div>
             </div>
         </template>
 
@@ -74,6 +85,14 @@
                 </div>
             </div>
         </div>
+
+        <FilterSidebar
+            v-model="showFilters"
+            :statuses="statuses"
+            :categories="categories"
+            :users="users"
+            :current-filters="filters"
+        />
     </AuthenticatedLayout>
 </template>
 
@@ -82,13 +101,33 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Link } from '@inertiajs/vue3';
 import TicketStatus from '@/Components/Tickets/TicketStatus.vue';
 import TicketPriority from '@/Components/Tickets/TicketPriority.vue';
+import FilterSidebar from '@/Components/Tickets/FilterSidebar.vue';
+import { ref } from 'vue';
 import Pagination from '@/Components/Pagination.vue';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
+const showFilters = ref(false);
+
 defineProps({
     tickets: {
         type: Object,
+        required: true
+    },
+    filters: {
+        type: Object,
+        required: true
+    },
+    statuses: {
+        type: Array,
+        required: true
+    },
+    categories: {
+        type: Array,
+        required: true
+    },
+    users: {
+        type: Array,
         required: true
     }
 });

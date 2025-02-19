@@ -10,6 +10,6 @@ class ApiDocumentationController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Api/DocumentationV2');
+        return Inertia::render('Api/Documentation');
     }
 }

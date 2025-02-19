@@ -1,15 +1,40 @@
 <?php
 
 return [
+    'comments' => [
+        'title' => 'Comments',
+        'no_comments' => 'No comments yet',
+        'add' => 'Add a comment',
+        'placeholder' => 'Write your comment here...',
+        'attachments' => 'Attachments',
+        'add_files' => 'Add files',
+        'confirm_delete' => 'Are you sure you want to delete this comment?',
+        'max_size' => 'Maximum size',
+        'accepted_formats' => 'Accepted formats',
+        'success' => [
+            'added' => 'Comment added successfully',
+            'deleted' => 'Comment deleted successfully'
+        ],
+        'error' => [
+            'add' => 'An error occurred while adding the comment',
+            'delete' => 'Error deleting comment',
+            'file_size' => 'File size exceeds the 10 MB limit'
+        ]
+    ],
     'dashboard' => [
         'title' => 'Dashboard',
         'statistics' => 'Statistics',
         'total_equipment' => 'Total Equipment',
-        'latest_products' => 'Latest Products',
+        'total_users' => 'Total Users',
+        'equipment_stats' => 'Equipment Statistics',
+        'most_tickets' => 'Equipment with Most Tickets',
+        'least_tickets' => 'Equipment with Least Tickets',
+        'ticket_count' => 'Ticket count: :count',
         'ticket_stats' => 'Ticket Statistics',
         'total_tickets' => 'Total Tickets',
         'by_status' => 'By Status',
-        'by_priority' => 'By Priority'
+        'by_priority' => 'By Priority',
+        'tickets_over_time' => 'Ticket Evolution Over Last 30 Days'
     ],
     'auth' => [
         'login' => [
@@ -175,13 +200,16 @@ return [
         'create' => [
             'title' => 'Create Role',
             'name' => 'Name',
+            'description' => 'Description',
             'permissions' => 'Permissions',
             'save' => 'Save',
-            'cancel' => 'Cancel'
+            'cancel' => 'Cancel',
+            'create' => 'Create'
         ],
         'edit' => [
             'title' => 'Edit Role',
             'name' => 'Name',
+            'description' => 'Description',
             'permissions' => 'Permissions',
             'save' => 'Save',
             'cancel' => 'Cancel'
@@ -331,6 +359,24 @@ return [
                 ],
                 'delete' => [
                     'description' => 'Delete an existing equipment'
+                ]
+            ],
+            'tickets' => [
+                'title' => 'Tickets',
+                'list' => [
+                    'description' => 'Retrieve the complete list of tickets.'
+                ],
+                'create' => [
+                    'description' => 'Create a new ticket'
+                ],
+                'show' => [
+                    'description' => 'Retrieve the details of a specific ticket.'
+                ],
+                'update' => [
+                    'description' => 'Update the information of an existing ticket'
+                ],
+                'delete' => [
+                    'description' => 'Delete an existing ticket'
                 ]
             ]
         ],

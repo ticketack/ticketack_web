@@ -6,6 +6,7 @@ use App\Models\Ticket;
 use App\Models\TicketCategory;
 use App\Models\TicketStatus;
 use App\Models\TicketDocument;
+use App\Models\User;
 use App\Services\TicketDocumentService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -24,7 +25,7 @@ class TicketController extends Controller
 
     use AuthorizesRequests;
 
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $query = Ticket::query()
@@ -35,10 +36,50 @@ class TicketController extends Controller
             $query->where('created_by', $user->id);
         }
 
-        $tickets = $query->latest()->paginate(50);
+        // Appliquer les filtres
+        if ($request->filled('status_id')) {
+            $query->where('status_id', $request->status_id);
+        }
+
+        if ($request->filled('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('equipement_id')) {
+            $query->where('equipement_id', $request->equipement_id);
+        }
+
+        if ($request->filled('assigned_to')) {
+            $query->where('assigned_to', $request->assigned_to);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $tickets = $query->latest()->paginate(50)->withQueryString();
+
+        // Récupérer les données pour les filtres
+        $statuses = TicketStatus::orderBy('order')->get();
+        $categories = TicketCategory::orderBy('order')->get();
+        $users = User::whereDoesntHave('roles', function($query) {
+            $query->where('name', 'tiers');
+        })->get();
 
         return Inertia::render('Tickets/Index', [
             'tickets' => $tickets,
+            'filters' => $request->all(),
+            'statuses' => $statuses,
+            'categories' => $categories,
+            'users' => $users
         ]);
     }
 
@@ -81,17 +122,19 @@ class TicketController extends Controller
 
         \Log::info('Ticket créé avec succès:', ['ticket_id' => $ticket->id]);
 
-        return redirect()->route('tickets.create')->with([
-            'success' => 'Ticket créé avec succès',
-            'ticket' => $ticket
-        ]);
+        return Inertia::render('Tickets/Create', [
+            'ticket' => $ticket,
+            'categories' => TicketCategory::orderBy('order')->get(),
+            'statuses' => TicketStatus::orderBy('order')->get(),
+            'equipements' => Auth::user()->equipements,
+        ])->with('success', 'Ticket créé avec succès');
     }
 
     public function show(Ticket $ticket)
     {
         $this->authorize('view', $ticket);
 
-        $ticket->load(['category', 'status', 'creator', 'assignee', 'equipement', 'logs.user', 'documents']);
+        $ticket->load(['category', 'status', 'creator', 'assignee', 'equipement', 'logs.user', 'documents', 'comments.user']);
 
         return Inertia::render('Tickets/Show', [
             'ticket' => $ticket,

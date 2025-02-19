@@ -15,6 +15,16 @@ use Illuminate\Http\JsonResponse;
  */
 class EquipementController extends Controller
 {
+    public function search(Request $request)
+    {
+        $query = $request->get('q');
+        
+        return Equipement::where('designation', 'like', "%{$query}%")
+            ->orWhere('marque', 'like', "%{$query}%")
+            ->orWhere('modele', 'like', "%{$query}%")
+            ->take(10)
+            ->get();
+    }
     /**
      * @OA\Get(
      *     path="/api/equipements",

@@ -108,8 +108,7 @@
                                         id="due_date"
                                         type="date"
                                         class="mt-1 block w-full"
-                                        :value="form.due_date"
-                                        @input="handleDateChange"
+                                        v-model="form.due_date"
                                         :disabled="currentStep > 1"
                                     />
                                     <InputError :message="form.errors.due_date" class="mt-2" />
@@ -220,9 +219,7 @@ const form = useForm({
     due_date: null
 });
 
-const handleDateChange = (e) => {
-    form.due_date = e.target.value || null;
-};
+
 
 const submitStep1 = () => {
     console.log('Submitting form, current step:', currentStep.value);
@@ -232,13 +229,9 @@ const submitStep1 = () => {
         form.post(route('tickets.store'), {
             preserveScroll: true,
             onSuccess: (page) => {
-                console.log('Success response:', page);
-                if (page?.props?.flash?.ticket?.id) {
-                    console.log('Ticket ID found:', page.props.flash.ticket.id);
-                    ticketId.value = page.props.flash.ticket.id;
+                if (page?.props?.ticket?.id) {
+                    ticketId.value = page.props.ticket.id;
                     currentStep.value = 2;
-                } else {
-                    console.log('No ticket ID in response');
                 }
             },
             onError: (errors) => {

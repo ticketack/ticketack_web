@@ -2,18 +2,31 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { getPriorityColor } from '@/Utils/ticketPriorityColors';
+import TicketsChart from '@/Components/Dashboard/TicketsChart.vue';
 
 defineProps({
     equipmentCount: {
         type: Number,
         required: true
     },
-    latestEquipments: {
+    userCount: {
+        type: Number,
+        required: true
+    },
+    mostTickets: {
+        type: Array,
+        required: true
+    },
+    leastTickets: {
         type: Array,
         required: true
     },
     ticketStats: {
         type: Object,
+        required: true
+    },
+    chartData: {
+        type: Array,
         required: true
     }
 });
@@ -49,23 +62,55 @@ defineProps({
                                     <p class="text-2xl font-bold text-gray-800">{{ equipmentCount }}</p>
                                 </div>
                             </div>
+                            <div class="flex items-center space-x-4 mt-4">
+                                <div class="p-3 bg-green-100 rounded-full">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">{{ $page.props.translations.pages.dashboard.total_users }}</p>
+                                    <p class="text-2xl font-bold text-gray-800">{{ userCount }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Panneau Derniers produits -->
+                    <!-- Panneau Statistiques d'équipements -->
                     <div class="overflow-hidden bg-white shadow-lg rounded-lg">
                         <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.pages.dashboard.latest_products }}</h3>
-                            <div class="space-y-4">
-                                <div v-for="equipment in latestEquipments" :key="equipment.id" class="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-                                    <div class="p-2 bg-gray-100 rounded-full">
-                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.pages.dashboard.equipment_stats }}</h3>
+                            
+                            <!-- Équipements avec le plus de tickets -->
+                            <div class="mb-6">
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.pages.dashboard.most_tickets }}</h4>
+                                <div class="space-y-3">
+                                    <div v-for="equipment in mostTickets" :key="equipment.id" 
+                                         class="flex items-center justify-between p-3 bg-orange-50 rounded-lg transition-colors duration-200">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800">{{ equipment.designation }}</p>
+                                            <p class="text-xs text-gray-500">{{ equipment.marque }} - {{ equipment.modele }}</p>
+                                        </div>
+                                        <div class="px-3 py-1 bg-orange-100 rounded-full">
+                                            <span class="text-sm font-medium text-orange-800">{{ equipment.ticket_count }}</span>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-800">{{ equipment.designation }}</p>
-                                        <p class="text-xs text-gray-500">{{ equipment.marque }} - {{ equipment.modele }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Équipements avec le moins de tickets -->
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.pages.dashboard.least_tickets }}</h4>
+                                <div class="space-y-3">
+                                    <div v-for="equipment in leastTickets" :key="equipment.id" 
+                                         class="flex items-center justify-between p-3 bg-green-50 rounded-lg transition-colors duration-200">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800">{{ equipment.designation }}</p>
+                                            <p class="text-xs text-gray-500">{{ equipment.marque }} - {{ equipment.modele }}</p>
+                                        </div>
+                                        <div class="px-3 py-1 bg-green-100 rounded-full">
+                                            <span class="text-sm font-medium text-green-800">{{ equipment.ticket_count }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -122,6 +167,14 @@ defineProps({
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Graphique des tickets -->
+                <div class="mt-6 overflow-hidden bg-white shadow-lg rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.pages.dashboard.tickets_over_time }}</h3>
+                        <TicketsChart :data="chartData" />
                     </div>
                 </div>
             </div>

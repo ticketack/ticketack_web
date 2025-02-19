@@ -77,5 +77,8 @@ class Ticket extends Model
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
-
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->with('user')->latest();
+    }
 }

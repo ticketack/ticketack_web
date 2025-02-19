@@ -6,6 +6,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EquipementController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TicketDocumentController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -49,6 +50,12 @@ Route::middleware(['auth'])->group(function () {
                 ->name('tickets.documents.store');
             Route::delete('/tickets/{ticket}/documents/{document}', [TicketDocumentController::class, 'destroy'])
                 ->name('tickets.documents.destroy');
+
+            // Routes pour les commentaires
+            Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])
+                ->name('tickets.comments.store');
+            Route::delete('/tickets/{ticket}/comments/{comment}', [CommentController::class, 'destroy'])
+                ->name('tickets.comments.destroy');
         });
 
         // Route de téléchargement (accessible à tous ceux qui peuvent voir les tickets)
@@ -96,6 +103,12 @@ Route::middleware(['auth'])->group(function () {
     // Routes pour la gestion des rôles (admin uniquement)
     Route::group(['middleware' => ['role_or_permission:admin|roles.view']], function () {
         Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+        
+        Route::middleware(['role_or_permission:admin|roles.create'])->group(function () {
+            Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+            Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+        });
+
         Route::get('/roles/{role}', [RoleController::class, 'show'])->name('roles.show');
 
         Route::group(['middleware' => ['role_or_permission:admin|roles.create']], function () {

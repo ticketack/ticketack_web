@@ -23,8 +23,15 @@ class RoleController extends Controller
 
     public function create(): Response
     {
+        $permissions = Permission::all()->map(function ($permission) {
+            return [
+                'id' => $permission->id,
+                'name' => __('permissions.' . $permission->name)
+            ];
+        });
+
         return Inertia::render('Roles/Create', [
-            'permissions' => Permission::all(),
+            'permissions' => $permissions,
         ]);
     }
 
@@ -51,6 +58,23 @@ class RoleController extends Controller
 
         return redirect()->route('roles.index')
             ->with('message', 'Rôle créé avec succès.');
+    }
+
+    public function show(Role $role): Response
+    {
+        return Inertia::render('Roles/Show', [
+            'role' => [
+                'id' => $role->id,
+                'name' => $role->name,
+                'description' => $role->description,
+                'permissions' => $role->permissions->map(function ($permission) {
+                    return [
+                        'id' => $permission->id,
+                        'name' => $permission->name
+                    ];
+                })
+            ]
+        ]);
     }
 
     public function edit(Role $role): Response

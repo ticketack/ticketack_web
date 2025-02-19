@@ -32,4 +32,9 @@ class Equipement extends Model
     {
         return $this->children()->with('allChildren');
     }
+
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
+    }
 }
