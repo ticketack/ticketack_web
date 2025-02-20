@@ -6,8 +6,10 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EquipementController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TicketDocumentController;
+use App\Http\Controllers\TicketPdfController;
 use App\Http\Controllers\CommentController;
 use Illuminate\Foundation\Application;
+use Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,39 +30,46 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/tickets', [\App\Http\Controllers\TicketController::class, 'index'])
             ->name('tickets.index');
 
-        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.create'])->group(function () {
-            Route::get('/tickets/create', [\App\Http\Controllers\TicketController::class, 'create'])
-                ->name('tickets.create');
-            Route::post('/tickets', [\App\Http\Controllers\TicketController::class, 'store'])
-                ->name('tickets.store');
-        });
-
         Route::get('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'show'])
             ->name('tickets.show');
 
         Route::get('/tickets/{ticket}/documents', [\App\Http\Controllers\TicketController::class, 'documents'])
             ->name('tickets.documents');
 
-        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.edit'])->group(function () {
-            Route::put('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'update'])
-                ->name('tickets.update');
-
-            // Routes pour les documents
-            Route::post('/tickets/{ticket}/documents', [TicketDocumentController::class, 'store'])
-                ->name('tickets.documents.store');
-            Route::delete('/tickets/{ticket}/documents/{document}', [TicketDocumentController::class, 'destroy'])
-                ->name('tickets.documents.destroy');
-
-            // Routes pour les commentaires
-            Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])
-                ->name('tickets.comments.store');
-            Route::delete('/tickets/{ticket}/comments/{comment}', [CommentController::class, 'destroy'])
-                ->name('tickets.comments.destroy');
-        });
-
         // Route de téléchargement (accessible à tous ceux qui peuvent voir les tickets)
         Route::get('/tickets/{ticket}/documents/{document}/download', [TicketDocumentController::class, 'download'])
             ->name('tickets.documents.download');
+    });
+
+    // Route de création de tickets
+    Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.create'])->group(function () {
+        Route::get('/tickets/create', [\App\Http\Controllers\TicketController::class, 'create'])
+            ->name('tickets.create');
+        Route::post('/tickets', [\App\Http\Controllers\TicketController::class, 'store'])
+            ->name('tickets.store');
+    });
+
+    // Route PDF (accessible aux admins et ceux ayant la permission)
+    Route::get('/tickets/{ticket}/pdf', [TicketPdfController::class, 'generate'])
+        ->name('tickets.pdf')
+        ->middleware('auth');
+
+    // Routes d'édition de tickets
+    Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.edit'])->group(function () {
+        Route::put('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'update'])
+            ->name('tickets.update');
+
+        // Routes pour les documents
+        Route::post('/tickets/{ticket}/documents', [TicketDocumentController::class, 'store'])
+            ->name('tickets.documents.store');
+        Route::delete('/tickets/{ticket}/documents/{document}', [TicketDocumentController::class, 'destroy'])
+            ->name('tickets.documents.destroy');
+
+        // Routes pour les commentaires
+        Route::post('/tickets/{ticket}/comments', [CommentController::class, 'store'])
+            ->name('tickets.comments.store');
+        Route::delete('/tickets/{ticket}/comments/{comment}', [CommentController::class, 'destroy'])
+            ->name('tickets.comments.destroy');
     });
 
     // Route de la documentation API

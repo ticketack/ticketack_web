@@ -16,6 +16,10 @@
                                 <p class="text-sm text-gray-500">
                                     {{ log.message }}
                                     <span class="font-medium text-gray-900">{{ log.user.name }}</span>
+                                    <span v-if="log.type === 'comment_added' || log.type === 'comment_deleted'" 
+                                          class="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                                        CM-{{ log.comment_id }}
+                                    </span>
                                 </p>
                             </div>
                             <div class="whitespace-nowrap text-right text-sm text-gray-500">
