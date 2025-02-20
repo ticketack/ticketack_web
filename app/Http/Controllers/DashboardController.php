@@ -14,9 +14,34 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Statistiques des utilisateurs
+        $userCount = User::count();
+        $usersWithMostAssignedTickets = User::withCount('assignedTickets as assigned_tickets_count')
+            ->orderByDesc('assigned_tickets_count')
+            ->take(3)
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'ticket_count' => $user->assigned_tickets_count
+                ];
+            });
+
+        $usersWithMostCreatedTickets = User::withCount('tickets')
+            ->orderByDesc('tickets_count')
+            ->take(3)
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'ticket_count' => $user->tickets_count
+                ];
+            });
+
         // Statistiques des équipements
         $equipmentCount = Equipement::count();
-        $userCount = User::count();
 
         // Équipements avec le plus/moins de tickets
         $equipmentStats = Equipement::withCount('tickets')
@@ -50,6 +75,13 @@ class DashboardController extends Controller
                 ->get()
                 ->mapWithKeys(function ($item) {
                     return [$item->priority => $item->count];
+                }),
+            'byCategory' => Ticket::select('category_id', DB::raw('count(*) as count'))
+                ->groupBy('category_id')
+                ->with('category')
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    return [$item->category->name => $item->count];
                 })
         ];
 
@@ -83,7 +115,9 @@ class DashboardController extends Controller
             'mostTickets' => $mostTickets,
             'leastTickets' => $leastTickets,
             'ticketStats' => $ticketStats,
-            'chartData' => $chartData
+            'chartData' => $chartData,
+            'usersWithMostAssignedTickets' => $usersWithMostAssignedTickets,
+            'usersWithMostCreatedTickets' => $usersWithMostCreatedTickets
         ]);
     }
 }

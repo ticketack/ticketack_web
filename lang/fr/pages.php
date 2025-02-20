@@ -34,7 +34,11 @@ return [
         'total_tickets' => 'Nombre total de tickets',
         'by_status' => 'Par statut',
         'by_priority' => 'Par priorité',
-        'tickets_over_time' => 'Évolution des tickets sur les 30 derniers jours'
+        'by_category' => 'Par catégorie',
+        'tickets_over_time' => 'Évolution des tickets sur les 30 derniers jours',
+        'user_stats' => 'Statistiques des utilisateurs',
+        'most_assigned_tickets' => 'Utilisateurs avec le plus de tickets assignés',
+        'most_created_tickets' => 'Utilisateurs avec le plus de tickets créés'
     ],
     'auth' => [
         'login' => [

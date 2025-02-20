@@ -47,4 +47,20 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the tickets created by the user.
+     */
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'created_by');
+    }
+
+    /**
+     * Get the tickets assigned to the user.
+     */
+    public function assignedTickets()
+    {
+        return $this->hasMany(Ticket::class, 'assigned_to');
+    }
 }
