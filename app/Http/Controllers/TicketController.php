@@ -103,6 +103,7 @@ class TicketController extends Controller
             'category_id' => 'required|exists:ticket_categories,id',
             'equipement_id' => 'nullable|exists:equipements,id',
             'due_date' => 'nullable|date',
+            'is_public' => 'boolean',
         ]);
 
         // Traiter la date d'échéance
@@ -132,6 +133,18 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket)
     {
+        $user = Auth::user();
+
+        // Vérifier si l'utilisateur peut voir le ticket
+        if (!$ticket->is_public) {
+            // Si le ticket est privé, vérifier si l'utilisateur est autorisé
+            if (!$user->hasRole('admin') && 
+                $ticket->created_by !== $user->id && 
+                $ticket->assigned_to !== $user->id) {
+                abort(403, 'Vous n\'avez pas accès à ce ticket.');
+            }
+        }
+
         $this->authorize('view', $ticket);
 
         $ticket->load(['category', 'status', 'creator', 'assignee', 'equipement', 'logs.user', 'documents', 'comments.user']);
@@ -149,26 +162,51 @@ class TicketController extends Controller
         \Log::info('Mise à jour du ticket - données reçues:', $request->all());
 
         $validated = $request->validate([
-            'status_id' => 'required|exists:ticket_statuses,id'
+            'status_id' => 'sometimes|required|exists:ticket_statuses,id',
+            'assignee_id' => 'sometimes|required|exists:users,id'
         ]);
 
-        $oldStatus = $ticket->status;
-        $newStatus = TicketStatus::findOrFail($validated['status_id']);
-        
-        if ($oldStatus->id !== $newStatus->id) {
-            $ticket->update([
-                'status_id' => $newStatus->id
-            ]);
-
-            $ticket->addLog('status_changed', "Statut changé de {$oldStatus->name} à {$newStatus->name}");
+        // Gestion du changement de statut
+        if (isset($validated['status_id'])) {
+            $oldStatus = $ticket->status;
+            $newStatus = TicketStatus::findOrFail($validated['status_id']);
             
-            \Log::info('Statut du ticket mis à jour:', [
-                'ticket_id' => $ticket->id,
-                'old_status' => $oldStatus->name,
-                'new_status' => $newStatus->name
-            ]);
+            if ($oldStatus->id !== $newStatus->id) {
+                $ticket->update([
+                    'status_id' => $newStatus->id
+                ]);
+
+                $ticket->addLog('status_changed', "Statut changé de {$oldStatus->name} à {$newStatus->name}");
+                
+                \Log::info('Statut du ticket mis à jour:', [
+                    'ticket_id' => $ticket->id,
+                    'old_status' => $oldStatus->name,
+                    'new_status' => $newStatus->name
+                ]);
+            }
         }
 
-        return back()->with('success', 'Statut du ticket mis à jour avec succès.');
+        // Gestion de l'assignation
+        if (isset($validated['assignee_id'])) {
+            $oldAssignee = $ticket->assignee;
+            $newAssignee = User::findOrFail($validated['assignee_id']);
+
+            if (!$oldAssignee || $oldAssignee->id !== $newAssignee->id) {
+                $ticket->update([
+                    'assignee_id' => $newAssignee->id
+                ]);
+
+                $oldAssigneeName = $oldAssignee ? $oldAssignee->name : 'personne';
+                $ticket->addLog('assigned', "Ticket réassigné de {$oldAssigneeName} à {$newAssignee->name}");
+
+                \Log::info('Assignation du ticket mise à jour:', [
+                    'ticket_id' => $ticket->id,
+                    'old_assignee' => $oldAssigneeName,
+                    'new_assignee' => $newAssignee->name
+                ]);
+            }
+        }
+
+        return back()->with('success', 'Ticket mis à jour avec succès.');
     }
 }

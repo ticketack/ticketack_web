@@ -34,6 +34,7 @@
                                         <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                                         <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
                                         <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Visibilité</th>
                                         <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priorité</th>
                                         <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
                                         <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Équipement</th>
@@ -53,6 +54,10 @@
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             <TicketStatus :status="ticket.status" />
+                                        </td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-center">
+                                            <EyeIcon v-if="ticket.is_public" class="h-5 w-5 inline-block text-green-500" />
+                                            <EyeSlashIcon v-else class="h-5 w-5 inline-block text-orange-500" />
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             <TicketPriority :priority="ticket.priority" />
@@ -99,6 +104,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Link } from '@inertiajs/vue3';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline';
 import TicketStatus from '@/Components/Tickets/TicketStatus.vue';
 import TicketPriority from '@/Components/Tickets/TicketPriority.vue';
 import FilterSidebar from '@/Components/Tickets/FilterSidebar.vue';

@@ -42,7 +42,6 @@ class RoleController extends Controller
             'description' => 'nullable|string|max:255',
             'permissions' => 'required|array',
             'permissions.*.id' => 'required|exists:permissions,id',
-            'permissions.*.granted' => 'required|boolean',
         ]);
 
         $role = Role::create([
@@ -50,11 +49,11 @@ class RoleController extends Controller
             'description' => $validated['description'],
         ]);
 
-        foreach ($validated['permissions'] as $permission) {
-            $role->permissions()->attach($permission['id'], [
-                'granted' => $permission['granted'],
-            ]);
-        }
+        $permissionIds = collect($validated['permissions'])
+            ->pluck('id')
+            ->toArray();
+
+        $role->syncPermissions($permissionIds);
 
         return redirect()->route('roles.index')
             ->with('message', 'Rôle créé avec succès.');

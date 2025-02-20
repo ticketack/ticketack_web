@@ -273,6 +273,45 @@ return [
             'confirm' => 'Delete'
         ]
     ],
+    'tickets' => [
+        'visibility' => [
+            'public_label' => 'Public ticket',
+            'tooltip' => 'A private ticket can only be viewed by its author, the person it is assigned to, and administrators'
+        ],
+        'create' => [
+            'title' => 'Create new ticket',
+            'step1' => [
+                'title' => 'Step 1: Ticket Information',
+                'completed' => 'Completed'
+            ],
+            'step2' => [
+                'title' => 'Step 2: Documents',
+                'drag_files' => 'Drag and drop files here, or click to select',
+                'max_size' => 'Maximum file size: 10MB'
+            ],
+            'fields' => [
+                'title' => 'Title',
+                'description' => 'Description',
+                'priority' => 'Priority',
+                'category' => 'Category',
+                'due_date' => 'Due date (optional)',
+                'equipment' => 'Related equipment'
+            ],
+            'priority' => [
+                'low' => 'Low',
+                'medium' => 'Medium',
+                'high' => 'High',
+                'critical' => 'Critical'
+            ],
+            'buttons' => [
+                'cancel' => 'Cancel',
+                'next' => 'Next',
+                'modify' => 'Modify',
+                'finish' => 'Finish'
+            ]
+        ]
+    ],
+
     'api_doc' => [
         'title' => 'API Documentation',
         'summary' => 'Summary',

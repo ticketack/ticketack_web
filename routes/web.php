@@ -29,6 +29,14 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.view'])->group(function () {
         Route::get('/tickets', [\App\Http\Controllers\TicketController::class, 'index'])
             ->name('tickets.index');
+            
+        // Route de création de tickets (doit être avant la route avec paramètre)
+        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.create'])->group(function () {
+            Route::get('/tickets/create', [\App\Http\Controllers\TicketController::class, 'create'])
+                ->name('tickets.create');
+            Route::post('/tickets', [\App\Http\Controllers\TicketController::class, 'store'])
+                ->name('tickets.store');
+        });
 
         Route::get('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'show'])
             ->name('tickets.show');
@@ -39,14 +47,10 @@ Route::middleware(['auth'])->group(function () {
         // Route de téléchargement (accessible à tous ceux qui peuvent voir les tickets)
         Route::get('/tickets/{ticket}/documents/{document}/download', [TicketDocumentController::class, 'download'])
             ->name('tickets.documents.download');
-    });
-
-    // Route de création de tickets
-    Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.create'])->group(function () {
-        Route::get('/tickets/create', [\App\Http\Controllers\TicketController::class, 'create'])
-            ->name('tickets.create');
-        Route::post('/tickets', [\App\Http\Controllers\TicketController::class, 'store'])
-            ->name('tickets.store');
+            
+        // Route de recherche d'utilisateurs pour l'assignation
+        Route::get('/users/search', [UserController::class, 'search'])
+            ->name('users.search');
     });
 
     // Route PDF (accessible aux admins et ceux ayant la permission)

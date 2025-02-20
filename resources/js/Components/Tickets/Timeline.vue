@@ -41,7 +41,8 @@ import {
     CheckCircleIcon,
     UserCircleIcon,
     ArrowPathIcon,
-    PencilSquareIcon
+    PencilSquareIcon,
+    UserPlusIcon
 } from '@heroicons/vue/24/solid';
 
 const props = defineProps({
@@ -53,24 +54,26 @@ const props = defineProps({
 
 const getTypeClass = (type) => {
     const classes = {
-        comment: 'bg-gray-400',
+        comment_added: 'bg-blue-500',
+        comment_deleted: 'bg-red-500',
         created: 'bg-green-500',
-        status_changed: 'bg-blue-500',
+        status_changed: 'bg-yellow-500',
         assigned: 'bg-purple-500',
-        updated: 'bg-yellow-500'
+        updated: 'bg-gray-500'
     };
-    return classes[type] || 'bg-gray-400';
+    return classes[type] || 'bg-gray-500';
 };
 
 const getTypeIcon = (type) => {
     const icons = {
-        comment: ChatBubbleLeftEllipsisIcon,
+        comment_added: ChatBubbleLeftEllipsisIcon,
+        comment_deleted: ChatBubbleLeftEllipsisIcon,
         created: CheckCircleIcon,
         status_changed: ArrowPathIcon,
-        assigned: UserCircleIcon,
+        assigned: UserPlusIcon,
         updated: PencilSquareIcon
     };
-    return icons[type] || ChatBubbleLeftEllipsisIcon;
+    return icons[type] || PencilSquareIcon;
 };
 
 const formatDate = (date) => {

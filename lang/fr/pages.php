@@ -259,6 +259,45 @@ return [
     ],
 
 
+    'tickets' => [
+        'visibility' => [
+            'public_label' => 'Ticket public',
+            'tooltip' => 'Un ticket privé ne pourra être consulté que par l\'auteur, la personne à qui il est assigné et les administrateurs'
+        ],
+        'create' => [
+            'title' => 'Créer un nouveau ticket',
+            'step1' => [
+                'title' => 'Étape 1 : Informations du ticket',
+                'completed' => 'Complété'
+            ],
+            'step2' => [
+                'title' => 'Étape 2 : Documents',
+                'drag_files' => 'Glissez et déposez des fichiers ici, ou cliquez pour sélectionner',
+                'max_size' => 'Taille maximale du fichier : 10MB'
+            ],
+            'fields' => [
+                'title' => 'Titre',
+                'description' => 'Description',
+                'priority' => 'Priorité',
+                'category' => 'Catégorie',
+                'due_date' => 'Date d\'échéance (optionnelle)',
+                'equipment' => 'Équipement concerné'
+            ],
+            'priority' => [
+                'low' => 'Basse',
+                'medium' => 'Moyenne',
+                'high' => 'Haute',
+                'critical' => 'Critique'
+            ],
+            'buttons' => [
+                'cancel' => 'Annuler',
+                'next' => 'Suite',
+                'modify' => 'Modifier',
+                'finish' => 'Terminer'
+            ]
+        ]
+    ],
+
     'api_doc' => [
         'title' => 'Documentation API',
         'summary' => 'Sommaire',

@@ -19,6 +19,7 @@ class Ticket extends Model
         'priority',
         'category_id',
         'status_id',
+        'is_public',
         'equipement_id',
         'created_by',
         'assigned_to',
@@ -29,6 +30,7 @@ class Ticket extends Model
         'due_date' => 'datetime',
         'resolved_at' => 'datetime',
         'closed_at' => 'datetime',
+        'is_public' => 'boolean',
     ];
 
     public function category(): BelongsTo

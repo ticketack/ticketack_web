@@ -220,9 +220,21 @@
                     <!-- Colonne latérale (30%) -->
                     <div class="w-[30%]">
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg sticky top-6">
-                            <div class="p-6">
-                                <h4 class="text-sm font-medium text-gray-900 mb-4">Historique</h4>
-                                <Timeline :logs="ticket?.logs" />
+                            <div class="p-6 space-y-4">
+                                <div>
+                                    <label for="assignee" class="block text-sm font-medium text-gray-700 mb-2">Assigné à</label>
+                                    <Autocomplete
+                                        :model-value="ticket?.assignee_id"
+                                        :search-url="route('users.search')"
+                                        @update:modelValue="updateAssignee"
+                                        placeholder="Rechercher un utilisateur..."
+                                        class="w-full"
+                                    />
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900 mb-4">Historique</h4>
+                                    <Timeline :logs="ticket?.logs" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -235,6 +247,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Link, useForm, router, usePage } from '@inertiajs/vue3';
+import Autocomplete from '@/Components/Autocomplete.vue';
 import { reactive, defineProps, ref } from 'vue';
 import DropZone from '@/Components/Documents/DropZone.vue';
 import { ArrowLeftIcon, DocumentIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline';
@@ -263,7 +276,7 @@ const props = defineProps({
 });
 
 const form = useForm({
-    status_id: props?.ticket?.status?.id
+    status_id: props.ticket?.status?.id
 });
 
 const deleteDocument = (document) => {
@@ -306,7 +319,15 @@ const formatFileSize = (bytes) => {
 };
 
 const updateStatus = () => {
-    form.put(route('tickets.update', props.ticket.id));
+    router.put(route('tickets.update', props.ticket.id), {
+        status_id: form.status_id
+    });
+};
+
+const updateAssignee = (userId) => {
+    router.put(route('tickets.update', props.ticket.id), {
+        assignee_id: userId
+    });
 };
 
 // Gestion des commentaires

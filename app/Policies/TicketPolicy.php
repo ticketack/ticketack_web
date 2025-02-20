@@ -13,6 +13,12 @@ class TicketPolicy
     public function view(User $user, Ticket $ticket): bool
     {
         if ($user->hasPermissionTo('tickets.view')) {
+            // Si le ticket est public, tous les utilisateurs avec la permission peuvent le voir
+            if ($ticket->is_public) {
+                return true;
+            }
+
+            // Si le ticket est privé, seuls l'admin, le créateur et l'assigné peuvent le voir
             return $user->hasRole('admin') || 
                    $user->id === $ticket->created_by || 
                    $user->id === $ticket->assigned_to;

@@ -31,6 +31,19 @@ const isLoading = ref(false);
 const showDropdown = ref(false);
 const blurTimeout = ref(null);
 
+// Initialiser la valeur si modelValue est défini
+if (props.modelValue) {
+    fetch(`${props.searchUrl}?id=${props.modelValue}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.result) {
+                selectedItem.value = data.result;
+                query.value = data.result.text;
+            }
+        })
+        .catch(error => console.error("Erreur lors de la récupération de l'utilisateur:", error));
+}
+
 const handleFocus = () => {
     if (blurTimeout.value) {
         window.clearTimeout(blurTimeout.value);
@@ -47,7 +60,7 @@ const handleBlur = () => {
 };
 
 const debouncedSearch = debounce(async (searchQuery) => {
-    if (searchQuery.length < props.minChars) {
+    if (!searchQuery || searchQuery.length < props.minChars) {
         suggestions.value = [];
         showDropdown.value = false;
         return;
@@ -84,6 +97,17 @@ const clearSelection = () => {
 watch(() => props.modelValue, (newValue) => {
     if (!newValue) {
         clearSelection();
+    } else if (!selectedItem.value || selectedItem.value.id !== newValue) {
+        // Charger les données de l'élément sélectionné
+        fetch(`${props.searchUrl}?id=${newValue}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.result) {
+                    selectedItem.value = data.result;
+                    query.value = data.result.text;
+                }
+            })
+            .catch(error => console.error("Erreur lors de la récupération de l'utilisateur:", error));
     }
 });
 

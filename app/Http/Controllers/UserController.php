@@ -15,6 +15,22 @@ class UserController extends Controller
     public function __construct()
     {}
 
+    public function search(Request $request)
+    {
+        $search = $request->input('query');
+        
+        return User::where('name', 'like', "%{$search}%")
+            ->orWhere('email', 'like', "%{$search}%")
+            ->limit(10)
+            ->get(['id', 'name', 'email'])
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'text' => $user->name . ' (' . $user->email . ')'
+                ];
+            });
+    }
+
     public function index(): Response
     {
         return Inertia::render('Users/Index', [

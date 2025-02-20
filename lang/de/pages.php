@@ -282,6 +282,45 @@ return [
             'confirm' => 'Löschen'
         ]
     ],
+    'tickets' => [
+        'visibility' => [
+            'public_label' => 'Öffentliches Ticket',
+            'tooltip' => 'Ein privates Ticket kann nur vom Autor, der zugewiesenen Person und Administratoren eingesehen werden'
+        ],
+        'create' => [
+            'title' => 'Neues Ticket erstellen',
+            'step1' => [
+                'title' => 'Schritt 1: Ticket-Informationen',
+                'completed' => 'Abgeschlossen'
+            ],
+            'step2' => [
+                'title' => 'Schritt 2: Dokumente',
+                'drag_files' => 'Dateien hierher ziehen oder klicken zum Auswählen',
+                'max_size' => 'Maximale Dateigröße: 10MB'
+            ],
+            'fields' => [
+                'title' => 'Titel',
+                'description' => 'Beschreibung',
+                'priority' => 'Priorität',
+                'category' => 'Kategorie',
+                'due_date' => 'Fälligkeitsdatum (optional)',
+                'equipment' => 'Betroffene Ausrüstung'
+            ],
+            'priority' => [
+                'low' => 'Niedrig',
+                'medium' => 'Mittel',
+                'high' => 'Hoch',
+                'critical' => 'Kritisch'
+            ],
+            'buttons' => [
+                'cancel' => 'Abbrechen',
+                'next' => 'Weiter',
+                'modify' => 'Ändern',
+                'finish' => 'Fertig'
+            ]
+        ]
+    ],
+
     'api_doc' => [
         'title' => 'API-Dokumentation',
         'summary' => 'Inhaltsverzeichnis',
