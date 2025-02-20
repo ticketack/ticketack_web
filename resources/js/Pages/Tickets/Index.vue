@@ -39,6 +39,7 @@
                                         <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Catégorie</th>
                                         <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Équipement</th>
                                         <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigné à</th>
+                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Auteur</th>
                                         <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Créé le</th>
                                     </tr>
                                 </thead>
@@ -48,9 +49,14 @@
                                             #{{ ticket.id }}
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            <Link :href="route('tickets.show', ticket.id)" class="text-indigo-600 hover:text-indigo-900">
-                                                {{ ticket.title }}
-                                            </Link>
+                                            <template v-if="!ticket.is_public && !canViewPrivateTicket(ticket)">
+                                                <span class="italic text-gray-500">Privé</span>
+                                            </template>
+                                            <template v-else>
+                                                <Link :href="route('tickets.show', ticket.id)" class="text-indigo-600 hover:text-indigo-900">
+                                                    {{ ticket.title }}
+                                                </Link>
+                                            </template>
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             <TicketStatus :status="ticket.status" />
@@ -63,19 +69,24 @@
                                             <TicketPriority :priority="ticket.priority" />
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-4 font-semibold rounded-full"
+                                            <span v-if="ticket.category" class="px-2 py-1 text-xs font-medium rounded-full"
                                                 :style="{ backgroundColor: ticket.category.color + '20', color: ticket.category.color }">
                                                 {{ ticket.category.name }}
                                             </span>
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                                            <Link v-if="ticket.equipement" :href="route('equipements.edit', ticket.equipement.id)" class="text-indigo-600 hover:text-indigo-900">
-                                                {{ ticket.equipement.designation }}
-                                            </Link>
-                                            <span v-else class="text-gray-400">Non spécifié</span>
+                                            <template v-if="!ticket.is_public && !canViewPrivateTicket(ticket)">
+                                                <span class="italic text-gray-500">Privé</span>
+                                            </template>
+                                            <template v-else>
+                                                {{ ticket.equipement?.name || '-' }}
+                                            </template>
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
                                             {{ ticket.assignee?.name || 'Non assigné' }}
+                                        </td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                            {{ ticket.creator?.name || '-' }}
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
                                             {{ formatDate(ticket.created_at) }}
@@ -103,7 +114,7 @@
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline';
 import TicketStatus from '@/Components/Tickets/TicketStatus.vue';
 import TicketPriority from '@/Components/Tickets/TicketPriority.vue';
@@ -140,5 +151,12 @@ defineProps({
 
 const formatDate = (date) => {
     return format(new Date(date), 'd MMMM yyyy', { locale: fr });
+};
+
+const canViewPrivateTicket = (ticket) => {
+    const user = usePage().props.auth.user;
+    return user.id === ticket.created_by || 
+           user.id === ticket.assigned_to || 
+           user.roles.some(role => role.name === 'admin');
 };
 </script>

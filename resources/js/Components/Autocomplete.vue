@@ -70,11 +70,12 @@ const debouncedSearch = debounce(async (searchQuery) => {
     try {
         const response = await fetch(`${props.searchUrl}?query=${encodeURIComponent(searchQuery)}`);
         const data = await response.json();
-        suggestions.value = data.results;
-        showDropdown.value = true;
+        suggestions.value = data.results || [];
+        showDropdown.value = suggestions.value.length > 0;
     } catch (error) {
         console.error('Erreur lors de la recherche:', error);
         suggestions.value = [];
+        showDropdown.value = false;
     } finally {
         isLoading.value = false;
     }

@@ -111,6 +111,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { toast } from '@/utils';
 
 const props = defineProps({
     user: {
@@ -128,12 +129,18 @@ const form = useForm({
     email: props.user.email,
     password: '',
     password_confirmation: '',
-    roles: props.user.roles.map(role => role.id),
+    roles: props.user.roles.map(role => role.name),
 });
 
 const submit = () => {
     form.put(route('users.update', props.user.id), {
         preserveScroll: true,
+        onSuccess: () => {
+            toast.success('Utilisateur mis à jour avec succès');
+        },
+        onError: () => {
+            toast.error('Une erreur est survenue lors de la mise à jour');
+        }
     });
 };
 </script>

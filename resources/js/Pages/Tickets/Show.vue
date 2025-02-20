@@ -221,15 +221,36 @@
                     <div class="w-[30%]">
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg sticky top-6">
                             <div class="p-6 space-y-4">
-                                <div>
+                                <div v-if="$page.props.permissions['update_ticket_status']" class="mb-4">
+                                    <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                                    <select id="status"
+                                            v-model="ticket.status_id"
+                                            @change="updateStatus"
+                                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                        <option v-for="status in statuses"
+                                                :key="status.id"
+                                                :value="status.id">
+                                            {{ status.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div v-if="$page.props.permissions['tickets.assign']">
                                     <label for="assignee" class="block text-sm font-medium text-gray-700 mb-2">Assigné à</label>
-                                    <Autocomplete
-                                        :model-value="ticket?.assignee_id"
-                                        :search-url="route('users.search')"
-                                        @update:modelValue="updateAssignee"
-                                        placeholder="Rechercher un utilisateur..."
-                                        class="w-full"
-                                    />
+                                    <div class="space-y-2">
+                                        <Autocomplete
+                                            v-model="selectedAssigneeId"
+                                            :search-url="route('users.search')"
+                                            placeholder="Rechercher un utilisateur..."
+                                            class="w-full"
+                                            @update:model-value="updateAssignee"
+                                        />
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Assigné à</label>
+                                    <div class="text-sm text-gray-500">
+                                        {{ ticket?.assignee?.name || 'Non assigné' }}
+                                    </div>
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-medium text-gray-900 mb-4">Historique</h4>
@@ -324,10 +345,24 @@ const updateStatus = () => {
     });
 };
 
-const updateAssignee = (userId) => {
-    router.put(route('tickets.update', props.ticket.id), {
-        assignee_id: userId
-    });
+const selectedAssigneeId = ref(props.ticket?.assigned_to);
+
+const updateAssignee = (newValue) => {
+    // newValue est directement l'ID de l'utilisateur sélectionné
+    if (newValue !== props.ticket?.assigned_to) {
+        router.put(route('tickets.update', props.ticket.id), {
+            assigned_to: newValue
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Assignation mise à jour avec succès');
+            },
+            onError: () => {
+                toast.error('Erreur lors de la mise à jour de l\'assignation');
+                selectedAssigneeId.value = props.ticket?.assigned_to;
+            }
+        });
+    }
 };
 
 // Gestion des commentaires

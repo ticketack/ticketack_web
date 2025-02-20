@@ -48,6 +48,11 @@ class Ticket extends Model
         return $this->belongsTo(Equipement::class);
     }
 
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -72,11 +77,6 @@ class Ticket extends Model
     {
         return $this->belongsToMany(TicketDocument::class, 'ticket_document')
             ->withTimestamps();
-    }
-
-    public function assignee(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'assigned_to');
     }
 
     public function comments(): HasMany

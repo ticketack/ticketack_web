@@ -35,6 +35,8 @@ class TicketController extends Controller
         if ($user->hasRole('tiers')) {
             $query->where('created_by', $user->id);
         }
+        // Pour les autres utilisateurs, montrer tous les tickets (même privés)
+        // L'affichage sera géré côté frontend
 
         // Appliquer les filtres
         if ($request->filled('status_id')) {
@@ -159,15 +161,26 @@ class TicketController extends Controller
     {
         $this->authorize('update', $ticket);
 
-        \Log::info('Mise à jour du ticket - données reçues:', $request->all());
+        \Log::info('Mise à jour du ticket - données reçues:', [
+            'request_all' => $request->all(),
+            'ticket_before' => $ticket->toArray(),
+            'ticket_assignee_before' => $ticket->assignee ? $ticket->assignee->toArray() : null
+        ]);
 
         $validated = $request->validate([
             'status_id' => 'sometimes|required|exists:ticket_statuses,id',
-            'assignee_id' => 'sometimes|required|exists:users,id'
+            'assigned_to' => 'sometimes|required|exists:users,id'
+        ]);
+
+        \Log::info('Données validées:', [
+            'validated' => $validated,
+            'has_assigned_to' => isset($validated['assigned_to']),
+            'assigned_to_value' => $validated['assigned_to'] ?? null
         ]);
 
         // Gestion du changement de statut
         if (isset($validated['status_id'])) {
+            $this->authorize('updateStatus', $ticket);
             $oldStatus = $ticket->status;
             $newStatus = TicketStatus::findOrFail($validated['status_id']);
             
@@ -187,23 +200,51 @@ class TicketController extends Controller
         }
 
         // Gestion de l'assignation
-        if (isset($validated['assignee_id'])) {
-            $oldAssignee = $ticket->assignee;
-            $newAssignee = User::findOrFail($validated['assignee_id']);
-
-            if (!$oldAssignee || $oldAssignee->id !== $newAssignee->id) {
-                $ticket->update([
-                    'assignee_id' => $newAssignee->id
-                ]);
-
-                $oldAssigneeName = $oldAssignee ? $oldAssignee->name : 'personne';
-                $ticket->addLog('assigned', "Ticket réassigné de {$oldAssigneeName} à {$newAssignee->name}");
-
-                \Log::info('Assignation du ticket mise à jour:', [
+        if (isset($validated['assigned_to'])) {
+            $this->authorize('assign', $ticket);
+            try {
+                \Log::info('Début assignation:', [
                     'ticket_id' => $ticket->id,
-                    'old_assignee' => $oldAssigneeName,
-                    'new_assignee' => $newAssignee->name
+                    'assigned_to' => $validated['assigned_to'],
+                    'current_assigned_to' => $ticket->assigned_to
                 ]);
+
+                $oldAssignee = $ticket->assignee;
+                $newAssignee = User::findOrFail($validated['assigned_to']);
+
+                if (!$oldAssignee || $oldAssignee->id !== $newAssignee->id) {
+                    \DB::enableQueryLog();
+                    
+                    $ticket->assigned_to = $newAssignee->id;
+                    $result = $ticket->save();
+
+                    \Log::info('Queries exécutées:', [
+                        'queries' => \DB::getQueryLog()
+                    ]);
+
+                    \Log::info('Résultat update:', [
+                        'result' => $result,
+                        'ticket_after_save' => $ticket->toArray(),
+                        'assigned_to_after' => $ticket->fresh()->assigned_to
+                    ]);
+
+                    // Vérifions que la mise à jour a bien été faite
+                    $ticket->refresh();
+                    \Log::info('Après refresh:', [
+                        'assigned_to' => $ticket->assigned_to,
+                        'assignee' => $ticket->assignee ? $ticket->assignee->toArray() : null,
+                        'ticket_full' => $ticket->toArray()
+                    ]);
+
+                    $oldAssigneeName = $oldAssignee ? $oldAssignee->name : 'personne';
+                    $ticket->addLog('assigned', "Ticket réassigné de {$oldAssigneeName} à {$newAssignee->name}");
+                }
+            } catch (\Exception $e) {
+                \Log::error('Erreur lors de l\'assignation:', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw $e;
             }
         }
 

@@ -1,0 +1,20 @@
+[90m= [39m[34;4mApp\Models\Ticket[39;24m {#6377
+    [34mid[39m: [35m1[39m,
+    [34mtitle[39m: "[32mtest[39m",
+    [34mdescription[39m: "[32mtest[39m",
+    [34mpriority[39m: "[32mmedium[39m",
+    [34mcategory_id[39m: [35m2[39m,
+    [34mstatus_id[39m: [35m1[39m,
+    [34mequipement_id[39m: [35m1[39m,
+    [34mcreated_by[39m: [35m1[39m,
+    [34massigned_to[39m: [36mnull[39m,
+    [34mdue_date[39m: [36mnull[39m,
+    [34mresolved_at[39m: [36mnull[39m,
+    [34mclosed_at[39m: [36mnull[39m,
+    [34mcreated_at[39m: "[32m2025-02-20 02:09:54[39m",
+    [34mupdated_at[39m: "[32m2025-02-20 02:09:54[39m",
+    [34mdeleted_at[39m: [36mnull[39m,
+    [34mis_public[39m: [35m0[39m,
+    [34massignee[39m: [36mnull[39m,
+  }
+

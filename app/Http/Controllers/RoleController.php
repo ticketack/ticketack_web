@@ -83,7 +83,7 @@ class RoleController extends Controller
 
         $formattedPermissions = $permissions->map(function ($permission) use ($rolePermissions) {
             return [
-                'id' => $permission->name,
+                'id' => $permission->id,
                 'name' => $permission->name,
                 'granted' => in_array($permission->name, $rolePermissions)
             ];
@@ -105,6 +105,8 @@ class RoleController extends Controller
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
             'description' => 'nullable|string|max:255',
             'permissions' => 'required|array',
+            'permissions.*.id' => 'exists:permissions,id',
+            'permissions.*.granted' => 'boolean',
         ]);
 
         $role->update([
@@ -113,14 +115,17 @@ class RoleController extends Controller
         ]);
 
         // Filtrer les permissions accordées
-        $grantedPermissions = collect($request->permissions)
+        $grantedPermissions = collect($validated['permissions'])
             ->filter(function ($permission) {
                 return $permission['granted'];
             })
             ->pluck('id')
             ->toArray();
 
-        $role->syncPermissions($grantedPermissions);
+        // Récupérer les permissions depuis la base de données
+        $permissions = Permission::whereIn('id', $grantedPermissions)->get();
+
+        $role->syncPermissions($permissions);
 
         return redirect()->route('roles.index')
             ->with('message', 'Rôle mis à jour avec succès.');

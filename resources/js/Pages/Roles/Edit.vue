@@ -48,7 +48,8 @@
                                                     <input
                                                         type="checkbox"
                                                         :id="'permission-' + permission.id"
-                                                        v-model="permission.granted"
+                                                        :checked="permission.granted"
+                                                        @change="togglePermission(permission)"
                                                         class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
                                                         :disabled="role.name === 'admin'"
                                                     >
@@ -89,6 +90,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { toast } from '@/utils';
 
 const props = defineProps({
     role: {
@@ -140,12 +142,23 @@ const getTranslatedPermission = (permission) => {
 const form = useForm({
     name: props.role.name,
     description: props.role.description,
-    permissions: props.permissions
+    permissions: [...props.permissions]
 });
+
+const togglePermission = (permission) => {
+    permission.granted = !permission.granted;
+    form.permissions = [...props.permissions];
+};
 
 const submit = () => {
     form.put(route('roles.update', props.role.id), {
         preserveScroll: true,
+        onSuccess: () => {
+            toast.success('Rôle mis à jour avec succès');
+        },
+        onError: () => {
+            toast.error('Une erreur est survenue lors de la mise à jour');
+        }
     });
 };
 </script>

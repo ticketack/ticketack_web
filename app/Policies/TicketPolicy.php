@@ -45,4 +45,14 @@ class TicketPolicy
     {
         return $user->hasPermissionTo('tickets.delete');
     }
+
+    public function assign(User $user, Ticket $ticket): bool
+    {
+        return $user->hasPermissionTo('tickets.assign');
+    }
+
+    public function updateStatus(User $user, Ticket $ticket): bool
+    {
+        return $user->hasPermissionTo('update_ticket_status');
+    }
 }

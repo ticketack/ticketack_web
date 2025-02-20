@@ -17,18 +17,30 @@ class UserController extends Controller
 
     public function search(Request $request)
     {
+        if ($request->has('id')) {
+            $user = User::find($request->input('id'));
+            return response()->json([
+                'result' => $user ? [
+                    'id' => $user->id,
+                    'text' => $user->name
+                ] : null
+            ]);
+        }
+
         $search = $request->input('query');
         
-        return User::where('name', 'like', "%{$search}%")
+        $results = User::where('name', 'like', "%{$search}%")
             ->orWhere('email', 'like', "%{$search}%")
             ->limit(10)
             ->get(['id', 'name', 'email'])
             ->map(function ($user) {
                 return [
                     'id' => $user->id,
-                    'text' => $user->name . ' (' . $user->email . ')'
+                    'text' => $user->name
                 ];
             });
+
+        return response()->json(['results' => $results]);
     }
 
     public function index(): Response
