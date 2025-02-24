@@ -2,7 +2,7 @@
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $page.props.translations.pages.tickets.create.title }}
+                {{ $page.props.translations.tickets.create.title }}
             </h2>
         </template>
 
@@ -13,13 +13,13 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-lg font-medium text-gray-900">
-                                {{ $page.props.translations.pages.tickets.create.step1.title }}
+                                {{ $page.props.translations.tickets.create.step1.title }}
                             </h3>
                             <div class="flex items-center space-x-2">
                                 <svg v-if="currentStep > 1" class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span v-if="currentStep > 1" class="text-sm text-gray-500">{{ $page.props.translations.pages.tickets.create.step1.completed }}</span>
+                                <span v-if="currentStep > 1" class="text-sm text-gray-500">{{ $page.props.translations.tickets.create.step1.completed }}</span>
                             </div>
                         </div>
 
@@ -27,7 +27,7 @@
                             <div class="space-y-6">
                                 <!-- Titre -->
                                 <div>
-                                    <InputLabel for="title" :value="$page.props.translations.pages.tickets.create.fields.title" />
+                                    <InputLabel for="title" :value="$page.props.translations.tickets.create.fields.title" />
                                     <TextInput
                                         id="title"
                                         type="text"
@@ -41,7 +41,7 @@
 
                                 <!-- Description -->
                                 <div>
-                                    <InputLabel for="description" :value="$page.props.translations.pages.tickets.create.fields.description" />
+                                    <InputLabel for="description" :value="$page.props.translations.tickets.create.fields.description" />
                                     <textarea
                                         id="description"
                                         v-model="form.description"
@@ -55,7 +55,7 @@
 
                                 <!-- Priorité -->
                                 <div>
-                                    <InputLabel for="priority" :value="$page.props.translations.pages.tickets.create.fields.priority" />
+                                    <InputLabel for="priority" :value="$page.props.translations.tickets.create.fields.priority" />
                                     <select
                                         id="priority"
                                         v-model="form.priority"
@@ -63,17 +63,17 @@
                                         required
                                         :disabled="currentStep > 1"
                                     >
-                                        <option value="low">{{ $page.props.translations.pages.tickets.create.priority.low }}</option>
-                                        <option value="medium">{{ $page.props.translations.pages.tickets.create.priority.medium }}</option>
-                                        <option value="high">{{ $page.props.translations.pages.tickets.create.priority.high }}</option>
-                                        <option value="critical">{{ $page.props.translations.pages.tickets.create.priority.critical }}</option>
+                                        <option value="low">{{ $page.props.translations.tickets.create.priority.low }}</option>
+                                        <option value="medium">{{ $page.props.translations.tickets.create.priority.medium }}</option>
+                                        <option value="high">{{ $page.props.translations.tickets.create.priority.high }}</option>
+                                        <option value="critical">{{ $page.props.translations.tickets.create.priority.critical }}</option>
                                     </select>
                                     <InputError :message="form.errors.priority" class="mt-2" />
                                 </div>
 
                                 <!-- Catégorie -->
                                 <div>
-                                    <InputLabel for="category_id" :value="$page.props.translations.pages.tickets.create.fields.category" />
+                                    <InputLabel for="category_id" :value="$page.props.translations.tickets.create.fields.category" />
                                     <select
                                         id="category_id"
                                         v-model="form.category_id"
@@ -90,20 +90,20 @@
 
                                 <!-- Équipement -->
                                 <div>
-                                    <InputLabel for="equipement_id" :value="$page.props.translations.pages.tickets.create.fields.equipment" />
+                                    <InputLabel for="equipment_id" :value="$page.props.translations.tickets.create.fields.equipment" />
                                     <Autocomplete
-                                        v-model="form.equipement_id"
-                                        :search-url="route('equipements.search')"
+                                        v-model="form.equipment_id"
+                                        :search-url="route('equipment.search')"
                                         placeholder="Rechercher un équipement..."
                                         class="mt-1"
                                         :disabled="currentStep > 1"
                                     />
-                                    <InputError :message="form.errors.equipement_id" class="mt-2" />
+                                    <InputError :message="form.errors.equipment_id" class="mt-2" />
                                 </div>
 
                                 <!-- Date d'échéance -->
                                 <div>
-                                    <InputLabel for="due_date" :value="$page.props.translations.pages.tickets.create.fields.due_date" />
+                                    <InputLabel for="due_date" :value="$page.props.translations.tickets.create.fields.due_date" />
                                     <TextInput
                                         id="due_date"
                                         type="date"
@@ -134,10 +134,10 @@
                                         </button>
                                     </div>
                                     <div class="group relative">
-                                        <InputLabel :value="$page.props.translations.pages.tickets.visibility.public_label" class="!mb-0 cursor-help border-b border-dotted border-gray-400" />
+                                        <InputLabel :value="$page.props.translations.tickets.create.visibility.public_label" class="!mb-0 cursor-help border-b border-dotted border-gray-400" />
                                         <div class="absolute left-0 bottom-full mb-2 hidden group-hover:block">
                                             <div class="bg-gray-900 text-white text-sm rounded p-2 w-64">
-                                                {{ $page.props.translations.pages.tickets.visibility.tooltip }}
+                                                {{ $page.props.translations.tickets.create.visibility.tooltip }}
                                                 <div class="absolute left-0 top-full w-3 h-3 -mt-1.5 ml-2">
                                                     <div class="bg-gray-900 w-3 h-3 transform rotate-45"></div>
                                                 </div>
@@ -148,13 +148,13 @@
                             </div>
 
                             <div class="flex items-center justify-end mt-6 gap-4">
-                                <Link :href="route('tickets.index')" class="text-gray-600 hover:text-gray-900">{{ $page.props.translations.pages.tickets.create.buttons.cancel }}</Link>
+                                <Link :href="route('tickets.index')" class="text-gray-600 hover:text-gray-900">{{ $page.props.translations.tickets.create.buttons.cancel }}</Link>
                                 <PrimaryButton
                                     type="submit"
                                     :class="{ 'opacity-25': form.processing }"
                                     :disabled="form.processing"
                                 >
-                                    {{ currentStep === 1 ? $page.props.translations.pages.tickets.create.buttons.next : $page.props.translations.pages.tickets.create.buttons.modify }}
+                                    {{ currentStep === 1 ? $page.props.translations.tickets.create.buttons.next : $page.props.translations.tickets.create.buttons.modify }}
                                 </PrimaryButton>
                             </div>
                         </form>
@@ -166,7 +166,7 @@
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-lg font-medium text-gray-900">
-                                {{ $page.props.translations.pages.tickets.create.step2.title }}
+                                {{ $page.props.translations.tickets.create.step2.title }}
                             </h3>
                         </div>
 
@@ -180,7 +180,7 @@
 
                             <!-- Aperçu des documents -->
                             <div v-if="documents.length > 0" class="mt-4">
-                                <h4 class="text-sm font-medium text-gray-700 mb-3">{{ $page.props.translations.pages.tickets.create.step2.drag_files }}</h4>
+                                <h4 class="text-sm font-medium text-gray-700 mb-3">{{ $page.props.translations.tickets.create.step2.drag_files }}</h4>
                                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                     <DocumentPreview
                                         v-for="doc in documents"
@@ -195,13 +195,13 @@
 
                             <div class="flex items-center justify-end mt-6 space-x-4">
                                 <SecondaryButton @click="goBackToStep1">
-                                    Revenir à l'étape 1
+                                    {{ $page.props.translations.tickets.create.buttons.back }}
                                 </SecondaryButton>
                                 <Link
                                     :href="route('tickets.show', ticketId)"
                                     class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
                                 >
-                                    {{ $page.props.translations.pages.tickets.create.buttons.finish }}
+                                    {{ $page.props.translations.tickets.create.buttons.finish }}
                                 </Link>
                             </div>
                         </div>
@@ -236,7 +236,7 @@ const props = defineProps({
         type: Array,
         required: true
     },
-    equipements: {
+    equipment: {
         type: Array,
         required: true
     }
@@ -247,7 +247,7 @@ const form = useForm({
     description: '',
     priority: 'medium',
     category_id: '',
-    equipement_id: '',
+    equipment_id: '',
     due_date: null,
     is_public: true
 });

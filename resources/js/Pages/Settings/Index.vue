@@ -58,11 +58,7 @@ const handleLanguageChange = (event) => {
     languageForm.post(route('settings.store'));
 };
 
-const languages = [
-    { value: 'fr', label: 'Français' },
-    { value: 'en', label: 'English' },
-    { value: 'de', label: 'Deutsch' }
-];
+// Les langues sont maintenant gérées directement dans le template avec les traductions
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB en octets
 
@@ -70,7 +66,7 @@ const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
         if (file.size > MAX_FILE_SIZE) {
-            errorMessage.value = 'Le fichier est trop volumineux. La taille maximale autorisée est de 10MB.';
+            errorMessage.value = page.props.translations.settings.logo.error_size;
             event.target.value = ''; // Réinitialiser l'input file
             return;
         }
@@ -102,7 +98,7 @@ const submit = () => {
                 window.location.reload();
                 return;
             }
-            successMessage.value = 'Paramètres mis à jour avec succès';
+            successMessage.value = page.props.translations.settings.success.updated;
             form.reset('logo');
             if (response?.props?.settings?.logo) {
                 previewLogo.value = '';
@@ -126,7 +122,7 @@ const deleteLogo = () => {
         preserveScroll: true,
         onSuccess: (response) => {
             showDeleteModal.value = false;
-            successMessage.value = response?.props?.flash?.success || 'Logo supprimé avec succès';
+            successMessage.value = response?.props?.flash?.success || page.props.translations.settings.success.logo_deleted;
             if (response?.props?.settings) {
                 setLogo(response.props.settings.logo || '');
             }
@@ -135,7 +131,7 @@ const deleteLogo = () => {
             }, 5000);
         },
         onError: () => {
-            errorMessage.value = 'Une erreur est survenue lors de la suppression du logo';
+            errorMessage.value = page.props.translations.settings.error.logo_delete;
             setTimeout(() => {
                 errorMessage.value = '';
             }, 5000);
@@ -148,12 +144,12 @@ const deleteLogo = () => {
 </script>
 
 <template>
-    <Head :title="$page.props.translations.pages.settings.title" />
+    <Head :title="$page.props.translations.settings.title" />
 
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $page.props.translations.pages.settings.title }}
+                {{ $page.props.translations.settings.title }}
             </h2>
         </template>
 
@@ -196,7 +192,7 @@ const deleteLogo = () => {
                         <form @submit.prevent="submit" class="space-y-6">
                             <div>
                                 <label for="company_name" class="block text-sm font-medium text-gray-700">
-                                    {{ $page.props.translations.pages.settings.company_name }}
+                                    {{ $page.props.translations.settings.company_name }}
                                 </label>
                                 <input
                                     id="company_name"
@@ -208,14 +204,17 @@ const deleteLogo = () => {
 
                             <div>
                                 <label for="logo" class="block text-sm font-medium text-gray-700">
-                                    {{ $page.props.translations.pages.settings.logo }}
+                                    {{ $page.props.translations.settings.logo.title }}
                                 </label>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    {{ $page.props.translations.settings.logo.requirements }}
+                                </p>
                                 <input
                                     id="logo"
                                     type="file"
                                     @change="handleFileUpload"
                                     accept=".png,.jpg,.jpeg,.tiff,.webp"
-                                    class="mt-1 block w-full text-sm text-gray-500
+                                    class="mt-2 block w-full text-sm text-gray-500
                                         file:mr-4 file:py-2 file:px-4
                                         file:rounded-md file:border-0
                                         file:text-sm file:font-semibold
@@ -226,12 +225,16 @@ const deleteLogo = () => {
 
                             <!-- Affichage du logo actuel -->
                             <div v-if="currentLogo" class="mt-4">
+                                <p class="text-sm font-medium text-gray-700 mb-2">
+                                    {{ $page.props.translations.settings.logo.current }}
+                                </p>
                                 <div class="relative group w-[250px]">
-                                    <img :src="currentLogo" alt="Logo actuel" class="w-full h-auto rounded-lg shadow-sm">
+                                    <img :src="currentLogo" :alt="$page.props.translations.settings.logo.current" class="w-full h-auto rounded-lg shadow-sm">
                                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg flex items-center justify-center">
                                         <button
                                             @click.prevent="showDeleteModal = true"
                                             class="hidden group-hover:block p-2 bg-white rounded-full shadow-lg hover:bg-red-50 transition-colors duration-200"
+                                            :title="$page.props.translations.settings.logo.delete"
                                         >
                                             <svg class="w-5 h-5 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -241,20 +244,21 @@ const deleteLogo = () => {
                                 </div>
                             </div>
 
-                            <!-- Sélecteur de langue -->
-                            <div class="mt-6">
+                            <!-- Sélection de la langue -->
+                            <div>
                                 <label for="language" class="block text-sm font-medium text-gray-700">
-                                    {{ $page.props.translations.pages.settings.language }}
+                                    {{ $page.props.translations.settings.language.title }}
                                 </label>
                                 <select
                                     id="language"
                                     v-model="form.language"
                                     @change="handleLanguageChange"
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 >
-                                    <option v-for="lang in languages" :key="lang.value" :value="lang.value">
-                                        {{ lang.label }}
-                                    </option>
+                                    <option value="" disabled>{{ $page.props.translations.settings.language.select }}</option>
+                                    <option value="fr">{{ $page.props.translations.settings.language.fr }}</option>
+                                    <option value="en">{{ $page.props.translations.settings.language.en }}</option>
+                                    <option value="de">{{ $page.props.translations.settings.language.de }}</option>
                                 </select>
                             </div>
 
@@ -264,7 +268,7 @@ const deleteLogo = () => {
                                     class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                     :disabled="form.processing"
                                 >
-                                    {{ $page.props.translations.pages.settings.save }}
+                                    {{ $page.props.translations.common.save }}
                                 </button>
                             </div>
                         </form>
@@ -273,20 +277,20 @@ const deleteLogo = () => {
                         <Modal :show="showDeleteModal" @close="showDeleteModal = false">
                             <div class="p-6">
                                 <h2 class="text-lg font-medium text-gray-900">
-                                    {{ $page.props.translations.pages.settings.delete_logo.title }}
+                                    {{ $page.props.translations.settings.logo.confirm_delete }}
                                 </h2>
                                 <p class="mt-3 text-sm text-gray-600">
-                                    {{ $page.props.translations.pages.settings.delete_logo.text }}
+                                    {{ $page.props.translations.settings.logo.confirm_delete }}
                                 </p>
                                 <div class="mt-6 flex justify-end space-x-3">
                                     <SecondaryButton @click="showDeleteModal = false">
-                                        {{ $page.props.translations.pages.settings.delete_logo.cancel }}
+                                        {{ $page.props.translations.common.cancel }}
                                     </SecondaryButton>
                                     <DangerButton
                                         @click="deleteLogo"
                                         :disabled="isDeleting"
                                     >
-                                        {{ $page.props.translations.pages.settings.delete_logo.confirm }}
+                                        {{ $page.props.translations.common.delete }}
                                     </DangerButton>
                                 </div>
                             </div>

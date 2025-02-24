@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Equipement;
+use App\Models\Equipment;
 use App\Models\Ticket;
 use App\Models\TicketStatus;
 use App\Models\User;
@@ -41,10 +41,10 @@ class DashboardController extends Controller
             });
 
         // Statistiques des équipements
-        $equipmentCount = Equipement::count();
+        $equipmentCount = Equipment::count();
 
         // Équipements avec le plus/moins de tickets
-        $equipmentStats = Equipement::withCount('tickets')
+        $equipmentStats = Equipment::withCount('tickets')
             ->get()
             ->sortByDesc('tickets_count')
             ->map(function ($equipment) {

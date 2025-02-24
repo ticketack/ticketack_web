@@ -2,16 +2,16 @@
 
 return [
     'groups' => [
-        'equipements' => 'Ausrüstungsverwaltung',
+        'equipment' => 'Geräteverwaltung',
         'roles' => 'Rollenverwaltung',
         'users' => 'Benutzerverwaltung',
         'settings' => 'Systemeinstellungen',
         'tickets' => 'Ticketverwaltung'
     ],
-    'equipements.view' => 'Ausrüstung anzeigen',
-    'equipements.create' => 'Ausrüstung erstellen',
-    'equipements.edit' => 'Ausrüstung bearbeiten',
-    'equipements.delete' => 'Ausrüstung löschen',
+    'equipment.view' => 'Geräte anzeigen',
+    'equipment.create' => 'Geräte erstellen',
+    'equipment.edit' => 'Geräte bearbeiten',
+    'equipment.delete' => 'Geräte löschen',
     'roles.view' => 'Rollen anzeigen',
     'roles.create' => 'Rollen erstellen',
     'roles.edit' => 'Rollen bearbeiten',

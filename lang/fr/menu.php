@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'solver' => 'Résolution',
+    'api_doc' => 'Documentation API',
     'tickets' => 'Tickets',
     'tickets_list' => 'Liste des tickets',
     'create_ticket' => 'Créer un ticket',

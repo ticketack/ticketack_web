@@ -1,46 +1,22 @@
+version: '3.8'
+
 services:
   app:
     build:
       args:
         user: laravel
         uid: 1000
-      context: ./
-      dockerfile: Dockerfile
-    image: laravel-app
-    container_name: laravel-app
-    restart: unless-stopped
     working_dir: /var/www/html
-    volumes:
-      - ./:/var/www/html
-      - ./docker-compose/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     networks:
       - laravel
 
   db:
-    image: mysql:8.0
-    container_name: laravel-db
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-laravel}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
-      MYSQL_USER: ${DB_USERNAME:-laravel}
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
-    volumes:
-      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
     networks:
       - laravel
 
   nginx:
-    image: nginx:alpine
-    container_name: laravel-nginx
-    restart: unless-stopped
-    ports:
-      - "8000:80"
-    volumes:
-      - ./:/var/www/html
-      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    depends_on:
+      - app
     networks:
       - laravel
 

@@ -29,7 +29,7 @@ class TicketController extends Controller
     {
         $user = Auth::user();
         $query = Ticket::query()
-            ->with(['category', 'status', 'creator', 'assignee', 'equipement']);
+            ->with(['category', 'status', 'creator', 'assignee', 'equipment']);
 
         // Si l'utilisateur est un "tiers", ne montrer que ses tickets
         if ($user->hasRole('tiers')) {
@@ -51,8 +51,8 @@ class TicketController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
-        if ($request->filled('equipement_id')) {
-            $query->where('equipement_id', $request->equipement_id);
+        if ($request->filled('equipment_id')) {
+            $query->where('equipment_id', $request->equipment_id);
         }
 
         if ($request->filled('assigned_to')) {
@@ -90,7 +90,7 @@ class TicketController extends Controller
         return Inertia::render('Tickets/Create', [
             'categories' => TicketCategory::orderBy('order')->get(),
             'statuses' => TicketStatus::orderBy('order')->get(),
-            'equipements' => Auth::user()->equipements,
+            'equipment' => Auth::user()->equipment,
         ]);
     }
 
@@ -103,7 +103,7 @@ class TicketController extends Controller
             'description' => 'required|string',
             'priority' => 'required|in:low,medium,high,critical',
             'category_id' => 'required|exists:ticket_categories,id',
-            'equipement_id' => 'nullable|exists:equipements,id',
+            'equipment_id' => 'nullable|exists:equipment,id',
             'due_date' => 'nullable|date',
             'is_public' => 'boolean',
         ]);
@@ -129,7 +129,7 @@ class TicketController extends Controller
             'ticket' => $ticket,
             'categories' => TicketCategory::orderBy('order')->get(),
             'statuses' => TicketStatus::orderBy('order')->get(),
-            'equipements' => Auth::user()->equipements,
+            'equipment' => Auth::user()->equipment,
         ])->with('success', 'Ticket créé avec succès');
     }
 
@@ -149,7 +149,7 @@ class TicketController extends Controller
 
         $this->authorize('view', $ticket);
 
-        $ticket->load(['category', 'status', 'creator', 'assignee', 'equipement', 'logs.user', 'documents', 'comments.user']);
+        $ticket->load(['category', 'status', 'creator', 'assignee', 'equipment', 'logs.user', 'documents', 'comments.user']);
 
         return Inertia::render('Tickets/Show', [
             'ticket' => $ticket,

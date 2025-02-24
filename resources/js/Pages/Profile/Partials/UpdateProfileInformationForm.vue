@@ -26,11 +26,11 @@ const form = useForm({
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900">
-                {{ $page.props.translations.pages.profile.update_info.title }}
+                {{ $page.props.translations.profile.update_info.title }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                {{ $page.props.translations.pages.profile.update_info.text }}
+                {{ $page.props.translations.profile.update_info.text }}
             </p>
         </header>
 
@@ -39,7 +39,7 @@ const form = useForm({
             class="mt-6 space-y-6"
         >
             <div>
-                <InputLabel for="name" :value="$page.props.translations.pages.profile.update_info.name" />
+                <InputLabel for="name" :value="$page.props.translations.profile.update_info.name" />
 
                 <TextInput
                     id="name"
@@ -55,7 +55,7 @@ const form = useForm({
             </div>
 
             <div>
-                <InputLabel for="email" :value="$page.props.translations.pages.profile.update_info.email" />
+                <InputLabel for="email" :value="$page.props.translations.profile.update_info.email" />
 
                 <TextInput
                     id="email"
@@ -71,14 +71,14 @@ const form = useForm({
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">
                 <p class="mt-2 text-sm text-gray-800">
-                    {{ $page.props.translations.pages.profile.update_info.unverified }}
+                    {{ $page.props.translations.profile.update_info.unverified }}
                     <Link
                         :href="route('verification.send')"
                         method="post"
                         as="button"
                         class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
-                        {{ $page.props.translations.pages.profile.update_info.resend_verification }}
+                        {{ $page.props.translations.profile.update_info.resend_verification }}
                     </Link>
                 </p>
 
@@ -86,12 +86,12 @@ const form = useForm({
                     v-show="status === 'verification-link-sent'"
                     class="mt-2 text-sm font-medium text-green-600"
                 >
-                    {{ $page.props.translations.pages.profile.update_info.verification_sent }}
+                    {{ $page.props.translations.profile.update_info.verification_sent }}
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">{{ $page.props.translations.pages.profile.update_info.save }}</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">{{ $page.props.translations.profile.update_info.save }}</PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"
@@ -103,7 +103,7 @@ const form = useForm({
                         v-if="form.recentlySuccessful"
                         class="text-sm text-gray-600"
                     >
-                        {{ $page.props.translations.pages.profile.update_info.saved }}
+                        {{ $page.props.translations.profile.update_info.saved }}
                     </p>
                 </Transition>
             </div>

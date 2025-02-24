@@ -22,11 +22,11 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head :title="$page.props.translations.pages.auth.register.title" />
+        <Head :title="$page.props.translations.auth.register.title" />
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" :value="$page.props.translations.pages.auth.register.name" />
+                <InputLabel for="name" :value="$page.props.translations.auth.register.name" />
 
                 <TextInput
                     id="name"
@@ -42,7 +42,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="email" :value="$page.props.translations.pages.auth.register.email" />
+                <InputLabel for="email" :value="$page.props.translations.auth.register.email" />
 
                 <TextInput
                     id="email"
@@ -57,7 +57,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" :value="$page.props.translations.pages.auth.register.password" />
+                <InputLabel for="password" :value="$page.props.translations.auth.register.password" />
 
                 <TextInput
                     id="password"
@@ -74,7 +74,7 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
-                    :value="$page.props.translations.pages.auth.register.confirm_password"
+                    :value="$page.props.translations.auth.register.confirm_password"
                 />
 
                 <TextInput
@@ -97,7 +97,7 @@ const submit = () => {
                     :href="route('login')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                    {{ $page.props.translations.pages.auth.register.already_registered }}
+                    {{ $page.props.translations.auth.register.already_registered }}
                 </Link>
 
                 <PrimaryButton
@@ -105,7 +105,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    {{ $page.props.translations.pages.auth.register.register }}
+                    {{ $page.props.translations.auth.register.register }}
                 </PrimaryButton>
             </div>
         </form>

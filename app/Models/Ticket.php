@@ -20,7 +20,7 @@ class Ticket extends Model
         'category_id',
         'status_id',
         'is_public',
-        'equipement_id',
+        'equipment_id',
         'created_by',
         'assigned_to',
         'due_date',
@@ -43,9 +43,9 @@ class Ticket extends Model
         return $this->belongsTo(TicketStatus::class);
     }
 
-    public function equipement(): BelongsTo
+    public function equipment(): BelongsTo
     {
-        return $this->belongsTo(Equipement::class);
+        return $this->belongsTo(Equipment::class);
     }
 
     public function assignee(): BelongsTo

@@ -23,10 +23,10 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head :title="$page.props.translations.pages.auth.forgot_password.title" />
+        <Head :title="$page.props.translations.auth.forgot_password.title" />
 
         <div class="mb-4 text-sm text-gray-600">
-            {{ $page.props.translations.pages.auth.forgot_password.text }}
+            {{ $page.props.translations.auth.forgot_password.text }}
         </div>
 
         <div
@@ -38,7 +38,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" :value="$page.props.translations.pages.auth.forgot_password.email" />
+                <InputLabel for="email" :value="$page.props.translations.auth.forgot_password.email" />
 
                 <TextInput
                     id="email"
@@ -58,7 +58,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    {{ $page.props.translations.pages.auth.forgot_password.reset_link }}
+                    {{ $page.props.translations.auth.forgot_password.reset_link }}
                 </PrimaryButton>
             </div>
         </form>

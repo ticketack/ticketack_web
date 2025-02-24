@@ -2,7 +2,7 @@
     <div class="space-y-6">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-medium text-gray-900">
-                Ajouter des documents
+                {{ $page.props.translations.tickets.documents.add }}
             </h3>
             <Link
                 :href="route('tickets.show', ticket.id)"
@@ -21,7 +21,7 @@
 
         <!-- Aperçu des documents -->
         <div v-if="documents.length > 0" class="mt-4">
-            <h4 class="text-sm font-medium text-gray-700 mb-3">Documents ajoutés</h4>
+            <h4 class="text-sm font-medium text-gray-700 mb-3">{{ $page.props.translations.tickets.documents.title }}</h4>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 <DocumentPreview
                     v-for="doc in documents"
@@ -79,7 +79,7 @@ const handleFiles = async (files) => {
             
             documents.value.push(response.data.document);
         } catch (error) {
-            console.error('Erreur lors du téléversement:', error);
+            console.error($page.props.translations.tickets.documents.errors.file_type, error);
         }
     }
     
@@ -91,7 +91,7 @@ const removeDocument = async (document) => {
         await axios.delete(route('tickets.documents.destroy', [props.ticket.id, document.id]));
         documents.value = documents.value.filter(doc => doc.id !== document.id);
     } catch (error) {
-        console.error('Erreur lors de la suppression:', error);
+        console.error($page.props.translations.tickets.documents.errors.file_type, error);
     }
 };
 </script>

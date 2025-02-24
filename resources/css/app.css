@@ -1,3 +1,56 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* FullCalendar Styles */
+.fc {
+    --fc-border-color: theme('colors.gray.200');
+    --fc-button-bg-color: theme('colors.indigo.600');
+    --fc-button-border-color: theme('colors.indigo.600');
+    --fc-button-hover-bg-color: theme('colors.indigo.700');
+    --fc-button-hover-border-color: theme('colors.indigo.700');
+    --fc-button-active-bg-color: theme('colors.indigo.800');
+    --fc-button-active-border-color: theme('colors.indigo.800');
+    --fc-event-bg-color: theme('colors.indigo.600');
+    --fc-event-border-color: theme('colors.indigo.600');
+    --fc-today-bg-color: theme('colors.indigo.50');
+}
+
+.fc .fc-button {
+    @apply font-semibold text-sm px-4 py-2 rounded-md shadow-sm;
+}
+
+.fc .fc-toolbar-title {
+    @apply text-xl font-semibold text-gray-900;
+}
+
+.fc .fc-event {
+    @apply cursor-pointer;
+    padding: 2px 4px;
+    margin: 1px 0;
+}
+
+.fc .fc-timegrid-slot {
+    height: 15px !important;
+}
+
+.fc .fc-col-header-cell {
+    @apply bg-gray-50 py-2;
+}
+
+.fc .fc-timegrid-axis {
+    @apply bg-gray-50;
+}
+
+/* Ajustements supplémentaires pour le calendrier */
+.fc-timegrid-slot-lane {
+    height: 15px !important;
+}
+
+.fc-timegrid-slots tr {
+    height: 15px !important;
+}
+
+.fc .fc-timegrid-col.fc-day-today {
+    background-color: var(--fc-today-bg-color) !important;
+}

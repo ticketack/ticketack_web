@@ -2,16 +2,16 @@
 
 return [
     'groups' => [
-        'equipements' => 'Gestion des équipements',
+        'equipment' => 'Gestion des équipements',
         'roles' => 'Gestion des rôles',
         'users' => 'Gestion des utilisateurs',
         'settings' => 'Paramètres du système',
         'tickets' => 'Gestion des tickets'
     ],
-    'equipements.view' => 'Consulter les équipements',
-    'equipements.create' => 'Créer des équipements',
-    'equipements.edit' => 'Modifier les équipements',
-    'equipements.delete' => 'Supprimer les équipements',
+    'equipment.view' => 'Consulter les équipements',
+    'equipment.create' => 'Créer des équipements',
+    'equipment.edit' => 'Modifier les équipements',
+    'equipment.delete' => 'Supprimer les équipements',
     'roles.view' => 'Consulter les rôles',
     'roles.create' => 'Créer des rôles',
     'roles.edit' => 'Modifier les rôles',

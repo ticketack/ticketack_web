@@ -33,11 +33,11 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head :title="$page.props.translations.pages.auth.reset_password.title" />
+        <Head :title="$page.props.translations.auth.reset_password.title" />
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" :value="$page.props.translations.pages.auth.reset_password.email" />
+                <InputLabel for="email" :value="$page.props.translations.auth.reset_password.email" />
 
                 <TextInput
                     id="email"
@@ -53,7 +53,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" :value="$page.props.translations.pages.auth.reset_password.password" />
+                <InputLabel for="password" :value="$page.props.translations.auth.reset_password.password" />
 
                 <TextInput
                     id="password"
@@ -70,7 +70,7 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
-                    :value="$page.props.translations.pages.auth.reset_password.confirm_password"
+                    :value="$page.props.translations.auth.reset_password.confirm_password"
                 />
 
                 <TextInput
@@ -93,7 +93,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    {{ $page.props.translations.pages.auth.reset_password.reset }}
+                    {{ $page.props.translations.auth.reset_password.reset }}
                 </PrimaryButton>
             </div>
         </form>

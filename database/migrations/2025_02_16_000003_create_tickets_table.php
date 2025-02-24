@@ -15,7 +15,7 @@ return new class extends Migration
             $table->enum('priority', ['low', 'medium', 'high', 'critical'])->default('medium');
             $table->foreignId('category_id')->constrained('ticket_categories');
             $table->foreignId('status_id')->constrained('ticket_statuses');
-            $table->foreignId('equipement_id')->nullable()->constrained('equipements');
+            $table->foreignId('equipment_id')->nullable()->constrained('equipment');
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('assigned_to')->nullable()->constrained('users');
             $table->timestamp('due_date')->nullable();

@@ -23,17 +23,17 @@ const verificationLinkSent = computed(
 
 <template>
     <GuestLayout>
-        <Head :title="$page.props.translations.pages.auth.verify_email.title" />
+        <Head :title="$page.props.translations.auth.verify_email.title" />
 
         <div class="mb-4 text-sm text-gray-600">
-            {{ $page.props.translations.pages.auth.verify_email.text }}
+            {{ $page.props.translations.auth.verify_email.text }}
         </div>
 
         <div
             class="mb-4 text-sm font-medium text-green-600"
             v-if="verificationLinkSent"
         >
-            {{ $page.props.translations.pages.auth.verify_email.new_verification }}
+            {{ $page.props.translations.auth.verify_email.new_verification }}
         </div>
 
         <form @submit.prevent="submit">
@@ -42,7 +42,7 @@ const verificationLinkSent = computed(
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    {{ $page.props.translations.pages.auth.verify_email.resend }}
+                    {{ $page.props.translations.auth.verify_email.resend }}
                 </PrimaryButton>
 
                 <Link
@@ -50,7 +50,7 @@ const verificationLinkSent = computed(
                     method="post"
                     as="button"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >{{ $page.props.translations.pages.auth.verify_email.logout }}</Link
+                    >{{ $page.props.translations.auth.verify_email.logout }}</Link
                 >
             </div>
         </form>

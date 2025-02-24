@@ -17,10 +17,10 @@ class RolesAndPermissionsSeeder extends Seeder
         // Création des permissions
         $permissions = [
             'dashboard.view',
-            'equipements.view',
-            'equipements.create',
-            'equipements.edit',
-            'equipements.delete',
+            'equipment.view',
+            'equipment.create',
+            'equipment.edit',
+            'equipment.delete',
             'roles.view',
             'roles.create',
             'roles.edit',
@@ -36,6 +36,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'tickets.edit',
             'tickets.delete',
             'update_ticket_status',
+            'tickets.schedule',
+            'tickets.assign',
+            'solver_dashboard.view',
         ];
 
         foreach ($permissions as $permission) {
@@ -45,15 +48,25 @@ class RolesAndPermissionsSeeder extends Seeder
         // Création des rôles
         $admin = Role::findOrCreate('admin');
         $tiers = Role::findOrCreate('tiers');
+        $solver = Role::findOrCreate('solver');
 
-        // Attribution des permissions aux rôles
-        $admin->givePermissionTo($permissions);
+        // Attribuer toutes les permissions au rôle admin
+        $admin->givePermissionTo(Permission::all());
 
         // Les tiers peuvent voir le dashboard et gérer leurs tickets
         $tiers->givePermissionTo([
             'dashboard.view',
             'tickets.view',
             'tickets.create',
+        ]);
+
+        // Les solvers peuvent voir leur dashboard et planifier les tickets
+        $solver->givePermissionTo([
+            'dashboard.view',
+            'solver_dashboard.view',
+            'tickets.view',
+            'tickets.schedule',
+            'update_ticket_status',
         ]);
 
         // Attribution du rôle admin à l'utilisateur admin@example.com

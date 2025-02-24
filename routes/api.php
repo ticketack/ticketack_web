@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
-use App\Http\Controllers\Api\EquipementController;
+use App\Http\Controllers\Api\EquipmentController;
 use App\Http\Controllers\Api\TicketController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,9 +22,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('user', [AuthController::class, 'user']);
     
-    // Equipements management
-    Route::get('equipements/search', [EquipementController::class, 'search']);
-    Route::apiResource('equipements', EquipementController::class);
+    // Equipment management
+    Route::get('equipment/search', [EquipmentController::class, 'search']);
+    Route::apiResource('equipment', EquipmentController::class);
 
     // Tickets management
     Route::apiResource('tickets', TicketController::class);

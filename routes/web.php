@@ -3,7 +3,7 @@
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\EquipementController;
+use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TicketDocumentController;
 use App\Http\Controllers\TicketPdfController;
@@ -25,6 +25,18 @@ Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'ind
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
+    // Routes du panneau solver
+    Route::middleware(['role:solver|admin'])->group(function () {
+        Route::get('/solver-dashboard', [\App\Http\Controllers\SolverDashboardController::class, 'index'])
+            ->name('solver.dashboard');
+        Route::post('/schedules', [\App\Http\Controllers\SolverDashboardController::class, 'scheduleTicket'])
+            ->name('schedules.store');
+        Route::put('/schedules/{schedule}', [\App\Http\Controllers\SolverDashboardController::class, 'updateSchedule'])
+            ->name('schedules.update');
+        Route::delete('/schedules/{schedule}', [\App\Http\Controllers\SolverDashboardController::class, 'deleteSchedule'])
+            ->name('schedules.destroy');
+    });
+
     // Routes des tickets
     Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.view'])->group(function () {
         Route::get('/tickets', [\App\Http\Controllers\TicketController::class, 'index'])
@@ -85,31 +97,31 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Routes des équipements avec groupe de middleware
-    Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipements.view'])->group(function () {
-        Route::get('equipements/search', [EquipementController::class, 'search'])
-            ->name('equipements.search');
-        Route::get('equipements', [EquipementController::class, 'index'])
-            ->name('equipements.index');
+    Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipment.view'])->group(function () {
+        Route::get('equipment/search', [EquipmentController::class, 'search'])
+            ->name('equipment.search');
+        Route::get('equipment', [EquipmentController::class, 'index'])
+            ->name('equipment.index');
 
-        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipements.create'])->group(function () {
-            Route::get('equipements/create', [EquipementController::class, 'create'])
-                ->name('equipements.create');
-            Route::post('equipements', [EquipementController::class, 'store'])
-                ->name('equipements.store');
-            Route::delete('equipements/{equipement}/image', [EquipementController::class, 'deleteImage'])
-                ->name('equipements.delete-image');
+        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipment.create'])->group(function () {
+            Route::get('equipment/create', [EquipmentController::class, 'create'])
+                ->name('equipment.create');
+            Route::post('equipment', [EquipmentController::class, 'store'])
+                ->name('equipment.store');
+            Route::delete('equipment/{equipment}/image', [EquipmentController::class, 'deleteImage'])
+                ->name('equipment.delete-image');
         });
 
-        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipements.edit'])->group(function () {
-            Route::get('equipements/{equipement}/edit', [EquipementController::class, 'edit'])
-                ->name('equipements.edit');
-            Route::put('equipements/{equipement}', [EquipementController::class, 'update'])
-                ->name('equipements.update');
+        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipment.edit'])->group(function () {
+            Route::get('equipment/{equipment}/edit', [EquipmentController::class, 'edit'])
+                ->name('equipment.edit');
+            Route::put('equipment/{equipment}', [EquipmentController::class, 'update'])
+                ->name('equipment.update');
         });
 
-        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipements.delete'])->group(function () {
-            Route::delete('equipements/{equipement}', [EquipementController::class, 'destroy'])
-                ->name('equipements.destroy');
+        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipment.delete'])->group(function () {
+            Route::delete('equipment/{equipment}', [EquipmentController::class, 'destroy'])
+                ->name('equipment.destroy');
         });
     });
 

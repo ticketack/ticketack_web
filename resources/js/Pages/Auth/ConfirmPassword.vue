@@ -19,15 +19,15 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head :title="$page.props.translations.pages.auth.confirm_password.title" />
+        <Head :title="$page.props.translations.auth.confirm_password.title" />
 
         <div class="mb-4 text-sm text-gray-600">
-            {{ $page.props.translations.pages.auth.confirm_password.text }}
+            {{ $page.props.translations.auth.confirm_password.text }}
         </div>
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="password" :value="$page.props.translations.pages.auth.confirm_password.password" />
+                <InputLabel for="password" :value="$page.props.translations.auth.confirm_password.password" />
                 <TextInput
                     id="password"
                     type="password"
@@ -46,7 +46,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    {{ $page.props.translations.pages.auth.confirm_password.confirm }}
+                    {{ $page.props.translations.auth.confirm_password.confirm }}
                 </PrimaryButton>
             </div>
         </form>

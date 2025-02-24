@@ -1,10 +1,10 @@
 <template>
-    <Head title="Modifier l'utilisateur" />
+    <Head :title="$page.props.translations.users.edit.title" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Modifier l'utilisateur
+                {{ $page.props.translations.users.edit.title }}
             </h2>
         </template>
 
@@ -14,7 +14,7 @@
                     <div class="p-6 text-gray-900">
                         <form @submit.prevent="submit" class="space-y-6">
                             <div>
-                                <InputLabel for="name" value="Nom" />
+                                <InputLabel for="name" :value="$page.props.translations.users.edit.name" />
                                 <TextInput
                                     id="name"
                                     type="text"
@@ -27,7 +27,7 @@
                             </div>
 
                             <div>
-                                <InputLabel for="email" value="Email" />
+                                <InputLabel for="email" :value="$page.props.translations.users.edit.email" />
                                 <TextInput
                                     id="email"
                                     type="email"
@@ -40,7 +40,7 @@
                             </div>
 
                             <div>
-                                <InputLabel for="password" value="Nouveau mot de passe (optionnel)" />
+                                <InputLabel for="password" :value="$page.props.translations.users.edit.password" />
                                 <TextInput
                                     id="password"
                                     type="password"

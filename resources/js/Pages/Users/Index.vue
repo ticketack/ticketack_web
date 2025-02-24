@@ -1,18 +1,18 @@
 <template>
-    <Head :title="$page.props.translations.pages.users.index.title" />
+    <Head :title="$page.props.translations.users.index.title" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ $page.props.translations.pages.users.index.title }}
+                    {{ $page.props.translations.users.index.title }}
                 </h2>
                 <Link
                     v-if="$page.props.permissions['users.create']"
                     :href="route('users.create')"
                     class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
                 >
-                    {{ $page.props.translations.pages.users.index.new_user }}
+                    {{ $page.props.translations.users.index.new_user }}
                 </Link>
             </div>
         </template>
@@ -33,17 +33,17 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ $page.props.translations.pages.users.index.name }}
+                                        {{ $page.props.translations.users.index.name }}
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ $page.props.translations.pages.users.index.email }}
+                                        {{ $page.props.translations.users.index.email }}
 
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ $page.props.translations.pages.users.index.roles }}
+                                        {{ $page.props.translations.users.index.roles }}
                                     </th>
                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ $page.props.translations.pages.users.index.actions }}
+                                        {{ $page.props.translations.users.index.actions }}
                                     </th>
                                 </tr>
                             </thead>
@@ -72,14 +72,14 @@
                                             :href="route('users.edit', user.id)"
                                             class="text-indigo-600 hover:text-indigo-900 mr-4"
                                         >
-                                        {{ $page.props.translations.pages.users.index.edit }}
+                                        {{ $page.props.translations.users.index.edit }}
                                         </Link>
                                         <button
                                             v-if="$page.props.permissions['users.delete'] && user.email !== 'admin@example.com'"
                                             @click="deleteUser(user)"
                                             class="text-red-600 hover:text-red-900"
                                         >
-                                        {{ $page.props.translations.pages.users.index.delete }}
+                                        {{ $page.props.translations.users.index.delete }}
                                         </button>
                                     </td>
                                 </tr>
@@ -105,7 +105,7 @@ defineProps({
 
 const deleteUser = (user) => {
     const page = usePage();
-    const confirmMessage = page.props.translations.pages.users.index.confirm_delete.replace('{name}', user.name);
+    const confirmMessage = page.props.translations.users.index.confirm_delete.replace('{name}', user.name);
     if (confirm(confirmMessage)) {
         router.delete(route('users.destroy', user.id));
     }

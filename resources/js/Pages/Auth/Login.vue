@@ -33,7 +33,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head :title="$page.props.translations.pages.auth.login.title" />
+        <Head :title="$page.props.translations.auth.login.title" />
 
         <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
@@ -41,7 +41,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" :value="$page.props.translations.pages.auth.login.email" />
+                <InputLabel for="email" :value="$page.props.translations.auth.login.email" />
 
                 <TextInput
                     id="email"
@@ -57,7 +57,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" :value="$page.props.translations.pages.auth.login.password" />
+                <InputLabel for="password" :value="$page.props.translations.auth.login.password" />
 
                 <TextInput
                     id="password"
@@ -75,7 +75,7 @@ const submit = () => {
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
                     <span class="ms-2 text-sm text-gray-600"
-                        >{{ $page.props.translations.pages.auth.login.remember_me }}</span
+                        >{{ $page.props.translations.auth.login.remember_me }}</span
                     >
                 </label>
             </div>
@@ -86,7 +86,7 @@ const submit = () => {
                     :href="route('password.request')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                    {{ $page.props.translations.pages.auth.login.forgot_password }}
+                    {{ $page.props.translations.auth.login.forgot_password }}
                 </Link>
 
                 <PrimaryButton
@@ -94,7 +94,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    {{ $page.props.translations.pages.auth.login.submit }}
+                    {{ $page.props.translations.auth.login.submit }}
                 </PrimaryButton>
             </div>
         </form>

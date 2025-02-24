@@ -48,24 +48,24 @@
                 <!-- Équipement -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Équipement</label>
-                    <Combobox v-model="filters.equipement_id">
+                    <Combobox v-model="filters.equipment_id">
                         <div class="relative">
                             <ComboboxInput
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                @change="searchEquipements"
-                                :displayValue="(id) => equipements.find(e => e.id === id)?.designation || ''"
+                                @change="searchEquipment"
+                                :displayValue="(id) => equipment.find(e => e.id === id)?.designation || ''"
                                 placeholder="Rechercher un équipement..."
                             />
                             <ComboboxOptions class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 shadow-lg">
                                 <ComboboxOption
-                                    v-for="equipement in equipements"
-                                    :key="equipement.id"
-                                    :value="equipement.id"
+                                    v-for="item in equipment"
+                                    :key="item.id"
+                                    :value="item.id"
                                     class="relative cursor-default select-none py-2 pl-3 pr-9 hover:bg-indigo-600 hover:text-white"
                                     v-slot="{ active, selected }"
                                 >
                                     <span :class="['block truncate', selected && 'font-semibold']">
-                                        {{ equipement.designation }}
+                                        {{ item.designation }}
                                     </span>
                                 </ComboboxOption>
                             </ComboboxOptions>
@@ -136,25 +136,25 @@ const props = defineProps({
 
 defineEmits(['update:modelValue']);
 
-const equipements = ref([]);
+const equipment = ref([]);
 const filters = ref({
     status_id: props.currentFilters.status_id || '',
     priority: props.currentFilters.priority || '',
     category_id: props.currentFilters.category_id || '',
-    equipement_id: props.currentFilters.equipement_id || '',
+    equipment_id: props.currentFilters.equipment_id || '',
     assigned_to: props.currentFilters.assigned_to || '',
     date_from: props.currentFilters.date_from || '',
     date_to: props.currentFilters.date_to || ''
 });
 
-const searchEquipements = debounce(async (event) => {
+const searchEquipment = debounce(async (event) => {
     const query = event.target.value;
     if (query.length < 2) return;
 
     try {
-        const response = await fetch(`/api/equipements/search?q=${encodeURIComponent(query)}`);
+        const response = await fetch(`/api/equipment/search?q=${encodeURIComponent(query)}`);
         const data = await response.json();
-        equipements.value = data;
+        equipment.value = data;
     } catch (error) {
         console.error('Erreur lors de la recherche des équipements:', error);
     }

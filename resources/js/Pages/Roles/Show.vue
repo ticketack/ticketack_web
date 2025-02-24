@@ -1,18 +1,18 @@
 <template>
-    <Head :title="$page.props.translations.pages.roles.show.title" />
+    <Head :title="$page.props.translations.roles.show.title" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ $page.props.translations.pages.roles.show.title }}
+                    {{ $page.props.translations.roles.show.title }}
                 </h2>
                 <Link
                     v-if="$page.props.can.roles.edit"
                     :href="route('roles.edit', role.id)"
                     class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700"
                 >
-                    {{ $page.props.translations.pages.roles.show.edit }}
+                    {{ $page.props.translations.roles.show.edit }}
                 </Link>
             </div>
         </template>
@@ -25,7 +25,7 @@
                             <!-- Nom -->
                             <div>
                                 <h3 class="text-lg font-medium text-gray-900">
-                                    {{ $page.props.translations.pages.roles.show.name }}
+                                    {{ $page.props.translations.roles.show.name }}
                                 </h3>
                                 <p class="mt-1 text-sm text-gray-600">
                                     {{ role.name }}
@@ -35,20 +35,20 @@
                             <!-- Description -->
                             <div>
                                 <h3 class="text-lg font-medium text-gray-900">
-                                    {{ $page.props.translations.pages.roles.show.description }}
+                                    {{ $page.props.translations.roles.show.description }}
                                 </h3>
                                 <p class="mt-1 text-sm text-gray-600">
-                                    {{ role.description || $page.props.translations.pages.roles.show.no_description }}
+                                    {{ role.description || $page.props.translations.roles.show.no_description }}
                                 </p>
                             </div>
 
                             <!-- Permissions -->
                             <div>
                                 <h3 class="text-lg font-medium text-gray-900 mb-4">
-                                    {{ $page.props.translations.pages.roles.show.permissions }}
+                                    {{ $page.props.translations.roles.show.permissions }}
                                 </h3>
                                 <div class="space-y-6">
-                                    <template v-for="group in ['equipements', 'roles', 'users', 'tickets', 'settings']" :key="group">
+                                    <template v-for="group in ['equipment', 'roles', 'users', 'tickets', 'settings']" :key="group">
                                         <div v-if="hasPermissionsForGroup(group)" class="space-y-2">
                                             <h4 class="font-medium text-gray-700">{{ getGroupTranslation(group) }}</h4>
                                             <div class="ml-4 space-y-2">
@@ -80,7 +80,7 @@
                                     :href="route('roles.index')"
                                     class="inline-flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
                                 >
-                                    {{ $page.props.translations.pages.roles.show.back }}
+                                    {{ $page.props.translations.roles.show.back }}
                                 </Link>
                             </div>
                         </div>

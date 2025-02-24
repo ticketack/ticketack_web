@@ -32,14 +32,14 @@ const copyToken = () => {
 </script>
 
 <template>
-    <Head :title="$page.props.translations.pages.profile.title" />
+    <Head :title="$page.props.translations.profile.title" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800"
             >
-                {{ $page.props.translations.pages.profile.title }}
+                {{ $page.props.translations.profile.title }}
             </h2>
         </template>
 
@@ -70,9 +70,9 @@ const copyToken = () => {
                 <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8">
                     <section class="max-w-xl">
                         <header>
-                            <h2 class="text-lg font-medium text-gray-900">{{ $page.props.translations.pages.profile.api_token.title }}</h2>
+                            <h2 class="text-lg font-medium text-gray-900">{{ $page.props.translations.profile.api_token.title }}</h2>
                             <p class="mt-1 text-sm text-gray-600">
-                                {{ $page.props.translations.pages.profile.api_token.description }}
+                                {{ $page.props.translations.profile.api_token.description }}
                             </p>
                         </header>
 
@@ -91,7 +91,7 @@ const copyToken = () => {
                                     @click="copyToken"
                                     class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900"
                                 >
-                                    {{ copied ? $page.props.translations.pages.profile.api_token.copied : $page.props.translations.pages.profile.api_token.copy }}
+                                    {{ copied ? $page.props.translations.profile.api_token.copied : $page.props.translations.profile.api_token.copy }}
                                 </button>
                             </div>
                         </div>

@@ -16,10 +16,10 @@ class PermissionsSeeder extends Seeder
             'dashboard.view',
 
             // Équipements
-            'equipements.view',
-            'equipements.create',
-            'equipements.edit',
-            'equipements.delete',
+            'equipment.view',
+            'equipment.create',
+            'equipment.edit',
+            'equipment.delete',
 
             // Rôles
             'roles.view',

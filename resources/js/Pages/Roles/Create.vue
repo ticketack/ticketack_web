@@ -1,10 +1,10 @@
 <template>
-    <Head :title="$page.props.translations.pages.roles.create.title" />
+    <Head :title="$page.props.translations.roles.create.title" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $page.props.translations.pages.roles.create.title }}
+                {{ $page.props.translations.roles.create.title }}
             </h2>
         </template>
 
@@ -14,7 +14,7 @@
                     <div class="p-6 text-gray-900">
                         <form @submit.prevent="submit" class="space-y-6">
                             <div>
-                                <InputLabel for="name" :value="$page.props.translations.pages.roles.create.name" />
+                                <InputLabel for="name" :value="$page.props.translations.roles.create.name" />
                                 <TextInput
                                     id="name"
                                     type="text"
@@ -27,7 +27,7 @@
                             </div>
 
                             <div>
-                                <InputLabel for="description" :value="$page.props.translations.pages.roles.create.description" />
+                                <InputLabel for="description" :value="$page.props.translations.roles.create.description" />
                                 <TextInput
                                     id="description"
                                     type="text"
@@ -38,7 +38,7 @@
                             </div>
 
                             <div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $page.props.translations.pages.roles.create.permissions }}</h3>
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $page.props.translations.roles.create.permissions }}</h3>
                                 <div class="space-y-4">
                                     <div v-for="permission in permissions" :key="permission.id" class="flex items-center">
                                         <input
@@ -60,10 +60,10 @@
                                     :href="route('roles.index')"
                                     class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors mr-4"
                                 >
-                                    {{ $page.props.translations.pages.roles.create.cancel }}
+                                    {{ $page.props.translations.roles.create.cancel }}
                                 </Link>
                                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                                    {{ $page.props.translations.pages.roles.create.create }}
+                                    {{ $page.props.translations.roles.create.create }}
                                 </PrimaryButton>
                             </div>
                         </form>

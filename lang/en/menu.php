@@ -1,9 +1,11 @@
 <?php
 
 return [
+    'solver' => 'Resolution',
+    'api_doc' => 'API Documentation',
     'tickets' => 'Tickets',
-    'tickets_list' => 'Tickets list',
-    'create_ticket' => 'Create ticket',
+    'tickets_list' => 'Tickets List',
+    'create_ticket' => 'Create Ticket',
     'dashboard' => 'Dashboard',
     'equipment' => 'Equipment',
     'roles' => 'Roles',

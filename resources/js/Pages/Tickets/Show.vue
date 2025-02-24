@@ -56,26 +56,11 @@
                                     </div>
                                 </div>
 
-                                <!-- Actions -->
-                                <div class="mt-6 flex flex-wrap gap-4">
-                                    <div v-if="$page.props.permissions['tickets.edit']">
-                                        <InputLabel for="status" value="Changer le statut" class="mb-1" />
-                                        <select
-                                            id="status"
-                                            v-model="form.status_id"
-                                            @change="updateStatus"
-                                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                        >
-                                            <option v-for="status in statuses" :key="status.id" :value="status.id">
-                                                {{ status.name }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
+
 
                                 <!-- Documents -->
                                 <div class="mt-8">
-                                    <h4 class="text-sm font-medium text-gray-900 mb-4">Documents</h4>
+                                    <h4 class="text-sm font-medium text-gray-900 mb-4">{{ $page.props.translations.tickets.documents.title }}</h4>
                                     <div v-if="ticket?.documents" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                                         <DocumentPreview
                                             v-for="document in ticket?.documents"
@@ -96,7 +81,7 @@
                         <!-- Section des commentaires -->
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                             <div class="p-6">
-                                <h4 class="text-sm font-medium text-gray-900 mb-4">{{ $t('pages.comments.title', 'Commentaires') }}</h4>
+                                <h4 class="text-sm font-medium text-gray-900 mb-4">{{ $page.props.translations.tickets.comments.title }}</h4>
                             
                             <!-- Liste des commentaires -->
                             <div v-if="ticket?.comments" class="space-y-4 mb-6 divide-y divide-gray-100">
@@ -155,15 +140,15 @@
                                     </div>
                                 </div>
                             </div>
-                            <p v-else class="text-gray-500 italic">{{ $page.props.translations.pages.comments.no_comments }}</p>
+                            <p v-else class="text-gray-500 italic">{{ $page.props.translations.tickets.comments.no_comments }}</p>
 
                             <!-- Formulaire d'ajout de commentaire -->
                             <form @submit.prevent="submitComment" class="mt-6 space-y-4">
                                 <div>
-                                    <label for="comment" class="sr-only">{{ $page.props.translations.pages.comments.add }}</label>
+                                    <label for="comment" class="sr-only">{{ $page.props.translations.tickets.comments.add }}</label>
                                     <textarea id="comment"
                                               v-model="commentForm.content"
-                                              :placeholder="$page.props.translations.pages.comments.placeholder"
+                                              :placeholder="$page.props.translations.tickets.comments.placeholder"
                                               rows="3"
                                               class="shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
                                               required></textarea>
@@ -187,15 +172,15 @@
                                 
                                 <!-- Upload de fichiers -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">{{ $page.props.translations.pages.comments.attachments }}</label>
+                                    <label class="block text-sm font-medium text-gray-700">{{ $page.props.translations.tickets.comments.attachments }}</label>
                                     <DropZone
                                         ref="dropZone"
                                         class="mt-1"
                                         @files-selected="handleCommentFileUpload"
                                     />
                                     <div class="mt-1 space-y-1">
-                                        <p class="text-sm text-gray-500">{{ $page.props.translations.pages.comments.max_size }} : 10 MB</p>
-                                        <p class="text-sm text-gray-500">{{ $page.props.translations.pages.comments.accepted_formats }} : JPG, JPEG, PNG, GIF, PDF</p>
+                                        <p class="text-sm text-gray-500">{{ $page.props.translations.tickets.comments.max_size }} : 10 MB</p>
+                                        <p class="text-sm text-gray-500">{{ $page.props.translations.tickets.comments.accepted_formats }} : JPG, JPEG, PNG, GIF, PDF</p>
                                     </div>
                                 </div>
                                     
@@ -224,7 +209,7 @@
                                 <div v-if="$page.props.permissions['update_ticket_status']" class="mb-4">
                                     <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
                                     <select id="status"
-                                            v-model="ticket.status_id"
+                                            v-model="form.status_id"
                                             @change="updateStatus"
                                             class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                                         <option v-for="status in statuses"
@@ -234,6 +219,7 @@
                                         </option>
                                     </select>
                                 </div>
+
                                 <div v-if="$page.props.permissions['tickets.assign']">
                                     <label for="assignee" class="block text-sm font-medium text-gray-700 mb-2">Assigné à</label>
                                     <div class="space-y-2">

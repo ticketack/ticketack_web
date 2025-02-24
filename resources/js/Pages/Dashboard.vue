@@ -42,14 +42,14 @@ defineProps({
 </script>
 
 <template>
-    <Head :title="$page.props.translations.pages.dashboard.title" />
+    <Head :title="$page.props.translations.dashboard.title" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800"
             >
-                {{ $page.props.translations.pages.dashboard.title }}
+                {{ $page.props.translations.dashboard.title }}
             </h2>
         </template>
 
@@ -59,7 +59,7 @@ defineProps({
                     <!-- Panneau Statistiques -->
                     <div class="overflow-hidden bg-white shadow-lg rounded-lg">
                         <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.pages.dashboard.statistics }}</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.dashboard.statistics }}</h3>
                             <div class="flex items-center space-x-4">
                                 <div class="p-3 bg-blue-100 rounded-full">
                                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,7 +67,7 @@ defineProps({
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">{{ $page.props.translations.pages.dashboard.total_equipment }}</p>
+                                    <p class="text-sm text-gray-600">{{ $page.props.translations.dashboard.total_equipment }}</p>
                                     <p class="text-2xl font-bold text-gray-800">{{ equipmentCount }}</p>
                                 </div>
                             </div>
@@ -78,7 +78,7 @@ defineProps({
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">{{ $page.props.translations.pages.dashboard.total_users }}</p>
+                                    <p class="text-sm text-gray-600">{{ $page.props.translations.dashboard.total_users }}</p>
                                     <p class="text-2xl font-bold text-gray-800">{{ userCount }}</p>
                                 </div>
                             </div>
@@ -88,7 +88,7 @@ defineProps({
                     <!-- Statistiques des tickets -->
                     <div class="overflow-hidden bg-white shadow-lg rounded-lg">
                         <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.pages.dashboard.ticket_stats }}</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.dashboard.ticket_stats }}</h3>
                             
                             <!-- Total des tickets -->
                             <div class="flex items-center space-x-4 mb-6">
@@ -98,14 +98,14 @@ defineProps({
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="text-sm text-gray-600">{{ $page.props.translations.pages.dashboard.total_tickets }}</p>
+                                    <p class="text-sm text-gray-600">{{ $page.props.translations.dashboard.total_tickets }}</p>
                                     <p class="text-2xl font-bold text-gray-800">{{ ticketStats.total }}</p>
                                 </div>
                             </div>
 
                             <!-- Par statut -->
                             <div class="mb-4">
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.pages.dashboard.by_status }}</h4>
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.dashboard.by_status }}</h4>
                                 <div class="space-y-2">
                                     <div v-for="(count, status) in ticketStats.byStatus" :key="status" class="flex justify-between items-center bg-gray-50 p-2 rounded">
                                         <span class="text-sm text-gray-600">{{ status }}</span>
@@ -116,7 +116,7 @@ defineProps({
 
                             <!-- Par priorité -->
                             <div class="mb-4">
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.pages.dashboard.by_priority }}</h4>
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.dashboard.by_priority }}</h4>
                                 <div class="space-y-2">
                                     <div
                                         v-for="(count, priority) in ticketStats.byPriority"
@@ -136,7 +136,7 @@ defineProps({
                             </div>
                                 <!-- Par catégorie -->
                             <div class="mb-4">
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.pages.dashboard.by_category }}</h4>
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.dashboard.by_category }}</h4>
                                 <div class="space-y-2">
                                         <div v-for="(count, category) in ticketStats.byCategory" :key="category" 
                                              class="flex justify-between items-center p-2 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600">
@@ -150,7 +150,7 @@ defineProps({
                     <!-- Panneau Statistiques des utilisateurs -->
                     <div class="overflow-hidden bg-white shadow-lg rounded-lg">
                         <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.pages.dashboard.user_stats }}</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.dashboard.user_stats }}</h3>
                             
                             <!-- Utilisateurs avec le plus de tickets assignés -->
                             <div class="mb-6">
@@ -161,7 +161,7 @@ defineProps({
                                         </svg>
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-600">{{ $page.props.translations.pages.dashboard.most_assigned_tickets }}</p>
+                                        <p class="text-sm text-gray-600">{{ $page.props.translations.dashboard.most_assigned_tickets }}</p>
                                     </div>
                                 </div>
                                 <div class="space-y-3">
@@ -186,7 +186,7 @@ defineProps({
                                         </svg>
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-600">{{ $page.props.translations.pages.dashboard.most_created_tickets }}</p>
+                                        <p class="text-sm text-gray-600">{{ $page.props.translations.dashboard.most_created_tickets }}</p>
                                     </div>
                                 </div>
                                 <div class="space-y-3">
@@ -207,11 +207,11 @@ defineProps({
                     <!-- Panneau Statistiques d'équipements -->
                     <div class="overflow-hidden bg-white shadow-lg rounded-lg">
                         <div class="p-6">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.pages.dashboard.equipment_stats }}</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.dashboard.equipment_stats }}</h3>
                             
                             <!-- Équipements avec le plus de tickets -->
                             <div class="mb-6">
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.pages.dashboard.most_tickets }}</h4>
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.dashboard.most_tickets }}</h4>
                                 <div class="space-y-3">
                                     <div v-for="equipment in mostTickets" :key="equipment.id" 
                                          class="flex items-center justify-between p-3 bg-orange-50 rounded-lg transition-colors duration-200">
@@ -228,7 +228,7 @@ defineProps({
 
                             <!-- Équipements avec le moins de tickets -->
                             <div>
-                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.pages.dashboard.least_tickets }}</h4>
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.dashboard.least_tickets }}</h4>
                                 <div class="space-y-3">
                                     <div v-for="equipment in leastTickets" :key="equipment.id" 
                                          class="flex items-center justify-between p-3 bg-green-50 rounded-lg transition-colors duration-200">
@@ -248,7 +248,7 @@ defineProps({
                 <!-- Graphique des tickets -->
                 <div class="mt-6 overflow-hidden bg-white shadow-lg rounded-lg">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.pages.dashboard.tickets_over_time }}</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.dashboard.tickets_over_time }}</h3>
                         <TicketsChart :data="chartData" />
                     </div>
                 </div>

@@ -2,16 +2,16 @@
 
 return [
     'groups' => [
-        'equipements' => 'Equipment Management',
+        'equipment' => 'Equipment Management',
         'roles' => 'Role Management',
         'users' => 'User Management',
         'settings' => 'System Settings',
         'tickets' => 'Ticket Management'
     ],
-    'equipements.view' => 'View equipment',
-    'equipements.create' => 'Create equipment',
-    'equipements.edit' => 'Edit equipment',
-    'equipements.delete' => 'Delete equipment',
+    'equipment.view' => 'View equipment',
+    'equipment.create' => 'Create equipment',
+    'equipment.edit' => 'Edit equipment',
+    'equipment.delete' => 'Delete equipment',
     'roles.view' => 'View roles',
     'roles.create' => 'Create roles',
     'roles.edit' => 'Edit roles',

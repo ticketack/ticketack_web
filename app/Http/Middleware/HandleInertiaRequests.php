@@ -58,10 +58,17 @@ class HandleInertiaRequests extends Middleware
                 $logo = \Storage::disk('s3')->url($logoSetting->value);
             }
         }
-
+         
         return array_merge(parent::share($request), [
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'roles' => $request->user()->roles->map(function($role) {
+                        return $role->name;
+                    })
+                ] : null,
             ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
@@ -71,18 +78,44 @@ class HandleInertiaRequests extends Middleware
                 'name' => config('app.name'),
                 'logo' => $logo,
             ],
-            'translations' => [
+            'translations' => array_merge([
+                // Debug des traductions
+                //'debug' => dd($this->loadTranslationFiles()),
+                // Traductions système
                 'menu' => trans('menu'),
-                'auth' => trans('auth'),
                 'pagination' => trans('pagination'),
                 'passwords' => trans('passwords'),
                 'validation' => trans('validation'),
-                'pages' => trans('pages'),
                 'permissions' => trans('permissions'),
-            ],
+                'auth' => trans('auth'),
+            ], $this->loadTranslationFiles()),
             'locale' => $language,
             'permissions' => $this->getPermissions($request),
         ]);
+    }
+
+    /**
+     * Load all translation files from the lang directory
+     */
+    protected function loadTranslationFiles(): array
+    {
+        $translations = [];
+        $path = base_path('lang/' . app()->getLocale());
+        
+        if (is_dir($path)) {
+            $files = scandir($path);
+            foreach ($files as $file) {
+                if (pathinfo($file, PATHINFO_EXTENSION) === 'php' && $file !== 'auth.php' 
+                    && $file !== 'pagination.php' && $file !== 'passwords.php' 
+                    && $file !== 'validation.php' && $file !== 'menu.php' 
+                    && $file !== 'permissions.php') {
+                    $key = pathinfo($file, PATHINFO_FILENAME);
+                    $translations[$key] = trans($key);
+                }
+            }
+        }
+        
+        return $translations;
     }
 
     protected function getPermissions(Request $request): array

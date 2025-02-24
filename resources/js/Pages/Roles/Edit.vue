@@ -1,10 +1,10 @@
 <template>
-    <Head :title="$page.props.translations.pages.roles.edit.title" />
+    <Head :title="$page.props.translations.roles.edit.title" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $page.props.translations.pages.roles.edit.title }}
+                {{ $page.props.translations.roles.edit.title }}
             </h2>
         </template>
 
@@ -14,7 +14,7 @@
                     <div class="p-6 text-gray-900">
                         <form @submit.prevent="submit" class="space-y-6">
                             <div>
-                                <InputLabel for="name" :value="$page.props.translations.pages.roles.edit.name" />
+                                <InputLabel for="name" :value="$page.props.translations.roles.edit.name" />
                                 <TextInput
                                     id="name"
                                     type="text"
@@ -27,7 +27,7 @@
                             </div>
 
                             <div>
-                                <InputLabel for="description" :value="$page.props.translations.pages.roles.edit.description" />
+                                <InputLabel for="description" :value="$page.props.translations.roles.edit.description" />
                                 <TextInput
                                     id="description"
                                     type="text"
@@ -38,9 +38,9 @@
                             </div>
 
                             <div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $page.props.translations.pages.roles.edit.permissions }}</h3>
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $page.props.translations.roles.edit.permissions }}</h3>
                                 <div class="space-y-6">
-                                    <template v-for="group in ['equipements', 'roles', 'users', 'tickets', 'settings']" :key="group">
+                                    <template v-for="group in ['equipment', 'roles', 'users', 'tickets', 'settings']" :key="group">
                                         <div v-if="hasPermissionsForGroup(group)" class="space-y-2">
                                             <h4 class="font-medium text-gray-700">{{ getGroupTranslation(group) }}</h4>
                                             <div class="ml-4 space-y-2">
@@ -69,10 +69,10 @@
                                     :href="route('roles.index')"
                                     class="inline-flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors mr-4"
                                 >
-                                    {{ $page.props.translations.pages.roles.edit.cancel }}
+                                    {{ $page.props.translations.roles.edit.cancel }}
                                 </Link>
                                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                                    {{ $page.props.translations.pages.roles.edit.save }}
+                                    {{ $page.props.translations.roles.edit.save }}
                                 </PrimaryButton>
                             </div>
                         </form>

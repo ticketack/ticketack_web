@@ -37,17 +37,17 @@ const updatePassword = () => {
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900">
-                {{ $page.props.translations.pages.profile.update_password.title }}
+                {{ $page.props.translations.profile.update_password.title }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                {{ $page.props.translations.pages.profile.update_password.description }}
+                {{ $page.props.translations.profile.update_password.description }}
             </p>
         </header>
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
             <div>
-                <InputLabel for="current_password" :value="$page.props.translations.pages.profile.update_password.current_password" />
+                <InputLabel for="current_password" :value="$page.props.translations.profile.update_password.current_password" />
 
                 <TextInput
                     id="current_password"
@@ -65,7 +65,7 @@ const updatePassword = () => {
             </div>
 
             <div>
-                <InputLabel for="password" :value="$page.props.translations.pages.profile.update_password.new_password" />
+                <InputLabel for="password" :value="$page.props.translations.profile.update_password.new_password" />
 
                 <TextInput
                     id="password"
@@ -82,7 +82,7 @@ const updatePassword = () => {
             <div>
                 <InputLabel
                     for="password_confirmation"
-                    :value="$page.props.translations.pages.profile.update_password.confirm_password"
+                    :value="$page.props.translations.profile.update_password.confirm_password"
                 />
 
                 <TextInput
@@ -100,7 +100,7 @@ const updatePassword = () => {
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">{{ $page.props.translations.pages.profile.update_password.save }}</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">{{ $page.props.translations.profile.update_password.save }}</PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"
@@ -112,7 +112,7 @@ const updatePassword = () => {
                         v-if="form.recentlySuccessful"
                         class="text-sm text-gray-600"
                     >
-                        {{ $page.props.translations.pages.profile.update_password.saved }}
+                        {{ $page.props.translations.profile.update_password.saved }}
                     </p>
                 </Transition>
             </div>

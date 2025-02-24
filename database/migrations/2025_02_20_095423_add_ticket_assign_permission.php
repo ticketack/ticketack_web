@@ -13,12 +13,6 @@ return new class extends Migration
     {
         // Créer la nouvelle permission
         Permission::findOrCreate('tickets.assign');
-
-        // Donner la permission aux rôles appropriés
-        $admin = Role::findByName('admin');
-        if ($admin) {
-            $admin->givePermissionTo('tickets.assign');
-        }
     }
 
     /**

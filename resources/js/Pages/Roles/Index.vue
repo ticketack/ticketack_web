@@ -1,18 +1,18 @@
 <template>
-    <Head :title="$page.props.translations.pages.roles.index.title" />
+    <Head :title="$page.props.translations.roles.index.title" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ $page.props.translations.pages.roles.index.title }}
+                    {{ $page.props.translations.roles.index.title }}
                 </h2>
                 <Link
                     v-if="$page.props.permissions['roles.create']"
                     :href="route('roles.create')"
                     class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
                 >
-                    {{ $page.props.translations.pages.roles.index.new_role }}
+                    {{ $page.props.translations.roles.index.new_role }}
                 </Link>
             </div>
         </template>
@@ -33,16 +33,16 @@
                             <thead class="bg-gray-50">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ $page.props.translations.pages.roles.index.name }}
+                                        {{ $page.props.translations.roles.index.name }}
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ $page.props.translations.pages.roles.index.description }}
+                                        {{ $page.props.translations.roles.index.description }}
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ $page.props.translations.pages.roles.index.permissions }}
+                                        {{ $page.props.translations.roles.index.permissions }}
                                     </th>
                                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {{ $page.props.translations.pages.roles.index.actions }}
+                                        {{ $page.props.translations.roles.index.actions }}
                                     </th>
                                 </tr>
                             </thead>
@@ -76,14 +76,14 @@
                                             :href="route('roles.edit', role.id)"
                                             class="text-indigo-600 hover:text-indigo-900 mr-4"
                                         >
-                                            {{ $page.props.translations.pages.roles.index.edit }}
+                                            {{ $page.props.translations.roles.index.edit }}
                                         </Link>
                                         <button
                                             v-if="$page.props.permissions['roles.delete'] && role.name !== 'admin'"
                                             @click="deleteRole(role)"
                                             class="text-red-600 hover:text-red-900"
                                         >
-                                            {{ $page.props.translations.pages.roles.index.delete }}
+                                            {{ $page.props.translations.roles.index.delete }}
                                         </button>
                                     </td>
                                 </tr>
@@ -108,7 +108,7 @@ defineProps({
 });
 
 const deleteRole = (role) => {
-    if (confirm($page.props.translations.pages.roles.index.confirm_delete.replace(':name', role.name))) {
+    if (confirm($page.props.translations.roles.confirm_delete.replace(':name', role.name))) {
         router.delete(route('roles.destroy', role.id));
     }
 };

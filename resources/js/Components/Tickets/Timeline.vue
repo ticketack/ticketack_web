@@ -22,7 +22,7 @@
                                     </span>
                                 </p>
                             </div>
-                            <div class="whitespace-nowrap text-right text-sm text-gray-500">
+                            <div class="whitespace-nowrap text-right text-xs text-gray-500">
                                 <time :datetime="log.created_at">{{ formatDate(log.created_at) }}</time>
                             </div>
                         </div>
