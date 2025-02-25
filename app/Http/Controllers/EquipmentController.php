@@ -61,7 +61,7 @@ class EquipmentController extends Controller
     {
         $equipment = Equipment::all();
         return Inertia::render('Equipment/Create', [
-            'equipements' => $equipment,
+            'allEquipment' => $equipment,
             'translations' => [
                 'pages' => trans('pages'),
                 'equipment' => trans('equipment'),
@@ -83,7 +83,7 @@ class EquipmentController extends Controller
             'modele' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048',
             'icone' => 'nullable|integer',
-            'parent_id' => 'nullable|exists:equipements,id' // table name remains equipements
+            'parent_id' => 'nullable|exists:equipment,id'
         ]);
 
         if ($request->hasFile('image')) {
@@ -101,8 +101,8 @@ class EquipmentController extends Controller
     {
         $equipmentList = Equipment::where('id', '!=', $equipment->id)->get();
         return Inertia::render('Equipment/Edit', [
-            'equipement' => $equipment,
-            'equipements' => $equipmentList,
+            'equipment' => $equipment,
+            'allEquipment' => $equipmentList,
             'translations' => [
                 'pages' => trans('pages'),
                 'menu' => trans('menu'),
@@ -124,7 +124,7 @@ class EquipmentController extends Controller
             'modele' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048',
             'icone' => 'nullable|integer',
-            'parent_id' => 'nullable|exists:equipements,id' // table name remains equipements
+            'parent_id' => 'nullable|exists:equipment,id'
         ]);
 
         if ($request->hasFile('image')) {

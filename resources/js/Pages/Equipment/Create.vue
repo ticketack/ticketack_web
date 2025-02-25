@@ -57,7 +57,7 @@
                                     class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                 >
                                     <option :value="null">{{ $page.props.translations.equipment.create.no_parent }}</option>
-                                    <option v-for="item in equipements" :key="item.id" :value="item.id">
+                                    <option v-for="item in allEquipment" :key="item.id" :value="item.id">
                                         {{ item.designation }}
                                     </option>
                                 </select>
@@ -85,7 +85,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-    equipements: {
+    allEquipment: {
         type: Array,
         required: true
     }

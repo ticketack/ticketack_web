@@ -54,9 +54,9 @@
                                 <InputLabel for="image" :value="$page.props.translations.equipment.edit.image" />
                                 <div class="mt-2 space-y-2">
                                     <!-- Prévisualisation de l'image existante -->
-                                    <div v-if="props.equipement.image || imagePreview" class="relative w-64 h-64 border rounded-lg overflow-hidden">
+                                    <div v-if="props.equipment.image || imagePreview" class="relative w-64 h-64 border rounded-lg overflow-hidden">
                                         <img 
-                                            :src="imagePreview || props.equipement.image" 
+                                            :src="imagePreview || props.equipment.image" 
                                             class="w-full h-full object-cover"
                                             :alt="$page.props.translations.equipment.edit.image_previewge_preview"
                                         />
@@ -108,11 +108,11 @@ import { ref, defineComponent } from 'vue';
 const page = usePage();
 
 const props = defineProps({
-    equipement: {
+    equipment: {
         type: Object,
         required: true
     },
-    equipements: {
+    allEquipment: {
         type: Array,
         required: true
     }
@@ -122,12 +122,12 @@ const imagePreview = ref(null);
 const imageInput = ref(null);
 
 const form = useForm({
-    designation: props.equipement.designation,
-    marque: props.equipement.marque,
-    modele: props.equipement.modele,
+    designation: props.equipment.designation,
+    marque: props.equipment.marque,
+    modele: props.equipment.modele,
     image: null,
-    icone: props.equipement.icone,
-    parent_id: props.equipement.parent_id
+    icone: props.equipment.icone,
+    parent_id: props.equipment.parent_id
 });
 
 const handleImageInput = (e) => {
@@ -143,11 +143,11 @@ const handleImageInput = (e) => {
 };
 
 const deleteImage = () => {
-    if (props.equipement.image) {
+    if (props.equipment.image) {
         // Supprimer l'image existante via l'API
-        router.delete(route('equipment.delete-image', props.equipement.id), {
+        router.delete(route('equipment.delete-image', props.equipment.id), {
             onSuccess: () => {
-                props.equipement.image = null;
+                props.equipment.image = null;
                 imagePreview.value = null;
                 if (form.image) {
                     form.image = null;
