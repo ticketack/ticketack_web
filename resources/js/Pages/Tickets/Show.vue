@@ -253,8 +253,6 @@
                                         </div>
                                         <div v-else>Non assigné</div>
                                     </div>
-                                </div>ee?.name || 'Non assigné' }}
-                                    </div>
                                 </div>
                                 <div>
                                     <h4 class="text-sm font-medium text-gray-900 mb-4">Historique</h4>
