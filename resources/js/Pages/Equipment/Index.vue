@@ -1,18 +1,18 @@
 <template>
-    <Head :title="$page.props.translations.index.title" />
+    <Head :title="$page.props.translations.equipment.index.title" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    {{ $page.props.translations.index.title }}
+                    {{ $page.props.translations.equipment.index.title }}
                 </h2>
                 <Link
                     v-if="$page.props.permissions['equipment.create']"
                     :href="route('equipment.create')"
                     class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
                 >
-                    {{ $page.props.translations.index.new_equipment }}
+                    {{ $page.props.translations.equipment.index.new_equipment }}
                 </Link>
             </div>
         </template>
@@ -26,7 +26,7 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <div class="mb-4">
-                            <h3 class="text-lg font-medium">{{ $page.props.translations.index.list }}</h3>
+                            <h3 class="text-lg font-medium">{{ $page.props.translations.equipment.index.list }}</h3>
                         </div>
                         <div class="space-y-4">
                             <TreeNode 
@@ -65,7 +65,7 @@ const editEquipment = (id) => {
 };
 
 const deleteEquipment = (id) => {
-    if (confirm($page.props.translations.index.confirm_delete)) {
+    if (confirm($page.props.translations.equipment.index.confirm_delete)) {
         router.delete(route('equipment.destroy', id));
     }
 };

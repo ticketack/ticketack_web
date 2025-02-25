@@ -61,7 +61,7 @@ class EquipmentController extends Controller
     {
         $equipment = Equipment::all();
         return Inertia::render('Equipment/Create', [
-            'equipements' => $equipements,
+            'equipements' => $equipment,
             'translations' => [
                 'pages' => trans('pages'),
                 'equipment' => trans('equipment'),
@@ -111,7 +111,7 @@ class EquipmentController extends Controller
                 'passwords' => trans('passwords'),
                 'validation' => trans('validation'),
                 'permissions' => trans('permissions'),
-                'equipements' => trans('equipements')
+                'equipment' => trans('equipment')
             ]
         ]);
     }

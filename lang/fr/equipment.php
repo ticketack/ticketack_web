@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'equipment' => [
     'title' => 'Équipements',
     'index' => [
         'title' => 'Gestion des équipements',
@@ -34,6 +33,5 @@ return [
         'confirm_text' => 'Êtes-vous sûr de vouloir supprimer cet équipement ?',
         'cancel' => 'Annuler',
         'confirm' => 'Supprimer'
-    ]
     ]
 ];

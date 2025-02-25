@@ -80,7 +80,6 @@ class HandleInertiaRequests extends Middleware
             ],
             'translations' => array_merge([
                 // Debug des traductions
-                //'debug' => dd($this->loadTranslationFiles()),
                 // Traductions système
                 'menu' => trans('menu'),
                 'pagination' => trans('pagination'),

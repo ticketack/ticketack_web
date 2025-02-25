@@ -1,10 +1,10 @@
 <template>
-    <Head :title="$page.props.translations.create.title" />
+    <Head :title="$page.props.translations.equipment.create.title" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $page.props.translations.create.title }}
+                {{ $page.props.translations.equipment.create.title }}
             </h2>
         </template>
 
@@ -14,7 +14,7 @@
                     <div class="p-6 text-gray-900">
                         <form @submit.prevent="submit" class="space-y-6">
                             <div>
-                                <InputLabel for="designation" :value="$page.props.translations.create.designation" />
+                                <InputLabel for="designation" :value="$page.props.translations.equipment.create.designation" />
                                 <TextInput
                                     id="designation"
                                     type="text"
@@ -26,7 +26,7 @@
                             </div>
 
                             <div>
-                                <InputLabel for="marque" :value="$page.props.translations.create.brand" />
+                                <InputLabel for="marque" :value="$page.props.translations.equipment.create.brand" />
                                 <TextInput
                                     id="marque"
                                     type="text"
@@ -38,7 +38,7 @@
                             </div>
 
                             <div>
-                                <InputLabel for="modele" :value="$page.props.translations.create.model" />
+                                <InputLabel for="modele" :value="$page.props.translations.equipment.create.model" />
                                 <TextInput
                                     id="modele"
                                     type="text"
@@ -50,14 +50,14 @@
                             </div>
 
                             <div>
-                                <InputLabel for="parent_id" :value="$page.props.translations.create.parent_equipment" />
+                                <InputLabel for="parent_id" :value="$page.props.translations.equipment.create.parent_equipment" />
                                 <select
                                     id="parent_id"
                                     v-model="form.parent_id"
                                     class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                 >
-                                    <option :value="null">{{ $page.props.translations.create.no_parent }}</option>
-                                    <option v-for="item in equipment" :key="item.id" :value="item.id">
+                                    <option :value="null">{{ $page.props.translations.equipment.create.no_parent }}</option>
+                                    <option v-for="item in equipements" :key="item.id" :value="item.id">
                                         {{ item.designation }}
                                     </option>
                                 </select>
@@ -65,8 +65,8 @@
                             </div>
 
                             <div class="flex items-center gap-4">
-                                <PrimaryButton :disabled="form.processing">{{ $page.props.translations.create.create }}</PrimaryButton>
-                                <Link :href="route('equipment.index')" class="text-gray-600 hover:text-gray-900">{{ $page.props.translations.create.cancel }}</Link>
+                                <PrimaryButton :disabled="form.processing">{{ $page.props.translations.equipment.create.create }}</PrimaryButton>
+                                <Link :href="route('equipment.index')" class="text-gray-600 hover:text-gray-900">{{ $page.props.translations.equipment.create.cancel }}</Link>
                             </div>
                         </form>
                     </div>
@@ -85,7 +85,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-    equipment: {
+    equipements: {
         type: Array,
         required: true
     }

@@ -1,10 +1,10 @@
 <template>
-    <Head :title="$page.props.translations.edit.title" />
+    <Head :title="$page.props.translations.equipment.edit.title" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $page.props.translations.edit.title }}
+                {{ $page.props.translations.equipment.edit.title }}
             </h2>
         </template>
 
@@ -14,7 +14,7 @@
                     <div class="p-6 text-gray-900">
                         <form @submit.prevent="submit" class="space-y-6">
                             <div>
-                                <InputLabel for="designation" :value="page.props.translations.edit.designation" />
+                                <InputLabel for="designation" :value="page.props.translations.equipment.edit.designation" />
                                 <TextInput
                                     id="designation"
                                     type="text"
@@ -27,7 +27,7 @@
                             </div>
 
                             <div>
-                                <InputLabel for="marque" :value="$page.props.translations.edit.marque" />
+                                <InputLabel for="marque" :value="$page.props.translations.equipment.edit.marque" />
                                 <TextInput
                                     id="marque"
                                     type="text"
@@ -39,7 +39,7 @@
                             </div>
 
                             <div>
-                                <InputLabel for="modele" :value="$page.props.translations.edit.modele" />
+                                <InputLabel for="modele" :value="$page.props.translations.equipment.edit.modele" />
                                 <TextInput
                                     id="modele"
                                     type="text"
@@ -51,14 +51,14 @@
                             </div>
 
                             <div>
-                                <InputLabel for="image" :value="$page.props.translations.edit.image" />
+                                <InputLabel for="image" :value="$page.props.translations.equipment.edit.image" />
                                 <div class="mt-2 space-y-2">
                                     <!-- Prévisualisation de l'image existante -->
-                                    <div v-if="props.equipment.image || imagePreview" class="relative w-64 h-64 border rounded-lg overflow-hidden">
+                                    <div v-if="props.equipement.image || imagePreview" class="relative w-64 h-64 border rounded-lg overflow-hidden">
                                         <img 
-                                            :src="imagePreview || props.equipment.image" 
+                                            :src="imagePreview || props.equipement.image" 
                                             class="w-full h-full object-cover"
-                                            :alt="$page.props.translations.edit.image_preview"
+                                            :alt="$page.props.translations.equipment.edit.image_previewge_preview"
                                         />
                                         <button 
                                             @click.prevent="deleteImage"
@@ -85,8 +85,8 @@
                             </div>
 
                             <div class="flex items-center gap-4">
-                                <PrimaryButton :disabled="form.processing">{{ $page.props.translations.edit.save }}</PrimaryButton>
-                                <Link :href="route('equipment.index')" class="text-gray-600 hover:text-gray-900">{{ $page.props.translations.edit.cancel }}</Link>
+                                <PrimaryButton :disabled="form.processing">{{ $page.props.translations.equipment.edit.save }}</PrimaryButton>
+                                <Link :href="route('equipment.index')" class="text-gray-600 hover:text-gray-900">{{ $page.props.translations.equipment.edit.cancel }}</Link>
                             </div>
                         </form>
                     </div>
@@ -107,15 +107,12 @@ import { ref, defineComponent } from 'vue';
 
 const page = usePage();
 
-// Debug des traductions
-console.log('Equipment translations:', page.props.translations.equipment);
-
 const props = defineProps({
-    equipment: {
+    equipement: {
         type: Object,
         required: true
     },
-    allEquipment: {
+    equipements: {
         type: Array,
         required: true
     }
@@ -125,12 +122,12 @@ const imagePreview = ref(null);
 const imageInput = ref(null);
 
 const form = useForm({
-    designation: props.equipment.designation,
-    marque: props.equipment.marque,
-    modele: props.equipment.modele,
+    designation: props.equipement.designation,
+    marque: props.equipement.marque,
+    modele: props.equipement.modele,
     image: null,
-    icone: props.equipment.icone,
-    parent_id: props.equipment.parent_id
+    icone: props.equipement.icone,
+    parent_id: props.equipement.parent_id
 });
 
 const handleImageInput = (e) => {
@@ -146,11 +143,11 @@ const handleImageInput = (e) => {
 };
 
 const deleteImage = () => {
-    if (props.equipment.image) {
+    if (props.equipement.image) {
         // Supprimer l'image existante via l'API
-        router.delete(route('equipment.delete-image', props.equipment.id), {
+        router.delete(route('equipment.delete-image', props.equipement.id), {
             onSuccess: () => {
-                props.equipment.image = null;
+                props.equipement.image = null;
                 imagePreview.value = null;
                 if (form.image) {
                     form.image = null;
