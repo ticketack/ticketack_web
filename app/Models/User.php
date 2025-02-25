@@ -49,18 +49,19 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the tickets created by the user.
+     * Les tickets créés par l'utilisateur
      */
     public function tickets()
     {
-        return $this->hasMany(Ticket::class, 'created_by');
+        return $this->hasMany(Ticket::class, 'created_by', 'id');
     }
 
     /**
-     * Get the tickets assigned to the user.
+     * Les tickets assignés à l'utilisateur
      */
     public function assignedTickets()
     {
-        return $this->hasMany(Ticket::class, 'assigned_to');
+        return $this->belongsToMany(Ticket::class, 'ticket_assignees')
+                    ->withTimestamps();
     }
 }

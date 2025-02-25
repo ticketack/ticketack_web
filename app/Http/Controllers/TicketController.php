@@ -200,7 +200,6 @@ class TicketController extends Controller
         }
 
         // L'assignation est maintenant gérée par les méthodes assign et unassign
-        }
 
         return back()->with('success', 'Ticket mis à jour avec succès.');
     }

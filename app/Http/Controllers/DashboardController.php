@@ -16,7 +16,9 @@ class DashboardController extends Controller
     {
         // Statistiques des utilisateurs
         $userCount = User::count();
-        $usersWithMostAssignedTickets = User::withCount('assignedTickets as assigned_tickets_count')
+        $usersWithMostAssignedTickets = User::withCount(['assignedTickets as assigned_tickets_count' => function($query) {
+                $query->distinct();
+            }])
             ->orderByDesc('assigned_tickets_count')
             ->take(3)
             ->get()
