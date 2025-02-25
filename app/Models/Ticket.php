@@ -22,8 +22,9 @@ class Ticket extends Model
         'is_public',
         'equipment_id',
         'created_by',
-        'assigned_to',
         'due_date',
+        'planned_start',
+        'planned_end',
     ];
 
     protected $casts = [
@@ -31,6 +32,8 @@ class Ticket extends Model
         'resolved_at' => 'datetime',
         'closed_at' => 'datetime',
         'is_public' => 'boolean',
+        'planned_start' => 'datetime',
+        'planned_end' => 'datetime',
     ];
 
     public function category(): BelongsTo
@@ -48,9 +51,11 @@ class Ticket extends Model
         return $this->belongsTo(Equipment::class);
     }
 
-    public function assignee(): BelongsTo
+    public function assignees(): BelongsToMany
     {
-        return $this->belongsTo(User::class, 'assigned_to');
+        return $this->belongsToMany(User::class, 'ticket_assignees')
+                    ->withPivot('role')
+                    ->withTimestamps();
     }
 
     public function creator(): BelongsTo

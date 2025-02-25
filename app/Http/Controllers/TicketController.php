@@ -29,7 +29,7 @@ class TicketController extends Controller
     {
         $user = Auth::user();
         $query = Ticket::query()
-            ->with(['category', 'status', 'creator', 'assignee', 'equipment']);
+            ->with(['category', 'status', 'creator', 'assignees', 'equipment']);
 
         // Si l'utilisateur est un "tiers", ne montrer que ses tickets
         if ($user->hasRole('tiers')) {
@@ -199,55 +199,66 @@ class TicketController extends Controller
             }
         }
 
-        // Gestion de l'assignation
-        if (isset($validated['assigned_to'])) {
-            $this->authorize('assign', $ticket);
-            try {
-                \Log::info('Début assignation:', [
-                    'ticket_id' => $ticket->id,
-                    'assigned_to' => $validated['assigned_to'],
-                    'current_assigned_to' => $ticket->assigned_to
-                ]);
-
-                $oldAssignee = $ticket->assignee;
-                $newAssignee = User::findOrFail($validated['assigned_to']);
-
-                if (!$oldAssignee || $oldAssignee->id !== $newAssignee->id) {
-                    \DB::enableQueryLog();
-                    
-                    $ticket->assigned_to = $newAssignee->id;
-                    $result = $ticket->save();
-
-                    \Log::info('Queries exécutées:', [
-                        'queries' => \DB::getQueryLog()
-                    ]);
-
-                    \Log::info('Résultat update:', [
-                        'result' => $result,
-                        'ticket_after_save' => $ticket->toArray(),
-                        'assigned_to_after' => $ticket->fresh()->assigned_to
-                    ]);
-
-                    // Vérifions que la mise à jour a bien été faite
-                    $ticket->refresh();
-                    \Log::info('Après refresh:', [
-                        'assigned_to' => $ticket->assigned_to,
-                        'assignee' => $ticket->assignee ? $ticket->assignee->toArray() : null,
-                        'ticket_full' => $ticket->toArray()
-                    ]);
-
-                    $oldAssigneeName = $oldAssignee ? $oldAssignee->name : 'personne';
-                    $ticket->addLog('assigned', "Ticket réassigné de {$oldAssigneeName} à {$newAssignee->name}");
-                }
-            } catch (\Exception $e) {
-                \Log::error('Erreur lors de l\'assignation:', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
-                ]);
-                throw $e;
-            }
+        // L'assignation est maintenant gérée par les méthodes assign et unassign
         }
 
         return back()->with('success', 'Ticket mis à jour avec succès.');
+    }
+
+    /**
+     * Assigner un utilisateur à un ticket
+     */
+    public function assign(Request $request, Ticket $ticket)
+    {
+        $this->authorize('assign', $ticket);
+
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        try {
+            $user = User::findOrFail($validated['user_id']);
+            
+            // Vérifier si l'utilisateur n'est pas déjà assigné
+            if (!$ticket->assignees->contains($user->id)) {
+                $ticket->assignees()->attach($user->id);
+                $ticket->addLog('assigned', "Ticket assigné à {$user->name}");
+                return response()->json(['message' => 'Utilisateur assigné avec succès']);
+            }
+
+            return response()->json(['message' => 'L\'utilisateur est déjà assigné à ce ticket']);
+
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de l\'assignation:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['message' => 'Erreur lors de l\'assignation'], 500);
+        }
+    }
+
+    /**
+     * Retirer l'assignation d'un utilisateur d'un ticket
+     */
+    public function unassign(Ticket $ticket, User $user)
+    {
+        $this->authorize('assign', $ticket);
+
+        try {
+            if ($ticket->assignees->contains($user->id)) {
+                $ticket->assignees()->detach($user->id);
+                $ticket->addLog('unassigned', "Assignation de {$user->name} retirée");
+                return response()->json(['message' => 'Assignation retirée avec succès']);
+            }
+
+            return response()->json(['message' => 'L\'utilisateur n\'était pas assigné à ce ticket']);
+
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors du retrait de l\'assignation:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['message' => 'Erreur lors du retrait de l\'assignation'], 500);
+        }
     }
 }

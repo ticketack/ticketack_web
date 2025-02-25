@@ -29,7 +29,7 @@
                                 <!-- En-tête du ticket -->
                                 <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
                                     <div class="space-y-4">
-                                        <h3 class="text-lg font-medium">{{ ticket?.title }}</h3>
+                                        <h3 class="text-lg font-medium max-w-[830px]">{{ ticket?.title }}</h3>
                                         <div class="flex flex-wrap gap-2">
                                             <TicketStatus :status="ticket?.status" />
                                             <TicketPriority :priority="ticket?.priority" />
@@ -42,7 +42,12 @@
                                     
                                     <div class="space-y-2 text-sm text-gray-500">
                                         <p>Créé par : {{ ticket?.creator?.name }}</p>
-                                        <p>Assigné à : {{ ticket?.assignee?.name || 'Non assigné' }}</p>
+                                        <p>Assignés : 
+                                            <span v-if="ticket?.assignees?.length">
+                                                {{ ticket.assignees.map(a => a.name).join(', ') }}
+                                            </span>
+                                            <span v-else>Non assigné</span>
+                                        </p>
                                         <p>Créé le : {{ formatDate(ticket?.created_at) }}</p>
                                         <p v-if="ticket?.due_date">Échéance : {{ formatDate(ticket.due_date) }}</p>
                                     </div>
@@ -221,21 +226,34 @@
                                 </div>
 
                                 <div v-if="$page.props.permissions['tickets.assign']">
-                                    <label for="assignee" class="block text-sm font-medium text-gray-700 mb-2">Assigné à</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Assignés</label>
                                     <div class="space-y-2">
+                                        <div v-for="assignee in ticket?.assignees" :key="assignee.id" class="flex items-center justify-between bg-gray-50 p-2 rounded">
+                                            <span>{{ assignee.name }}</span>
+                                            <button @click="removeAssignee(assignee.id)" class="text-red-600 hover:text-red-800">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                         <Autocomplete
                                             v-model="selectedAssigneeId"
                                             :search-url="route('users.search')"
-                                            placeholder="Rechercher un utilisateur..."
-                                            class="w-full"
-                                            @update:model-value="updateAssignee"
+                                            placeholder="Ajouter un assigné..."
+                                            class="w-full mt-2"
+                                            @update:model-value="addAssignee"
                                         />
                                     </div>
                                 </div>
                                 <div v-else>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Assigné à</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Assignés</label>
                                     <div class="text-sm text-gray-500">
-                                        {{ ticket?.assignee?.name || 'Non assigné' }}
+                                        <div v-if="ticket?.assignees?.length">
+                                            {{ ticket.assignees.map(a => a.name).join(', ') }}
+                                        </div>
+                                        <div v-else>Non assigné</div>
+                                    </div>
+                                </div>ee?.name || 'Non assigné' }}
                                     </div>
                                 </div>
                                 <div>
@@ -331,24 +349,36 @@ const updateStatus = () => {
     });
 };
 
-const selectedAssigneeId = ref(props.ticket?.assigned_to);
+const selectedAssigneeId = ref(null);
 
-const updateAssignee = (newValue) => {
-    // newValue est directement l'ID de l'utilisateur sélectionné
-    if (newValue !== props.ticket?.assigned_to) {
-        router.put(route('tickets.update', props.ticket.id), {
-            assigned_to: newValue
+const addAssignee = (newValue) => {
+    if (newValue && !ticket.value?.assignees?.some(a => a.id === newValue)) {
+        router.post(route('tickets.assign', props.ticket.id), {
+            user_id: newValue
         }, {
             preserveScroll: true,
             onSuccess: () => {
-                toast.success('Assignation mise à jour avec succès');
+                toast.success('Assignation ajoutée avec succès');
+                selectedAssigneeId.value = null;
             },
             onError: () => {
-                toast.error('Erreur lors de la mise à jour de l\'assignation');
-                selectedAssigneeId.value = props.ticket?.assigned_to;
+                toast.error('Erreur lors de l\'ajout de l\'assignation');
+                selectedAssigneeId.value = null;
             }
         });
     }
+};
+
+const removeAssignee = (userId) => {
+    router.delete(route('tickets.unassign', [props.ticket.id, userId]), {
+        preserveScroll: true,
+        onSuccess: () => {
+            toast.success('Assignation supprimée avec succès');
+        },
+        onError: () => {
+            toast.error('Erreur lors de la suppression de l\'assignation');
+        }
+    });
 };
 
 // Gestion des commentaires

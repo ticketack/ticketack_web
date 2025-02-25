@@ -13,4 +13,5 @@ return [
     'settings' => 'Paramètres',
     'logout' => 'Déconnexion',
     'profile' => 'Profil',
+    'planning' => 'Planning',
 ];

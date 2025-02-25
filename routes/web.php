@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\TicketDocumentController;
 use App\Http\Controllers\TicketPdfController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\PlanningController;
 use Illuminate\Foundation\Application;
 use Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -35,6 +36,13 @@ Route::middleware(['auth'])->group(function () {
             ->name('schedules.update');
         Route::delete('/schedules/{schedule}', [\App\Http\Controllers\SolverDashboardController::class, 'deleteSchedule'])
             ->name('schedules.destroy');
+    });
+
+    // Routes des tickets
+    // Route du planning
+    Route::middleware([\App\Http\Middleware\CheckPermission::class . ':planning.view'])->group(function () {
+        Route::get('/planning', [PlanningController::class, 'index'])
+            ->name('planning.index');
     });
 
     // Routes des tickets
@@ -74,6 +82,12 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.edit'])->group(function () {
         Route::put('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'update'])
             ->name('tickets.update');
+
+        // Routes pour l'assignation multiple
+        Route::post('/tickets/{ticket}/assign', [\App\Http\Controllers\TicketController::class, 'assign'])
+            ->name('tickets.assign');
+        Route::delete('/tickets/{ticket}/assign/{user}', [\App\Http\Controllers\TicketController::class, 'unassign'])
+            ->name('tickets.unassign');
 
         // Routes pour les documents
         Route::post('/tickets/{ticket}/documents', [TicketDocumentController::class, 'store'])
