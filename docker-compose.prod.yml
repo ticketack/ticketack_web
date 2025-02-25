@@ -52,12 +52,24 @@ services:
       - "443:443"
     volumes:
       - ./:/var/www/html
+      - ./docker-compose/nginx/prod.conf:/etc/nginx/conf.d/default.conf
+      - ./docker-compose/nginx/ssl:/etc/nginx/ssl
+      - ./docker-compose/nginx/certbot:/var/www/certbot
+      - "443:443"
+    volumes:
+      - ./:/var/www/html
       - ./storage:/var/www/html/storage
       - ./docker-compose/nginx/prod.conf:/etc/nginx/conf.d/default.conf
       - ./docker-compose/nginx/ssl:/etc/nginx/ssl
       - ./docker-compose/nginx/certbot:/etc/nginx/certbot
     depends_on:
       - app
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./docker-compose/nginx/certbot:/var/www/certbot
+      - ./docker-compose/nginx/ssl:/etc/letsencrypt
 
 volumes:
   mysql_data:
