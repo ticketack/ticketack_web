@@ -35,7 +35,12 @@ return new class extends Migration
                 ]);
             });
 
-        // Supprimer l'ancienne colonne
+        // Supprimer d'abord la contrainte de clé étrangère
+        Schema::table('tickets', function (Blueprint $table) {
+            $table->dropForeign(['assigned_to']);
+        });
+
+        // Puis supprimer la colonne
         Schema::table('tickets', function (Blueprint $table) {
             $table->dropColumn('assigned_to');
         });
@@ -46,8 +51,13 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Recréer la colonne et la contrainte
         Schema::table('tickets', function (Blueprint $table) {
-            $table->foreignId('assigned_to')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('assigned_to')->nullable();
+        });
+
+        Schema::table('tickets', function (Blueprint $table) {
+            $table->foreign('assigned_to')->references('id')->on('users')->nullOnDelete();
         });
 
         // Restaurer la première assignation pour chaque ticket
