@@ -27,18 +27,41 @@ class UserController extends Controller
             ]);
         }
 
-        $search = $request->input('query');
-        
-        $results = User::where('name', 'like', "%{$search}%")
-            ->orWhere('email', 'like', "%{$search}%")
-            ->limit(10)
-            ->get(['id', 'name', 'email'])
-            ->map(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'text' => $user->name
-                ];
-            });
+        try {
+            $search = $request->input('q');
+            
+            // Vérifier si l'utilisateur a la permission de gérer les tickets
+            if (!auth()->user()->can('tickets.assign')) {
+                throw new \Illuminate\Auth\Access\AuthorizationException('Non autorisé à assigner des tickets');
+            }
+
+            // Récupérer les utilisateurs qui peuvent gérer les tickets
+            $results = User::role(['admin', 'solver'])
+                ->where(function($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                          ->orWhere('email', 'like', "%{$search}%");
+                })
+                ->limit(10)
+                ->get(['id', 'name', 'email'])
+                ->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'text' => $user->name
+                    ];
+                });
+
+            \Log::info('Recherche d\'utilisateurs', [
+                'search' => $search,
+                'results_count' => $results->count(),
+                'user' => auth()->user()->name
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la recherche d\'utilisateurs', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
 
         return response()->json(['results' => $results]);
     }

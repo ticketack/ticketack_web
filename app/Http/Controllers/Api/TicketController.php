@@ -17,7 +17,7 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Ticket::with(['status', 'equipement', 'creator', 'assignee']);
+        $query = Ticket::with(['status', 'equipement', 'creator', 'assignees']);
 
         // Filtrage par statut
         if ($request->has('status')) {

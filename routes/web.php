@@ -68,9 +68,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/tickets/{ticket}/documents/{document}/download', [TicketDocumentController::class, 'download'])
             ->name('tickets.documents.download');
             
-        // Route de recherche d'utilisateurs pour l'assignation
+    });
+
+    // Route de recherche d'utilisateurs pour l'assignation
+    Route::middleware(['auth', \App\Http\Middleware\CheckPermission::class . ':tickets.assign'])->group(function () {
         Route::get('/users/search', [UserController::class, 'search'])
             ->name('users.search');
+    
     });
 
     // Route PDF (accessible aux admins et ceux ayant la permission)

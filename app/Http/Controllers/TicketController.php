@@ -149,7 +149,7 @@ class TicketController extends Controller
 
         $this->authorize('view', $ticket);
 
-        $ticket->load(['category', 'status', 'creator', 'assignee', 'equipment', 'logs.user', 'documents', 'comments.user']);
+        $ticket->load(['category', 'status', 'creator', 'assignees', 'equipment', 'logs.user', 'documents', 'comments.user']);
 
         return Inertia::render('Tickets/Show', [
             'ticket' => $ticket,
@@ -164,7 +164,7 @@ class TicketController extends Controller
         \Log::info('Mise à jour du ticket - données reçues:', [
             'request_all' => $request->all(),
             'ticket_before' => $ticket->toArray(),
-            'ticket_assignee_before' => $ticket->assignee ? $ticket->assignee->toArray() : null
+            'ticket_assignees_before' => $ticket->assignees->toArray()
         ]);
 
         $validated = $request->validate([
@@ -222,17 +222,17 @@ class TicketController extends Controller
             if (!$ticket->assignees->contains($user->id)) {
                 $ticket->assignees()->attach($user->id);
                 $ticket->addLog('assigned', "Ticket assigné à {$user->name}");
-                return response()->json(['message' => 'Utilisateur assigné avec succès']);
+                return back()->with('success', 'Utilisateur assigné avec succès');
             }
 
-            return response()->json(['message' => 'L\'utilisateur est déjà assigné à ce ticket']);
+            return back()->with('error', 'L\'utilisateur est déjà assigné à ce ticket');
 
         } catch (\Exception $e) {
             \Log::error('Erreur lors de l\'assignation:', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            return response()->json(['message' => 'Erreur lors de l\'assignation'], 500);
+            return back()->with('error', 'Erreur lors de l\'assignation');
         }
     }
 
@@ -247,17 +247,17 @@ class TicketController extends Controller
             if ($ticket->assignees->contains($user->id)) {
                 $ticket->assignees()->detach($user->id);
                 $ticket->addLog('unassigned', "Assignation de {$user->name} retirée");
-                return response()->json(['message' => 'Assignation retirée avec succès']);
+                return back()->with('success', 'Assignation retirée avec succès');
             }
 
-            return response()->json(['message' => 'L\'utilisateur n\'était pas assigné à ce ticket']);
+            return back()->with('error', 'L\'utilisateur n\'était pas assigné à ce ticket');
 
         } catch (\Exception $e) {
             \Log::error('Erreur lors du retrait de l\'assignation:', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            return response()->json(['message' => 'Erreur lors du retrait de l\'assignation'], 500);
+            return back()->with('error', 'Erreur lors du retrait de l\'assignation');
         }
     }
 }

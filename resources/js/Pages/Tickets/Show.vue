@@ -236,12 +236,12 @@
                                                 </svg>
                                             </button>
                                         </div>
-                                        <Autocomplete
-                                            v-model="selectedAssigneeId"
+                                        <MultipleAutocomplete
+                                            v-model="selectedAssigneeIds"
                                             :search-url="route('users.search')"
-                                            placeholder="Ajouter un assigné..."
+                                            placeholder="Ajouter des assignés..."
                                             class="w-full mt-2"
-                                            @update:model-value="addAssignee"
+                                            @update:model-value="updateAssignees"
                                         />
                                     </div>
                                 </div>
@@ -269,6 +269,7 @@
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import MultipleAutocomplete from '@/Components/MultipleAutocomplete.vue';
 import { Link, useForm, router, usePage } from '@inertiajs/vue3';
 import Autocomplete from '@/Components/Autocomplete.vue';
 import { reactive, defineProps, ref } from 'vue';
@@ -347,24 +348,44 @@ const updateStatus = () => {
     });
 };
 
-const selectedAssigneeId = ref(null);
+const selectedAssigneeIds = ref([]);
 
-const addAssignee = (newValue) => {
-    if (newValue && !ticket.value?.assignees?.some(a => a.id === newValue)) {
+const updateAssignees = (newValues) => {
+    const currentAssigneeIds = ticket.value?.assignees?.map(a => a.id) || [];
+    
+    // Trouver les IDs à ajouter (présents dans newValues mais pas dans currentAssigneeIds)
+    const idsToAdd = newValues.filter(id => !currentAssigneeIds.includes(id));
+    
+    // Trouver les IDs à supprimer (présents dans currentAssigneeIds mais pas dans newValues)
+    const idsToRemove = currentAssigneeIds.filter(id => !newValues.includes(id));
+    
+    // Ajouter les nouvelles assignations
+    idsToAdd.forEach(userId => {
         router.post(route('tickets.assign', props.ticket.id), {
-            user_id: newValue
+            user_id: userId
         }, {
             preserveScroll: true,
             onSuccess: () => {
                 toast.success('Assignation ajoutée avec succès');
-                selectedAssigneeId.value = null;
             },
             onError: () => {
                 toast.error('Erreur lors de l\'ajout de l\'assignation');
-                selectedAssigneeId.value = null;
             }
         });
-    }
+    });
+    
+    // Supprimer les assignations retirées
+    idsToRemove.forEach(userId => {
+        router.delete(route('tickets.unassign', [props.ticket.id, userId]), {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Assignation retirée avec succès');
+            },
+            onError: () => {
+                toast.error('Erreur lors du retrait de l\'assignation');
+            }
+        });
+    });
 };
 
 const removeAssignee = (userId) => {

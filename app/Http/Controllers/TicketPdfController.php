@@ -31,7 +31,7 @@ class TicketPdfController extends Controller
             Log::info('Début des données base64: ' . substr($qrCodeBase64, 0, 50));
             
             $pdf = PDF::loadView('pdf.ticket', [
-                'ticket' => $ticket->load(['creator', 'assignee', 'status', 'category', 'comments.user', 'documents', 'logs.user']),
+                'ticket' => $ticket->load(['creator', 'assignees', 'status', 'category', 'comments.user', 'documents', 'logs.user']),
                 'qrCodeBase64' => $qrCodeBase64
             ]);
         } catch (\Exception $e) {
@@ -40,7 +40,7 @@ class TicketPdfController extends Controller
             
             // Générer le PDF sans QR code en cas d'erreur
             $pdf = PDF::loadView('pdf.ticket', [
-                'ticket' => $ticket->load(['creator', 'assignee', 'status', 'category', 'comments.user', 'documents', 'logs.user']),
+                'ticket' => $ticket->load(['creator', 'assignees', 'status', 'category', 'comments.user', 'documents', 'logs.user']),
                 'qrCodeBase64' => null
             ]);
         }

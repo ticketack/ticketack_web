@@ -197,7 +197,7 @@
         <div class="info-row">
             <div class="info-cell">
                 <span class="label">Créé par:</span> {{ $ticket->creator->name }}<br>
-                <span class="label">Assigné à:</span> {{ $ticket->assignee ? $ticket->assignee->name : 'Non assigné' }}
+                <span class="label">Assigné à:</span> {{ $ticket->assignees->isNotEmpty() ? $ticket->assignees->pluck('name')->join(', ') : 'Non assigné' }}
             </div>
             <div class="info-cell">
                 <span class="label">Date de création:</span> {{ $ticket->created_at->format('d/m/Y H:i') }}<br>
