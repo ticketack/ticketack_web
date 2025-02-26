@@ -30,13 +30,13 @@ class UserController extends Controller
         try {
             $search = $request->input('q');
             
-            // Vérifier si l'utilisateur a la permission de gérer les tickets
+            // Vérifier si l'utilisateur a la permission d'assigner des tickets
             if (!auth()->user()->can('tickets.assign')) {
                 throw new \Illuminate\Auth\Access\AuthorizationException('Non autorisé à assigner des tickets');
             }
 
-            // Récupérer les utilisateurs qui peuvent gérer les tickets
-            $results = User::role(['admin', 'solver'])
+            // Récupérer les utilisateurs qui peuvent planifier les tickets
+            $results = User::permission('tickets.schedule')
                 ->where(function($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
                           ->orWhere('email', 'like', "%{$search}%");
@@ -46,7 +46,7 @@ class UserController extends Controller
                 ->map(function ($user) {
                     return [
                         'id' => $user->id,
-                        'text' => $user->name
+                        'name' => $user->name
                     ];
                 });
 

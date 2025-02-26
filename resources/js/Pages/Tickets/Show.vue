@@ -3,7 +3,7 @@
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Ticket #{{ ticket?.id }} - {{ ticket?.title }}
+                    Ticket #{{ props.ticket?.id }} - {{ props.ticket?.title }}
                 </h2>
                 <div class="flex items-center gap-4">
                     <Link :href="route('tickets.index')" class="text-gray-600 hover:text-gray-900">
@@ -29,13 +29,13 @@
                                 <!-- En-tête du ticket -->
                                 <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
                                     <div class="space-y-4">
-                                        <h3 class="text-lg font-medium max-w-[830px]">{{ ticket?.title }}</h3>
+                                        <h3 class="text-lg font-medium max-w-[830px]">{{ props.ticket?.title }}</h3>
                                         <div class="flex flex-wrap gap-2">
-                                            <TicketStatus :status="ticket?.status" />
-                                            <TicketPriority :priority="ticket?.priority" />
-                                            <span v-if="ticket?.category" class="px-2 py-1 text-xs font-medium rounded-full"
-                                                :style="{ backgroundColor: ticket.category.color + '20', color: ticket.category.color }">
-                                                {{ ticket.category.name }}
+                                            <TicketStatus :status="props.ticket?.status" />
+                                            <TicketPriority :priority="props.ticket?.priority" />
+                                            <span v-if="props.ticket?.category" class="px-2 py-1 text-xs font-medium rounded-full"
+                                                :style="{ backgroundColor: props.ticket.category.color + '20', color: props.ticket.category.color }">
+                                                {{ props.ticket.category.name }}
                                             </span>
                                         </div>
                                     </div>
@@ -89,8 +89,8 @@
                                 <h4 class="text-sm font-medium text-gray-900 mb-4">{{ $page.props.translations.tickets.comments.title }}</h4>
                             
                             <!-- Liste des commentaires -->
-                            <div v-if="ticket?.comments" class="space-y-4 mb-6 divide-y divide-gray-100">
-                                <div v-for="comment in ticket?.comments" :key="comment?.id" 
+                            <div v-if="props.ticket?.comments" class="space-y-4 mb-6 divide-y divide-gray-100">
+                                <div v-for="comment in props.ticket?.comments" :key="comment?.id" 
                                      class="border border-gray-200 p-4 rounded-lg hover:border-gray-300 transition-colors first:mt-0 mt-4">
                                     <div class="flex items-start justify-between">
                                         <div class="flex items-start space-x-3">
@@ -227,8 +227,14 @@
 
                                 <div v-if="$page.props.permissions['tickets.assign']">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Assignés</label>
-                                    <div class="space-y-2">
-                                        <div v-for="assignee in ticket?.assignees" :key="assignee.id" class="flex items-center justify-between bg-gray-50 p-2 rounded">
+                                    <div class="space-y-4">
+                                        <MultipleAutocomplete
+                                            v-model="selectedAssigneeIds"
+                                            :search-url="route('users.search')"
+                                            placeholder="Rechercher des utilisateurs..."
+                                            @update:modelValue="updateAssignees"
+                                        />
+                                        <div v-for="assignee in props.ticket?.assignees" :key="assignee.id" class="flex items-center justify-between bg-gray-50 p-2 rounded">
                                             <span>{{ assignee.name }}</span>
                                             <button @click="removeAssignee(assignee.id)" class="text-red-600 hover:text-red-800">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -348,10 +354,10 @@ const updateStatus = () => {
     });
 };
 
-const selectedAssigneeIds = ref([]);
+const selectedAssigneeIds = ref(props.ticket?.assignees?.map(a => a.id) || []);
 
 const updateAssignees = (newValues) => {
-    const currentAssigneeIds = ticket.value?.assignees?.map(a => a.id) || [];
+    const currentAssigneeIds = props.ticket?.assignees?.map(a => a.id) || [];
     
     // Trouver les IDs à ajouter (présents dans newValues mais pas dans currentAssigneeIds)
     const idsToAdd = newValues.filter(id => !currentAssigneeIds.includes(id));
