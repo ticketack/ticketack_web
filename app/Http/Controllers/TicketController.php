@@ -56,7 +56,9 @@ class TicketController extends Controller
         }
 
         if ($request->filled('assigned_to')) {
-            $query->where('assigned_to', $request->assigned_to);
+            $query->whereHas('assignees', function ($query) use ($request) {
+                $query->where('user_id', $request->assigned_to);
+            });
         }
 
         if ($request->filled('date_from')) {
@@ -142,7 +144,7 @@ class TicketController extends Controller
             // Si le ticket est privé, vérifier si l'utilisateur est autorisé
             if (!$user->hasRole('admin') && 
                 $ticket->created_by !== $user->id && 
-                $ticket->assigned_to !== $user->id) {
+                !$ticket->assignees()->where('user_id', $user->id)->exists()) {
                 abort(403, 'Vous n\'avez pas accès à ce ticket.');
             }
         }
@@ -169,7 +171,7 @@ class TicketController extends Controller
 
         $validated = $request->validate([
             'status_id' => 'sometimes|required|exists:ticket_statuses,id',
-            'assigned_to' => 'sometimes|required|exists:users,id'
+            'assigned_to' => 'sometimes|required|exists:users,id'  // Pour la compatibilité avec le frontend
         ]);
 
         \Log::info('Données validées:', [

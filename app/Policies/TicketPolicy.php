@@ -18,10 +18,10 @@ class TicketPolicy
                 return true;
             }
 
-            // Si le ticket est privé, seuls l'admin, le créateur et l'assigné peuvent le voir
+            // Si le ticket est privé, seuls l'admin, le créateur et les assignés peuvent le voir
             return $user->hasRole('admin') || 
                    $user->id === $ticket->created_by || 
-                   $user->id === $ticket->assigned_to;
+                   $ticket->assignees()->where('user_id', $user->id)->exists();
         }
         return false;
     }
@@ -36,7 +36,7 @@ class TicketPolicy
         if ($user->hasPermissionTo('tickets.edit')) {
             return $user->hasRole('admin') || 
                    $user->id === $ticket->created_by || 
-                   $user->id === $ticket->assigned_to;
+                   $ticket->assignees()->where('user_id', $user->id)->exists();
         }
         return false;
     }

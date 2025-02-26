@@ -25,7 +25,9 @@ class SolverDashboardController extends Controller
         
         // Récupérer les tickets assignés au solver
         $assignedTickets = Ticket::with(['category', 'status'])
-            ->where('assigned_to', $user->id)
+            ->whereHas('assignees', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
