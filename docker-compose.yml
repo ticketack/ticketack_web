@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build:
@@ -11,10 +9,12 @@ services:
       - laravel
 
   db:
+    image: mysql:8.0
     networks:
       - laravel
 
   nginx:
+    image: nginx:1.25-alpine
     depends_on:
       - app
     networks:

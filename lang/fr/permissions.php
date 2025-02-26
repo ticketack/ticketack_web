@@ -6,7 +6,8 @@ return [
         'roles' => 'Gestion des rôles',
         'users' => 'Gestion des utilisateurs',
         'settings' => 'Paramètres du système',
-        'tickets' => 'Gestion des tickets'
+        'tickets' => 'Gestion des tickets',
+        'planning' => 'Gestion du planning'
     ],
     'equipment.view' => 'Consulter les équipements',
     'equipment.create' => 'Créer des équipements',
@@ -26,5 +27,10 @@ return [
     'tickets.view' => 'Consulter les tickets',
     'tickets.create' => 'Créer des tickets',
     'tickets.edit' => 'Modifier les tickets',
-    'tickets.delete' => 'Supprimer les tickets'
+    'tickets.delete' => 'Supprimer les tickets',
+    'update_ticket_status' => 'Mettre à jour le statut des tickets',
+    'tickets.schedule' => 'Planifier les tickets',
+    'tickets.assign' => 'Assigner les tickets',
+    'solver_dashboard.view' => 'Accéder au tableau de bord des techniciens',
+    'planning.view' => 'Consulter le planning'
 ];

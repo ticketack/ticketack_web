@@ -57,14 +57,9 @@
                                     <td class="px-6 py-4">
                                         <div class="flex flex-wrap gap-2">
                                             <span 
-                                                v-for="permission in role.permissions" 
+                                                v-for="permission in role.permissions.filter(p => p.granted)" 
                                                 :key="permission.id"
-                                                :class="[
-                                                    'px-2 py-1 text-xs rounded-full',
-                                                    permission.pivot.granted 
-                                                        ? 'bg-green-100 text-green-800' 
-                                                        : 'bg-red-100 text-red-800'
-                                                ]"
+                                                class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800"
                                             >
                                                 {{ permission.name }}
                                             </span>

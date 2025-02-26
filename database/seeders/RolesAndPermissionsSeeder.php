@@ -39,6 +39,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'tickets.schedule',
             'tickets.assign',
             'solver_dashboard.view',
+            'planning.view',
         ];
 
         foreach ($permissions as $permission) {
@@ -50,6 +51,9 @@ class RolesAndPermissionsSeeder extends Seeder
         $tiers = Role::findOrCreate('tiers');
         $solver = Role::findOrCreate('solver');
 
+        // Supprimer toutes les permissions existantes
+        $admin->revokePermissionTo(Permission::all());
+        
         // Attribuer toutes les permissions au rôle admin
         $admin->givePermissionTo(Permission::all());
 

@@ -40,7 +40,7 @@
                             <div>
                                 <h3 class="text-lg font-medium text-gray-900 mb-4">{{ $page.props.translations.roles.edit.permissions }}</h3>
                                 <div class="space-y-6">
-                                    <template v-for="group in ['equipment', 'roles', 'users', 'tickets', 'settings']" :key="group">
+                                    <template v-for="group in ['equipment', 'roles', 'users', 'tickets', 'settings', 'planning']" :key="group">
                                         <div v-if="hasPermissionsForGroup(group)" class="space-y-2">
                                             <h4 class="font-medium text-gray-700">{{ getGroupTranslation(group) }}</h4>
                                             <div class="ml-4 space-y-2">

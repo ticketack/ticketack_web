@@ -16,8 +16,25 @@ class RoleController extends Controller
 
     public function index(): Response
     {
+        $roles = Role::with('permissions')->get()->map(function ($role) {
+            $rolePermissions = $role->permissions->pluck('name')->toArray();
+            
+            return [
+                'id' => $role->id,
+                'name' => $role->name,
+                'description' => $role->description,
+                'permissions' => Permission::all()->map(function ($permission) use ($rolePermissions) {
+                    return [
+                        'id' => $permission->id,
+                        'name' => __('permissions.' . $permission->name),
+                        'granted' => in_array($permission->name, $rolePermissions)
+                    ];
+                })
+            ];
+        });
+
         return Inertia::render('Roles/Index', [
-            'roles' => Role::with('permissions')->get(),
+            'roles' => $roles,
         ]);
     }
 
