@@ -41,6 +41,23 @@ export default defineConfig({
     build: {
         commonjsOptions: {
             include: [/node_modules/]
+        },
+        rollupOptions: {
+            external: [
+                // Lister ici les modules qui posent problème
+            ],
+            output: {
+                manualChunks: {
+                    'fullcalendar': [
+                        '@fullcalendar/core',
+                        '@fullcalendar/daygrid',
+                        '@fullcalendar/timegrid',
+                        '@fullcalendar/list',
+                        '@fullcalendar/interaction',
+                        '@fullcalendar/vue3'
+                    ]
+                }
+            }
         }
     }
 });

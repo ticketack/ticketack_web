@@ -3,6 +3,7 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
+        "build:prod": "NODE_ENV=production vite build --config vite.config.prod.js",
         "dev": "vite"
     },
     "devDependencies": {
