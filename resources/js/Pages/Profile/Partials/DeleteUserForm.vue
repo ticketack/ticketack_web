@@ -42,32 +42,32 @@ const closeModal = () => {
     <section class="space-y-6">
         <header>
             <h2 class="text-lg font-medium text-gray-900">
-                {{ $page.props.translations.profile.delete_user.title }}
+                {{ $page.props.translations.profile.delete_account.title }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                {{ $page.props.translations.profile.delete_user.description }}
+                {{ $page.props.translations.profile.delete_account.text }}
             </p>
         </header>
 
-        <DangerButton @click="confirmUserDeletion">{{ $page.props.translations.profile.delete_user.delete_button }}</DangerButton>
+        <DangerButton @click="confirmUserDeletion">{{ $page.props.translations.profile.delete_account.button }}</DangerButton>
 
         <Modal :show="confirmingUserDeletion" @close="closeModal">
             <div class="p-6">
                 <h2
                     class="text-lg font-medium text-gray-900"
                 >
-                    {{ $page.props.translations.profile.delete_user.confirm_title }}
+                    {{ $page.props.translations.profile.delete_account.confirm_title }}
                 </h2>
 
                 <p class="mt-1 text-sm text-gray-600">
-                    {{ $page.props.translations.profile.delete_user.confirm_description }}
+                    {{ $page.props.translations.profile.delete_account.confirm_text }}
                 </p>
 
                 <div class="mt-6">
                     <InputLabel
                         for="password"
-                        :value="$page.props.translations.profile.delete_user.password"
+                        :value="$page.props.translations.profile.delete_account.password"
                         class="sr-only"
                     />
 
@@ -77,7 +77,7 @@ const closeModal = () => {
                         v-model="form.password"
                         type="password"
                         class="mt-1 block w-3/4"
-                        :placeholder="$page.props.translations.profile.delete_user.password"
+                        :placeholder="$page.props.translations.profile.delete_account.password"
                         @keyup.enter="deleteUser"
                     />
 
@@ -86,7 +86,7 @@ const closeModal = () => {
 
                 <div class="mt-6 flex justify-end">
                     <SecondaryButton @click="closeModal">
-                        {{ $page.props.translations.profile.delete_user.cancel }}
+                        {{ $page.props.translations.profile.delete_account.cancel }}
                     </SecondaryButton>
 
                     <DangerButton
@@ -95,7 +95,7 @@ const closeModal = () => {
                         :disabled="form.processing"
                         @click="deleteUser"
                     >
-                        {{ $page.props.translations.profile.delete_user.delete_button }}
+                        {{ $page.props.translations.profile.delete_account.confirm }}
                     </DangerButton>
                 </div>
             </div>

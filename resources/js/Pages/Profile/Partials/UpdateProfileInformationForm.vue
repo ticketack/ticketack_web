@@ -19,6 +19,7 @@ const user = usePage().props.auth.user;
 const form = useForm({
     name: user.name,
     email: user.email,
+    color: user.color || '#4f46e5',
 });
 </script>
 
@@ -88,6 +89,22 @@ const form = useForm({
                 >
                     {{ $page.props.translations.profile.update_info.verification_sent }}
                 </div>
+            </div>
+
+            <div>
+                <InputLabel for="color" :value="$page.props.translations.profile.update_info.color || 'Couleur personnalisée'" />
+
+                <div class="mt-1 flex items-center gap-2">
+                    <input
+                        id="color"
+                        type="color"
+                        class="h-10 w-20 rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        v-model="form.color"
+                    />
+                    <span class="text-sm text-gray-600">{{ form.color }}</span>
+                </div>
+
+                <InputError class="mt-2" :message="form.errors.color" />
             </div>
 
             <div class="flex items-center gap-4">

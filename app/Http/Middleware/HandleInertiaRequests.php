@@ -65,6 +65,7 @@ class HandleInertiaRequests extends Middleware
                     'id' => $request->user()->id,
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
+                    'color' => $request->user()->color,
                     'roles' => $request->user()->roles->map(function($role) {
                         return $role->name;
                     })
@@ -87,6 +88,7 @@ class HandleInertiaRequests extends Middleware
                 'validation' => trans('validation'),
                 'permissions' => trans('permissions'),
                 'auth' => trans('auth'),
+                'profile' => trans('profile'),
             ], $this->loadTranslationFiles()),
             'locale' => $language,
             'permissions' => $this->getPermissions($request),
@@ -104,14 +106,17 @@ class HandleInertiaRequests extends Middleware
         if (is_dir($path)) {
             $files = scandir($path);
             foreach ($files as $file) {
-                if (pathinfo($file, PATHINFO_EXTENSION) === 'php' && $file !== 'auth.php' 
-                    && $file !== 'pagination.php' && $file !== 'passwords.php' 
-                    && $file !== 'validation.php' && $file !== 'menu.php' 
-                    && $file !== 'permissions.php') {
+                if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
                     $key = pathinfo($file, PATHINFO_FILENAME);
                     $translations[$key] = trans($key);
+                    \Log::debug('Loading translation file: ' . $file, [
+                        'key' => $key,
+                        'content' => $translations[$key]
+                    ]);
                 }
             }
+        } else {
+            \Log::error('Translation directory not found: ' . $path);
         }
         
         return $translations;

@@ -13,6 +13,7 @@ return [
         'text' => 'Mettez à jour les informations de profil et l\'adresse e-mail de votre compte.',
         'name' => 'Nom',
         'email' => 'Email',
+        'color' => 'Couleur du planning',
         'save' => 'Enregistrer',
         'saved' => 'Enregistré.'
     ],

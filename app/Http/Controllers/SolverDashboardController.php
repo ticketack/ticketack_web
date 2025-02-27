@@ -28,12 +28,18 @@ class SolverDashboardController extends Controller
             ->whereHas('assignees', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
+            ->whereHas('status', function ($query) {
+                $query->where('is_closed', false);
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
         // Récupérer les planifications du solver avec toutes les relations nécessaires
         $schedules = TicketSchedule::with('ticket', 'ticket.status', 'ticket.category')
             ->where('solver_id', $user->id)
+            ->whereHas('ticket.status', function ($query) {
+                $query->where('is_closed', false);
+            })
             ->orderBy('start_at')
             ->get();
 
@@ -90,7 +96,10 @@ class SolverDashboardController extends Controller
 
     public function updateSchedule(Request $request, TicketSchedule $schedule): JsonResponse
     {
-        $this->authorize('update', $schedule);
+        // Vérifier que l'utilisateur est bien le solver assigné à ce schedule
+        if ($schedule->solver_id !== $request->user()->id && !$request->user()->hasRole('admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
 
         $validated = $request->validate([
             'start_at' => 'required|date',

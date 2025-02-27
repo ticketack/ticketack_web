@@ -35,6 +35,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import listPlugin from '@fullcalendar/list';
 import interactionPlugin from '@fullcalendar/interaction';
 import frLocale from '@fullcalendar/core/locales/fr';
 
@@ -48,12 +49,12 @@ const props = defineProps({
 const loading = ref(false);
 
 const calendarOptions = computed(() => ({
-    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+    plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
     initialView: 'timeGridWeek',
     headerToolbar: {
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
     },
     locale: frLocale,
     events: props.events,
@@ -74,24 +75,86 @@ const calendarOptions = computed(() => ({
             `
         }
     },
-    height: 'auto',
+    eventDidMount: (info) => {
+        if (info.event.extendedProps.assignedTo?.color) {
+            info.el.style.backgroundColor = info.event.extendedProps.assignedTo.color;
+            info.el.style.borderColor = info.event.extendedProps.assignedTo.color;
+        }
+    },
+    height: '800px',
     allDaySlot: false,
-    slotMinTime: '06:00:00',
-    slotMaxTime: '22:00:00',
+    slotMinTime: '00:00:00',
+    slotMaxTime: '24:00:00',
+    scrollTime: '08:00:00',
+    businessHours: [
+        {
+            daysOfWeek: [1, 2, 3, 4, 5],
+            startTime: '09:00',
+            endTime: '12:00'
+        },
+        {
+            daysOfWeek: [1, 2, 3, 4, 5],
+            startTime: '14:00',
+            endTime: '18:00'
+        }
+    ]
 }));
 </script>
 
 <style>
 .planning-calendar {
-    height: calc(100vh - 300px);
-    min-height: 600px;
+    height: calc(100vh - 200px);
+    min-height: 700px;
+    overflow: auto !important;
+}
+
+.fc-view-harness {
+    height: 1200px !important;
+}
+
+/* Mint Theme */
+.fc .fc-button-primary {
+    background-color: #3eb489 !important;
+    border-color: #3eb489 !important;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: #2d8b6a !important;
+    border-color: #2d8b6a !important;
+}
+
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+    background-color: #2d8b6a !important;
+    border-color: #2d8b6a !important;
+}
+
+.fc-col-header-cell {
+    background-color: #f0faf6;
+}
+
+.fc-timegrid-slot-lane {
+    background-color: #ffffff;
+}
+
+.fc-timegrid-slot-lane:nth-child(even) {
+    background-color: #fafffe;
 }
 
 .fc-event {
     cursor: pointer;
+    border-radius: 4px;
 }
 
 .fc-event:hover {
     opacity: 0.9;
+}
+
+.fc-toolbar-title {
+    color: #2d8b6a;
+}
+
+.fc-day-today {
+    background-color: #e6f7f1 !important;
 }
 </style>

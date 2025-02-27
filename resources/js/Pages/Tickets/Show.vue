@@ -242,13 +242,7 @@
                                                 </svg>
                                             </button>
                                         </div>
-                                        <MultipleAutocomplete
-                                            v-model="selectedAssigneeIds"
-                                            :search-url="route('users.search')"
-                                            placeholder="Ajouter des assignés..."
-                                            class="w-full mt-2"
-                                            @update:model-value="updateAssignees"
-                                        />
+
                                     </div>
                                 </div>
                                 <div v-else>

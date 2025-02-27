@@ -30,6 +30,7 @@ class PlanningController extends BaseController
                     'assignedTo' => $schedule->solver ? [
                         'id' => $schedule->solver->id,
                         'name' => $schedule->solver->name,
+                        'color' => $schedule->solver->color,
                     ] : null,
                     'equipment' => $schedule->ticket->equipment ? [
                         'id' => $schedule->ticket->equipment->id,
