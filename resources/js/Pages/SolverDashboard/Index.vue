@@ -7,10 +7,10 @@
             </h2>
         </template>
 
-        <div class="py-12">
+        <div class="py-2">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <!-- Stats -->
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 mb-6">
+                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 mb-2">
                     <h3 class="text-lg font-semibold mb-4">{{ $page.props.translations.solver.assigned_tickets }}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="bg-indigo-50 p-4 rounded-lg">
@@ -28,7 +28,7 @@
                     </div>
                 </div>
 
-                <div class="flex gap-6">
+                <div class="flex gap-2 mt-2">
                     <!-- Calendrier -->
                     <div class="flex-1 bg-white overflow-hidden shadow-xl sm:rounded-lg">
                         <div class="p-6">
@@ -40,24 +40,31 @@
                     <div id="external-events" class="w-96 bg-white overflow-hidden shadow-xl sm:rounded-lg">
                         <div class="p-6">
                             <h3 class="text-lg font-semibold mb-4">{{ $page.props.translations.solver.assigned_tickets }}</h3>
-                            <div class="space-y-4">
+                            <div class="space-y-2">
                                 <div v-for="ticket in assignedTickets" 
                                     :key="ticket.id"
-                                    class="bg-white border rounded-lg p-4 cursor-move shadow-sm hover:shadow-md transition-shadow external-event"
+                                    class="bg-white border rounded-lg p-2 cursor-move shadow-sm hover:shadow-md transition-shadow external-event"
                                     :data-ticket="JSON.stringify(ticket)"
+                                    :title="ticket.title"
                                 >
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm font-medium text-gray-600">#{{ ticket.id }}</span>
-                                        <span :class="getPriorityClass(ticket.priority)">
-                                            {{ typeof ticket.priority === 'object' ? ticket.priority.name : ticket.priority }}
+                                    <!-- Première ligne: numéro, titre tronqué, état -->
+                                    <div class="flex items-center gap-2 mb-1 w-full">
+                                        <span class="font-medium text-gray-600 shrink-0">#{{ ticket.id }}</span>
+                                        <Link :href="`/tickets/${ticket.id}`" class="text-indigo-600 hover:text-indigo-900 font-medium truncate flex-grow">
+                                            {{ ticket.title.length > 20 ? ticket.title.substring(0, 20) + '...' : ticket.title }}
+                                        </Link>
+                                        <span :class="getStatusClass(ticket.status)" class="shrink-0">
+                                            {{ ticket.status?.name || 'Nouveau' }}
                                         </span>
                                     </div>
-                                    <Link :href="`/tickets/${ticket.id}`" class="text-indigo-600 hover:text-indigo-900 font-medium block mb-2">
-                                        {{ ticket.title }}
-                                    </Link>
-                                    <div class="flex items-center justify-between">
-                                        <span :class="getStatusClass(ticket.status)">
-                                            {{ ticket.status?.name || 'Nouveau' }}
+                                    
+                                    <!-- Deuxième ligne: auteur, date souhaitée, équipement, priorité -->
+                                    <div class="flex items-center justify-between w-full text-sm">
+                                        <span class="text-gray-500 truncate max-w-[70px]" :title="ticket.user?.name || 'Anonyme'">{{ ticket.user?.name || 'Anonyme' }}</span>
+                                        <span class="text-gray-500">{{ ticket.desired_resolution_date ? new Date(ticket.desired_resolution_date).toLocaleDateString() : 'N/A' }}</span>
+                                        <span class="text-gray-500 truncate max-w-[80px]" :title="ticket.equipment?.name || 'N/A'">{{ ticket.equipment?.name || 'N/A' }}</span>
+                                        <span :class="getPriorityClass(ticket.priority)">
+                                            {{ typeof ticket.priority === 'object' ? ticket.priority.name : ticket.priority }}
                                         </span>
                                     </div>
                                 </div>
@@ -124,6 +131,96 @@
                 </form>
             </div>
         </Modal>
+
+        <!-- Modal de modification d'événement -->
+        <Modal :show="eventModalOpen" @close="closeEventModal">
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    {{ selectedEvent ? `Modifier #${selectedEvent.extendedProps?.ticket?.id} - ${selectedEvent.extendedProps?.ticket?.title}` : 'Modifier l\'événement' }}
+                </h3>
+                <form @submit.prevent="updateEvent" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">
+                            Date de début
+                        </label>
+                        <input
+                            type="datetime-local"
+                            v-model="eventForm.start_at"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">
+                            Durée (minutes)
+                        </label>
+                        <input
+                            type="number"
+                            v-model="eventForm.estimated_duration"
+                            min="1"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">
+                            Commentaires
+                        </label>
+                        <textarea
+                            v-model="eventForm.comments"
+                            rows="3"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        ></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button
+                            type="button"
+                            @click="confirmDeleteEvent"
+                            class="inline-flex justify-center rounded-md border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                        >
+                            Supprimer
+                        </button>
+                        <button
+                            type="button"
+                            @click="closeEventModal"
+                            class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Annuler
+                        </button>
+                        <button
+                            type="submit"
+                            class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        >
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </Modal>
+
+        <!-- Modal de confirmation de suppression -->
+        <Modal :show="deleteModalOpen" @close="closeDeleteModal">
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-red-600 mb-4">
+                    Confirmer la suppression
+                </h3>
+                <p class="mb-4">Êtes-vous sûr de vouloir supprimer cette planification ?</p>
+                <div class="flex justify-end space-x-3">
+                    <button
+                        type="button"
+                        @click="closeDeleteModal"
+                        class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                        Annuler
+                    </button>
+                    <button
+                        type="button"
+                        @click="deleteEvent"
+                        class="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    >
+                        Supprimer
+                    </button>
+                </div>
+            </div>
+        </Modal>
     </AppLayout>
 </template>
 
@@ -152,8 +249,16 @@ const props = defineProps({
 })
 
 const scheduleModalOpen = ref(false)
+const eventModalOpen = ref(false)
+const deleteModalOpen = ref(false)
 const selectedTicket = ref(null)
+const selectedEvent = ref(null)
 const scheduleForm = ref({
+    start_at: '',
+    estimated_duration: 60,
+    comments: ''
+})
+const eventForm = ref({
     start_at: '',
     estimated_duration: 60,
     comments: ''
@@ -198,6 +303,8 @@ onMounted(() => {
 
 // Options du calendrier
 const calendarOptions = {
+    eventResizableFromStart: true,
+    eventDurationEditable: true,
     plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
     editable: true,
     dragRevertDuration: 0,
@@ -207,6 +314,9 @@ const calendarOptions = {
     dropAccept: '.external-event',
     dragScroll: true,
     forceEventDuration: true,
+    // Désactiver complètement la conversion de fuseau horaire
+    // Cela garantit que les dates sont utilisées telles quelles, sans aucune conversion
+    timeZone: 'local',
     eventReceive: (info) => {
         console.log('Event received:', info);
         const ticket = info.event.extendedProps.ticket;
@@ -214,7 +324,8 @@ const calendarOptions = {
         // Créer le schedule dans la base de données
         const scheduleData = {
             ticket_id: ticket.id,
-            start_at: format(info.event.start, 'yyyy-MM-dd HH:mm:ss'),
+            // Soustraire manuellement 1 heure pour compenser le décalage
+            start_at: format(new Date(info.event.start.getTime() - 3600000), "yyyy-MM-dd'T'HH:mm:ssxxx"),
             estimated_duration: 60,
             comments: ''
         };
@@ -282,46 +393,96 @@ const calendarOptions = {
     nowIndicator: true,
     initialDate: new Date(),
     eventClick: (info) => {
-        const ticketId = info.event.extendedProps?.ticket?.id
-        if (ticketId) {
-            window.location.href = `/tickets/${ticketId}`
-        }
+        // Ouvrir le modal avec les détails de l'événement
+        selectedEvent.value = info.event;
+        
+        // Pour les champs datetime-local, utiliser le format YYYY-MM-DDThh:mm
+        // sans fuseau horaire, car le navigateur s'attend à ce format
+        const startDate = info.event.start;
+        const endDate = info.event.end || new Date(startDate.getTime() + 60 * 60 * 1000);
+        const durationInMinutes = Math.round((endDate - startDate) / (1000 * 60));
+        
+        eventForm.value = {
+            start_at: format(startDate, "yyyy-MM-dd'T'HH:mm"),
+            estimated_duration: durationInMinutes,
+            comments: info.event.extendedProps.ticket?.comments || ''
+        };
+        
+        eventModalOpen.value = true;
     },
-
-    eventSources: [
-        {
-            events: props.schedules.map(schedule => ({
-                id: schedule.id,
-                title: schedule.ticket ? `#${schedule.ticket.id} - ${schedule.ticket.title} (${schedule.ticket.status.name})` : 'No ticket info',
-                start: schedule.start_at,
-                end: new Date(new Date(schedule.start_at).getTime() + schedule.estimated_duration * 60000).toISOString(),
-                backgroundColor: getPriorityColor(schedule.ticket?.priority),
-                borderColor: getPriorityColor(schedule.ticket?.priority),
-                textColor: '#000000',
-                allDay: false,
-                extendedProps: {
-                    ticket: schedule.ticket
-                }
-            }))
-        }
-    ],
-    eventDrop: async (info) => {
+    eventResize: async (info) => {
         try {
-            console.log('Event dropped:', info);
+            console.log('Event resized:', info);
+            
             // Calculer la durée en minutes entre le début et la fin
             const start = info.event.start;
             const end = info.event.end || new Date(start.getTime() + 60 * 60 * 1000);
             const durationInMinutes = Math.round((end - start) / (1000 * 60));
 
+            // Soustraire manuellement 1 heure pour compenser le décalage
+            const correctedStart = new Date(start.getTime() - 3600000);
+            const startWithTimezone = format(correctedStart, "yyyy-MM-dd'T'HH:mm:ssxxx");
+
             await axios.put(`/schedules/${info.event.id}`, {
-                start_at: format(start, 'yyyy-MM-dd HH:mm:ss'),
+                start_at: startWithTimezone,
+                estimated_duration: durationInMinutes
+            });
+        } catch (error) {
+            console.error('Error updating schedule after resize:', error);
+            info.revert();
+        }
+    },
+    eventDrop: async (info) => {
+        try {
+            console.log('Event dropped:', info);
+            
+            // Calculer la durée en minutes entre le début et la fin
+            const start = info.event.start;
+            const end = info.event.end || new Date(start.getTime() + 60 * 60 * 1000);
+            const durationInMinutes = Math.round((end - start) / (1000 * 60));
+
+            // Soustraire manuellement 1 heure pour compenser le décalage
+            const correctedStart = new Date(start.getTime() - 3600000);
+            const startWithTimezone = format(correctedStart, "yyyy-MM-dd'T'HH:mm:ssxxx");
+            
+            console.log('Sending to server with correction:', {
+                start_at: startWithTimezone,
+                estimated_duration: durationInMinutes
+            });
+
+            await axios.put(`/schedules/${info.event.id}`, {
+                start_at: startWithTimezone,
                 estimated_duration: durationInMinutes
             });
         } catch (error) {
             console.error('Error updating schedule:', error);
             info.revert();
         }
-    }
+    },
+    eventSources: [
+        {
+            events: props.schedules.map(schedule => {
+                // Utiliser directement la date du serveur sans conversion
+                // FullCalendar gèrera automatiquement la conversion en fuseau horaire local
+                const startDate = new Date(schedule.start_at);
+                const endDate = new Date(startDate.getTime() + schedule.estimated_duration * 60000);
+                
+                return {
+                    id: schedule.id,
+                    title: schedule.ticket ? `#${schedule.ticket.id} - ${schedule.ticket.title} (${schedule.ticket.status.name})` : 'No ticket info',
+                    start: startDate,
+                    end: endDate,
+                    backgroundColor: getPriorityColor(schedule.ticket?.priority),
+                    borderColor: getPriorityColor(schedule.ticket?.priority),
+                    textColor: '#000000',
+                    allDay: false,
+                    extendedProps: {
+                        ticket: schedule.ticket
+                    }
+                };
+            })
+        }
+    ],
 }
 
 function formatDuration(minutes) {
@@ -459,12 +620,77 @@ function closeScheduleModal() {
     }
 }
 
+function closeEventModal() {
+    eventModalOpen.value = false;
+    selectedEvent.value = null;
+}
+
+function closeDeleteModal() {
+    deleteModalOpen.value = false;
+}
+
+function confirmDeleteEvent() {
+    closeEventModal();
+    deleteModalOpen.value = true;
+}
+
+async function deleteEvent() {
+    if (!selectedEvent.value) return;
+    
+    try {
+        await axios.delete(`/schedules/${selectedEvent.value.id}`);
+        
+        // Rafraîchir la page pour mettre à jour le calendrier
+        window.location.reload();
+    } catch (error) {
+        console.error('Error deleting event:', error);
+        alert('Une erreur est survenue lors de la suppression de l\'événement');
+    } finally {
+        closeDeleteModal();
+    }
+}
+
+async function updateEvent() {
+    if (!selectedEvent.value) return;
+    
+    try {
+        const startDate = new Date(eventForm.value.start_at);
+        const durationInMinutes = parseInt(eventForm.value.estimated_duration);
+        
+        await axios.put(`/schedules/${selectedEvent.value.id}`, {
+            // Soustraire manuellement 1 heure pour compenser le décalage
+            start_at: format(new Date(startDate.getTime() - 3600000), "yyyy-MM-dd'T'HH:mm:ssxxx"),
+            estimated_duration: durationInMinutes,
+            comments: eventForm.value.comments
+        });
+        
+        // Rafraîchir la page pour mettre à jour le calendrier
+        window.location.reload();
+    } catch (error) {
+        console.error('Error updating event:', error);
+        alert('Une erreur est survenue lors de la mise à jour de l\'événement');
+    } finally {
+        closeEventModal();
+    }
+}
+
 async function submitSchedule(data = null) {
     try {
-        const scheduleData = data || {
-            ticket_id: selectedTicket.value.id,
-            ...scheduleForm.value
-        };
+        let scheduleData;
+        
+        if (data) {
+            scheduleData = data;
+        } else {
+            // Convertir la date au format avec fuseau horaire
+            const startDate = new Date(scheduleForm.value.start_at);
+            scheduleData = {
+                ticket_id: selectedTicket.value.id,
+                // Soustraire manuellement 1 heure pour compenser le décalage
+            start_at: format(new Date(startDate.getTime() - 3600000), "yyyy-MM-dd'T'HH:mm:ssxxx"),
+                estimated_duration: scheduleForm.value.estimated_duration,
+                comments: scheduleForm.value.comments
+            };
+        }
 
         await axios.post('/schedules', scheduleData);
 

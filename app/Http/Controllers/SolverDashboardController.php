@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller;
 use App\Models\Ticket;
 use App\Models\TicketSchedule;
 use App\Models\TicketStatus;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Inertia\Inertia;
@@ -79,6 +80,13 @@ class SolverDashboardController extends Controller
         // Si le ticket est nouveau ou en attente, le passer en cours
         if ($ticket->status->name === 'Nouveau' || $ticket->status->name === 'En attente') {
             $ticket->update(['status_id' => $inProgressStatus->id]);
+        }
+
+        // Conserver le fuseau horaire envoyé par le client
+        // Les dates sont envoyées par le client avec le fuseau horaire local (format ISO 8601 avec +HH:MM)
+        // Utiliser Carbon::parse sans conversion de fuseau horaire
+        if (isset($validated['start_at'])) {
+            $validated['start_at'] = Carbon::parse($validated['start_at']);
         }
 
         $schedule = TicketSchedule::create([

@@ -9,6 +9,7 @@ use App\Http\Controllers\TicketDocumentController;
 use App\Http\Controllers\TicketPdfController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PlanningController;
+use App\Http\Controllers\ScheduleController;
 use Illuminate\Foundation\Application;
 use Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -34,12 +35,15 @@ Route::middleware(['auth'])->group(function () {
             ->name('schedules.store');
         Route::put('/schedules/{schedule}', [\App\Http\Controllers\SolverDashboardController::class, 'updateSchedule'])
             ->name('schedules.update');
-        Route::delete('/schedules/{schedule}', [\App\Http\Controllers\SolverDashboardController::class, 'deleteSchedule'])
-            ->name('schedules.destroy');
     });
 
-    // Routes des tickets
-    // Route du planning
+    // Routes des planifications pour tous les utilisateurs authentifiés
+    Route::put('/schedules/{id}', [ScheduleController::class, 'update'])
+        ->name('schedules.update.all');
+    Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy'])
+        ->name('schedules.destroy.all');
+
+    // Routes du planning
     Route::middleware([\App\Http\Middleware\CheckPermission::class . ':planning.view'])->group(function () {
         Route::get('/planning', [PlanningController::class, 'index'])
             ->name('planning.index');

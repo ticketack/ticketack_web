@@ -21,12 +21,15 @@ class PlanningController extends BaseController
         $schedules = TicketSchedule::with(['ticket.equipment', 'solver'])
             ->get()
             ->map(function ($schedule) {
-                $endTime = Carbon::parse($schedule->start_at)->addMinutes($schedule->estimated_duration);
+                // Utiliser Carbon pour manipuler les dates
+                $startTime = Carbon::parse($schedule->start_at);
+                $endTime = $startTime->copy()->addMinutes($schedule->estimated_duration);
+                
                 return [
                     'id' => $schedule->ticket->id,
                     'title' => $schedule->ticket->title,
-                    'start' => $schedule->start_at,
-                    'end' => $endTime->format('Y-m-d H:i:s'),
+                    'start' => $startTime->toIso8601String(), // Format ISO 8601 avec fuseau horaire
+                    'end' => $endTime->toIso8601String(), // Format ISO 8601 avec fuseau horaire
                     'assignedTo' => $schedule->solver ? [
                         'id' => $schedule->solver->id,
                         'name' => $schedule->solver->name,

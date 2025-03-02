@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Padding Override */
+.py-12 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
 /* FullCalendar Styles */
 .fc {
     --fc-border-color: theme('colors.gray.200');
