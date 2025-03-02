@@ -6,6 +6,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import Breadcrumbs from '@/Components/Breadcrumbs.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
@@ -18,6 +19,13 @@ const toggleSidebar = () => {
 // Obtenir le logo depuis les props
 const page = usePage();
 const logo = computed(() => page.props.app.logo);
+
+const props = defineProps({
+    breadcrumbs: {
+        type: Array,
+        default: () => []
+    }
+});
 
 
 </script>
@@ -316,6 +324,12 @@ const logo = computed(() => page.props.app.logo);
 
             <!-- Page Content -->
             <main>
+                <!-- Breadcrumbs -->
+                <div v-if="$props.breadcrumbs && $props.breadcrumbs.length > 0" class="py-2">
+                    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
+                        <Breadcrumbs :items="$props.breadcrumbs" />
+                    </div>
+                </div>
                 <slot />
             </main>
         </div>

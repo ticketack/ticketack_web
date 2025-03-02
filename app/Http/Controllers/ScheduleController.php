@@ -6,9 +6,8 @@ use App\Models\TicketSchedule;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Routing\Controller as BaseController;
 
-class ScheduleController extends BaseController
+class ScheduleController extends Controller
 {
     public function __construct()
     {
@@ -48,13 +47,28 @@ class ScheduleController extends BaseController
      */
     public function destroy($id): JsonResponse
     {
-        $schedule = TicketSchedule::findOrFail($id);
-
-        // Utiliser la politique au lieu de vérifier manuellement les autorisations
-        $this->authorize('delete', $schedule);
-
-        $schedule->delete();
-
-        return response()->json(['message' => 'Schedule deleted successfully']);
+        try {
+            // Trouver le planning ou échouer
+            $schedule = TicketSchedule::findOrFail($id);
+            
+            // Vérifier si l'utilisateur est autorisé à supprimer ce planning
+            if (auth()->user()->id !== $schedule->solver_id && !auth()->user()->hasRole('admin')) {
+                return response()->json(['message' => 'Unauthorized'], 403);
+            }
+            
+            // Supprimer le planning
+            $schedule->delete();
+            
+            return response()->json(['message' => 'Schedule deleted successfully']);
+        } catch (\Exception $e) {
+            // Journaliser l'erreur
+            \Log::error('Error deleting schedule: ' . $e->getMessage(), [
+                'id' => $id,
+                'user_id' => auth()->id(),
+                'exception' => $e
+            ]);
+            
+            return response()->json(['message' => 'Error deleting schedule: ' . $e->getMessage()], 500);
+        }
     }
 }

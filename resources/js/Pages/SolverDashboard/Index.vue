@@ -274,13 +274,13 @@ const averageTime = computed(() => {
 const calendarEl = ref(null);
 
 // Référence au calendrier
-let calendar = null;
+const calendar = ref(null);
 
 // Initialiser le drag & drop
 onMounted(() => {
     // Initialiser le calendrier
-    calendar = new Calendar(calendarEl.value, calendarOptions);
-    calendar.render();
+    calendar.value = new Calendar(calendarEl.value, calendarOptions);
+    calendar.value.render();
 
     // Initialiser les éléments draggables
     new Draggable(document.getElementById('external-events'), {
@@ -395,6 +395,15 @@ const calendarOptions = {
     eventClick: (info) => {
         // Ouvrir le modal avec les détails de l'événement
         selectedEvent.value = info.event;
+        
+        // Afficher les informations de l'événement pour le débogage
+        console.log('Event clicked:', {
+            id: info.event.id,
+            title: info.event.title,
+            start: info.event.start,
+            end: info.event.end,
+            extendedProps: info.event.extendedProps
+        });
         
         // Pour les champs datetime-local, utiliser le format YYYY-MM-DDThh:mm
         // sans fuseau horaire, car le navigateur s'attend à ce format
@@ -622,15 +631,22 @@ function closeScheduleModal() {
 
 function closeEventModal() {
     eventModalOpen.value = false;
-    selectedEvent.value = null;
+    // Ne pas effacer selectedEvent.value si on va vers la modale de suppression
+    if (!deleteModalOpen.value) {
+        selectedEvent.value = null;
+    }
 }
 
 function closeDeleteModal() {
     deleteModalOpen.value = false;
+    // Effacer l'événement sélectionné une fois la modale fermée
+    selectedEvent.value = null;
 }
 
 function confirmDeleteEvent() {
-    closeEventModal();
+    // Stocker l'ID de l'événement pour le débogage
+    console.log('Confirming delete for event ID:', selectedEvent.value?.id);
+    eventModalOpen.value = false; // Fermer la modale d'événement sans effacer selectedEvent
     deleteModalOpen.value = true;
 }
 
@@ -638,14 +654,30 @@ async function deleteEvent() {
     if (!selectedEvent.value) return;
     
     try {
-        await axios.delete(`/schedules/${selectedEvent.value.id}`);
+        // Récupérer l'ID correct de l'événement
+        const eventId = selectedEvent.value.id;
+        console.log('Deleting event with ID:', eventId);
         
-        // Rafraîchir la page pour mettre à jour le calendrier
-        window.location.reload();
+        // Ajouter un log pour voir la réponse du serveur
+        const response = await axios.delete(`/schedules/${eventId}`);
+        console.log('Delete response:', response);
+        
+        // Supprimer l'événement du calendrier sans recharger la page
+        if (selectedEvent.value) {
+            console.log('Removing event from calendar');
+            selectedEvent.value.remove();
+        } else {
+            console.warn('Selected event is null, cannot remove');
+        }
+        
+        // Fermer les modales
+        closeDeleteModal();
     } catch (error) {
         console.error('Error deleting event:', error);
+        if (error.response) {
+            console.error('Server response:', error.response.data);
+        }
         alert('Une erreur est survenue lors de la suppression de l\'événement');
-    } finally {
         closeDeleteModal();
     }
 }
@@ -656,20 +688,40 @@ async function updateEvent() {
     try {
         const startDate = new Date(eventForm.value.start_at);
         const durationInMinutes = parseInt(eventForm.value.estimated_duration);
+        const endDate = new Date(startDate.getTime() + durationInMinutes * 60000);
         
-        await axios.put(`/schedules/${selectedEvent.value.id}`, {
+        // Afficher les informations pour le débogage
+        console.log('Updating event:', {
+            id: selectedEvent.value.id,
+            start: startDate,
+            end: endDate,
+            duration: durationInMinutes
+        });
+        
+        const response = await axios.put(`/schedules/${selectedEvent.value.id}`, {
             // Soustraire manuellement 1 heure pour compenser le décalage
             start_at: format(new Date(startDate.getTime() - 3600000), "yyyy-MM-dd'T'HH:mm:ssxxx"),
             estimated_duration: durationInMinutes,
             comments: eventForm.value.comments
         });
         
-        // Rafraîchir la page pour mettre à jour le calendrier
-        window.location.reload();
+        console.log('Update response:', response);
+        
+        // Mettre à jour l'événement dans le calendrier sans recharger la page
+        if (selectedEvent.value) {
+            console.log('Updating event in calendar');
+            selectedEvent.value.setProp('title', selectedEvent.value.title);
+            selectedEvent.value.setStart(startDate);
+            selectedEvent.value.setEnd(endDate);
+        }
+        
+        closeEventModal();
     } catch (error) {
         console.error('Error updating event:', error);
+        if (error.response) {
+            console.error('Server response:', error.response.data);
+        }
         alert('Une erreur est survenue lors de la mise à jour de l\'événement');
-    } finally {
         closeEventModal();
     }
 }

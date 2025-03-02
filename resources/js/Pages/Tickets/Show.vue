@@ -1,24 +1,24 @@
 <template>
-    <AuthenticatedLayout>
+    <AuthenticatedLayout :breadcrumbs="[
+        { name: 'Tickets', route: 'tickets.index' },
+        { name: `#${props.ticket?.id} - ${props.ticket?.title}` }
+    ]">
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     Ticket #{{ props.ticket?.id }} - {{ props.ticket?.title }}
                 </h2>
                 <div class="flex items-center gap-4">
-                    <Link :href="route('tickets.index')" class="text-gray-600 hover:text-gray-900">
-                        <ArrowLeftIcon class="-ml-1 mr-2 h-4 w-4 inline" />
-                        Retour à la liste
-                    </Link>
                     <button @click="downloadPdf" class="text-red-600 hover:text-red-700 flex items-center">
                         <DocumentIcon class="-ml-1 mr-2 h-4 w-4" />
-                        Export PDF
+                        PDF
                     </button>
                 </div>
             </div>
         </template>
 
-        <div class="py-12">
+        <div class="py-2">
+            
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex gap-6">
                     <!-- Colonne principale (70%) -->
@@ -274,7 +274,8 @@ import { Link, useForm, router, usePage } from '@inertiajs/vue3';
 import Autocomplete from '@/Components/Autocomplete.vue';
 import { reactive, defineProps, ref } from 'vue';
 import DropZone from '@/Components/Documents/DropZone.vue';
-import { ArrowLeftIcon, DocumentIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { DocumentIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import Breadcrumbs from '@/Components/Breadcrumbs.vue';
 import { toast } from '@/utils';
 import TicketStatus from '@/Components/Tickets/TicketStatus.vue';
 import TicketPriority from '@/Components/Tickets/TicketPriority.vue';

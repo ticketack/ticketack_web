@@ -23,7 +23,12 @@
             </div>
         </template>
 
-        <div class="py-12">
+        <div class="py-2">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
+                <Breadcrumbs :items="[
+                    { name: 'Tickets' }
+                ]" />
+            </div>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
@@ -119,6 +124,7 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline';
 import TicketStatus from '@/Components/Tickets/TicketStatus.vue';
 import TicketPriority from '@/Components/Tickets/TicketPriority.vue';
 import FilterSidebar from '@/Components/Tickets/FilterSidebar.vue';
+import Breadcrumbs from '@/Components/Breadcrumbs.vue';
 import { ref } from 'vue';
 import Pagination from '@/Components/Pagination.vue';
 import { format } from 'date-fns';
