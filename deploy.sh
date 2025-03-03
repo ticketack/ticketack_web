@@ -2,33 +2,49 @@
 
 echo "Déploiement en production..."
 
+# Vérifier que les conteneurs sont en cours d'exécution
+echo "Vérification des conteneurs..."
+if ! docker compose -f docker-compose.yml -f docker-compose.prod.yml ps | grep -q "app.*running"; then
+    echo "Le conteneur app n'est pas en cours d'exécution. Démarrage des conteneurs..."
+    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+    sleep 10  # Attendre que les conteneurs soient prêts
+fi
+
+# Vérifier le répertoire de travail dans le conteneur
+echo "Vérification du répertoire de travail..."
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "pwd && ls -la"
+
+# Corriger les permissions si nécessaire
+echo "Correction des permissions..."
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "chown -R laravel:laravel /var/www/html"
+
 # Nettoyer le cache npm
 echo "Nettoyage du cache npm..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app npm cache clean --force
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "cd /var/www/html && npm cache clean --force"
 
 # Supprimer le dossier node_modules pour une installation propre
 echo "Suppression du dossier node_modules..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app rm -rf node_modules
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "cd /var/www/html && rm -rf node_modules"
 
 # Installer les dépendances npm
 echo "Installation des dépendances npm..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app npm install
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "cd /var/www/html && npm install --no-audit"
 
 # Vérifier que les modules FullCalendar sont correctement installés
 echo "Vérification des modules FullCalendar..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "ls -la node_modules/@fullcalendar"
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "cd /var/www/html && ls -la node_modules/@fullcalendar || echo 'FullCalendar non trouvé, installation en cours...' && npm install @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction @fullcalendar/timegrid @fullcalendar/vue3"
 
 # Nettoyer le cache de Vite
 echo "Nettoyage du cache de Vite..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app rm -rf node_modules/.vite
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "cd /var/www/html && rm -rf node_modules/.vite"
 
 # Compiler les assets
 echo "Compilation des assets..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app npm run build:prod
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "cd /var/www/html && npm run build:prod"
 
 # Nettoyer le cache Laravel
 echo "Nettoyage du cache Laravel..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php artisan optimize:clear
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php artisan optimize
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "cd /var/www/html && php artisan optimize:clear"
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "cd /var/www/html && php artisan optimize"
 
 echo "Déploiement terminé !"
