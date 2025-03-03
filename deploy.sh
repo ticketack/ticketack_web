@@ -14,9 +14,9 @@ fi
 echo "Vérification du répertoire de travail..."
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "pwd && ls -la"
 
-# Corriger les permissions si nécessaire
-echo "Correction des permissions..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "chown -R laravel:laravel /var/www/html"
+# Corriger les permissions uniquement pour les fichiers importants
+echo "Correction des permissions des fichiers importants..."
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "find /var/www/html/storage -type d -exec chmod 775 {} \; && find /var/www/html/storage -type f -exec chmod 664 {} \; && find /var/www/html/bootstrap/cache -type d -exec chmod 775 {} \; && find /var/www/html/bootstrap/cache -type f -exec chmod 664 {} \;"
 
 # Nettoyer le cache npm
 echo "Nettoyage du cache npm..."
