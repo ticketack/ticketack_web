@@ -94,6 +94,19 @@ const props = defineProps({
                     <span v-if="!sidebarCollapsed" class="ml-3">{{ $page.props.translations.menu.solver }}</span>
                 </Link>
 
+                <!-- Lien vers le pointage des temps -->
+                <Link 
+                    v-if="$page.props.permissions && $page.props.permissions['time_entries.view']"
+                    :href="route('time-tracking.index')"
+                    :class="{'justify-center': sidebarCollapsed}"
+                    class="flex items-center px-4 py-2 text-white hover:bg-gray-700 rounded-lg"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span v-if="!sidebarCollapsed" class="ml-3">{{ $page.props.translations.menu.time_tracking }}</span>
+                </Link>
+
             </div>
             
             <!-- API Documentation Link -->

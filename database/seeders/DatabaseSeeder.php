@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             EquipmentSeeder::class,
             SettingsSeeder::class,
             TicketStatusAndCategorySeeder::class,
+            TimeTrackingPermissionSeeder::class,
         ]);
     }
 }

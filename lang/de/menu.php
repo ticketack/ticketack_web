@@ -13,4 +13,5 @@ return [
     'settings' => 'Einstellungen',
     'logout' => 'Abmelden',
     'profile' => 'Profil',
+    'time_tracking' => 'Zeiterfassung',
 ];

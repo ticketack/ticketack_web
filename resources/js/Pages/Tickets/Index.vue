@@ -6,6 +6,11 @@
                     {{ $page.props.translations.tickets.index.title }}
                 </h2>
                 <div class="flex items-center space-x-4">
+                    <Link :href="route('tickets.archived')" 
+                        class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <ArchiveBoxIcon class="-ml-0.5 mr-2 h-4 w-4" />
+                        Tickets archivés
+                    </Link>
                     <button
                         @click="showFilters = true"
                         class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -96,6 +101,13 @@
                                         <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
                                             {{ formatDate(ticket.created_at) }}
                                         </td>
+                                        <td class="px-4 py-2 whitespace-nowrap text-sm font-medium">
+                                            <div class="flex space-x-2">
+                                                <button @click="archiveTicket(ticket)" class="text-gray-600 hover:text-gray-900" title="Archiver ce ticket">
+                                                    <ArchiveBoxIcon class="h-5 w-5" />
+                                                </button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -119,8 +131,9 @@
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Link, usePage } from '@inertiajs/vue3';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline';
+import { Link, usePage, useForm } from '@inertiajs/vue3';
+import { EyeIcon, EyeSlashIcon, ArchiveBoxIcon } from '@heroicons/vue/24/outline';
+import { useToast } from 'vue-toastification';
 import TicketStatus from '@/Components/Tickets/TicketStatus.vue';
 import TicketPriority from '@/Components/Tickets/TicketPriority.vue';
 import FilterSidebar from '@/Components/Tickets/FilterSidebar.vue';
@@ -131,6 +144,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 const showFilters = ref(false);
+const toast = useToast();
 
 defineProps({
     tickets: {
@@ -164,5 +178,21 @@ const canViewPrivateTicket = (ticket) => {
     return user.id === ticket.created_by || 
            user.id === ticket.assigned_to || 
            user.roles.some(role => role.name === 'admin');
+};
+
+// Fonction pour archiver un ticket
+const archiveTicket = (ticket) => {
+    if (confirm(`Êtes-vous sûr de vouloir archiver le ticket "${ticket.title}" ?`)) {
+        useForm().post(route('tickets.archive', ticket.id), {}, {
+            onSuccess: () => {
+                toast.success('Ticket archivé avec succès');
+                // Recharger la page
+                window.location.reload();
+            },
+            onError: (errors) => {
+                toast.error(Object.values(errors).join('\n'));
+            }
+        });
+    }
 };
 </script>

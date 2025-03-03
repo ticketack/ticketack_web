@@ -29,7 +29,8 @@ class TicketController extends Controller
     {
         $user = Auth::user();
         $query = Ticket::query()
-            ->with(['category', 'status', 'creator', 'assignees', 'equipment']);
+            ->with(['category', 'status', 'creator', 'assignees', 'equipment'])
+            ->where('archived', false);
 
         // Si l'utilisateur est un "tiers", ne montrer que ses tickets
         if ($user->hasRole('tiers')) {
@@ -261,5 +262,115 @@ class TicketController extends Controller
             ]);
             return back()->with('error', 'Erreur lors du retrait de l\'assignation');
         }
+    }
+    
+    /**
+     * Archiver un ticket
+     */
+    public function archive(Ticket $ticket)
+    {
+        $this->authorize('update', $ticket);
+        
+        try {
+            $ticket->archived = true;
+            $ticket->save();
+            
+            $ticket->addLog('archived', "Ticket archivé par " . Auth::user()->name);
+            
+            return back()->with('success', 'Ticket archivé avec succès');
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de l\'archivage du ticket:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Erreur lors de l\'archivage du ticket');
+        }
+    }
+    
+    /**
+     * Désarchiver un ticket
+     */
+    public function unarchive(Ticket $ticket)
+    {
+        $this->authorize('update', $ticket);
+        
+        try {
+            $ticket->archived = false;
+            $ticket->save();
+            
+            $ticket->addLog('unarchived', "Ticket désarchivé par " . Auth::user()->name);
+            
+            return back()->with('success', 'Ticket désarchivé avec succès');
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la désarchivage du ticket:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Erreur lors de la désarchivage du ticket');
+        }
+    }
+    
+    /**
+     * Affiche la liste des tickets archivés
+     */
+    public function archived(Request $request)
+    {
+        $user = Auth::user();
+        $query = Ticket::query()
+            ->with(['category', 'status', 'creator', 'assignees', 'equipment'])
+            ->where('archived', true);
+
+        // Si l'utilisateur est un "tiers", ne montrer que ses tickets
+        if ($user->hasRole('tiers')) {
+            $query->where('created_by', $user->id);
+        }
+
+        // Appliquer les filtres
+        if ($request->filled('status_id')) {
+            $query->where('status_id', $request->status_id);
+        }
+
+        if ($request->filled('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('equipment_id')) {
+            $query->where('equipment_id', $request->equipment_id);
+        }
+
+        if ($request->filled('assigned_to')) {
+            $query->whereHas('assignees', function ($query) use ($request) {
+                $query->where('user_id', $request->assigned_to);
+            });
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $tickets = $query->latest()->paginate(50)->withQueryString();
+
+        // Récupérer les données pour les filtres
+        $statuses = TicketStatus::orderBy('order')->get();
+        $categories = TicketCategory::orderBy('order')->get();
+        $users = User::whereDoesntHave('roles', function($query) {
+            $query->where('name', 'tiers');
+        })->get();
+
+        return Inertia::render('Tickets/ArchivedTickets', [
+            'tickets' => $tickets,
+            'filters' => $request->all(),
+            'statuses' => $statuses,
+            'categories' => $categories,
+            'users' => $users
+        ]);
     }
 }

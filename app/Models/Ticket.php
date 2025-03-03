@@ -19,6 +19,7 @@ class Ticket extends Model
         'priority',
         'category_id',
         'status_id',
+        'archived',
         'is_public',
         'equipment_id',
         'created_by',
@@ -32,6 +33,7 @@ class Ticket extends Model
         'resolved_at' => 'datetime',
         'closed_at' => 'datetime',
         'is_public' => 'boolean',
+        'archived' => 'boolean',
         'planned_start' => 'datetime',
         'planned_end' => 'datetime',
     ];
@@ -87,5 +89,21 @@ class Ticket extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class)->with('user')->latest();
+    }
+    
+    /**
+     * Récupère les entrées de temps associées à ce ticket
+     */
+    public function timeEntries(): HasMany
+    {
+        return $this->hasMany(TimeEntry::class)->with('user')->latest();
+    }
+    
+    /**
+     * Calcule le temps total passé sur ce ticket en minutes
+     */
+    public function getTotalTimeSpentAttribute(): int
+    {
+        return $this->timeEntries()->sum('minutes_spent');
     }
 }

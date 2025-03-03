@@ -10,6 +10,7 @@ use App\Http\Controllers\TicketPdfController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\TimeEntryController;
 use Illuminate\Foundation\Application;
 use Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -48,11 +49,27 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/planning', [PlanningController::class, 'index'])
             ->name('planning.index');
     });
+    
+    // Routes du pointage des temps
+    Route::middleware([\App\Http\Middleware\CheckPermission::class . ':time_entries.view'])->group(function () {
+        Route::get('/time-tracking', [TimeEntryController::class, 'index'])
+            ->name('time-tracking.index');
+        Route::post('/time-entries', [TimeEntryController::class, 'store'])
+            ->name('time-entries.store');
+        Route::put('/time-entries/{timeEntry}', [TimeEntryController::class, 'update'])
+            ->name('time-entries.update');
+        Route::delete('/time-entries/{timeEntry}', [TimeEntryController::class, 'destroy'])
+            ->name('time-entries.destroy');
+        Route::get('/time-entries/pdf-report', [TimeEntryController::class, 'generatePdfReport'])
+            ->name('time-entries.pdf-report');
+    });
 
     // Routes des tickets
     Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.view'])->group(function () {
         Route::get('/tickets', [\App\Http\Controllers\TicketController::class, 'index'])
             ->name('tickets.index');
+        Route::get('/tickets/archived', [\App\Http\Controllers\TicketController::class, 'archived'])
+            ->name('tickets.archived');
             
         // Route de création de tickets (doit être avant la route avec paramètre)
         Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.create'])->group(function () {
@@ -108,6 +125,12 @@ Route::middleware(['auth'])->group(function () {
             ->name('tickets.comments.store');
         Route::delete('/tickets/{ticket}/comments/{comment}', [CommentController::class, 'destroy'])
             ->name('tickets.comments.destroy');
+            
+        // Routes pour l'archivage des tickets
+        Route::post('/tickets/{ticket}/archive', [\App\Http\Controllers\TicketController::class, 'archive'])
+            ->name('tickets.archive');
+        Route::post('/tickets/{ticket}/unarchive', [\App\Http\Controllers\TicketController::class, 'unarchive'])
+            ->name('tickets.unarchive');
     });
 
     // Route de la documentation API

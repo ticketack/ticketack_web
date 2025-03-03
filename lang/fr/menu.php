@@ -14,4 +14,5 @@ return [
     'logout' => 'Déconnexion',
     'profile' => 'Profil',
     'planning' => 'Planning',
+    'time_tracking' => 'Pointage des temps',
 ];

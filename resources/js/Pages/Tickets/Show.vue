@@ -4,11 +4,15 @@
         { name: `#${props.ticket?.id} - ${props.ticket?.title}` }
     ]">
         <template #header>
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <div class="flex justify-between items-start mx-4">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight mr-8 max-w-3xl break-words">
                     Ticket #{{ props.ticket?.id }} - {{ props.ticket?.title }}
                 </h2>
                 <div class="flex items-center gap-4">
+                    <button @click="archiveTicket" class="text-gray-600 hover:text-gray-700 flex items-center">
+                        <ArchiveBoxIcon class="-ml-1 mr-2 h-4 w-4" />
+                        Archiver
+                    </button>
                     <button @click="downloadPdf" class="text-red-600 hover:text-red-700 flex items-center">
                         <DocumentIcon class="-ml-1 mr-2 h-4 w-4" />
                         PDF
@@ -29,7 +33,7 @@
                                 <!-- En-tête du ticket -->
                                 <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
                                     <div class="space-y-4">
-                                        <h3 class="text-lg font-medium max-w-[830px]">{{ props.ticket?.title }}</h3>
+
                                         <div class="flex flex-wrap gap-2">
                                             <TicketStatus :status="props.ticket?.status" />
                                             <TicketPriority :priority="props.ticket?.priority" />
@@ -270,13 +274,15 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import MultipleAutocomplete from '@/Components/MultipleAutocomplete.vue';
+import { ArchiveBoxIcon } from '@heroicons/vue/24/outline';
+import { useToast } from 'vue-toastification';
 import { Link, useForm, router, usePage } from '@inertiajs/vue3';
 import Autocomplete from '@/Components/Autocomplete.vue';
 import { reactive, defineProps, ref } from 'vue';
 import DropZone from '@/Components/Documents/DropZone.vue';
 import { DocumentIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import Breadcrumbs from '@/Components/Breadcrumbs.vue';
-import { toast } from '@/utils';
+// Import de toast depuis @/utils supprimé car non utilisé
 import TicketStatus from '@/Components/Tickets/TicketStatus.vue';
 import TicketPriority from '@/Components/Tickets/TicketPriority.vue';
 import Timeline from '@/Components/Tickets/Timeline.vue';
@@ -350,6 +356,23 @@ const updateStatus = () => {
 };
 
 const selectedAssigneeIds = ref(props.ticket?.assignees?.map(a => a.id) || []);
+const toast = useToast();
+
+// Fonction pour archiver un ticket
+const archiveTicket = () => {
+    if (confirm(`Êtes-vous sûr de vouloir archiver ce ticket ?`)) {
+        useForm().post(route('tickets.archive', props.ticket.id), {}, {
+            onSuccess: () => {
+                toast.success('Ticket archivé avec succès');
+                // Rediriger vers la liste des tickets
+                window.location.href = route('tickets.index');
+            },
+            onError: (errors) => {
+                toast.error(Object.values(errors).join('\n'));
+            }
+        });
+    }
+};
 
 const updateAssignees = (newValues) => {
     const currentAssigneeIds = props.ticket?.assignees?.map(a => a.id) || [];

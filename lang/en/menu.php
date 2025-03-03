@@ -13,4 +13,5 @@ return [
     'settings' => 'Settings',
     'logout' => 'Logout',
     'profile' => 'Profile',
+    'time_tracking' => 'Time Tracking',
 ];
