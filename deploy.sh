@@ -60,4 +60,8 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php art
 echo "Exécution des migrations..."
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php artisan migrate --force
 
+# Exécuter le seeder des permissions pour le timeTracking
+echo "Exécution du seeder des permissions pour le timeTracking..."
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php artisan db:seed --class=Database\\Seeders\\TimeTrackingPermissionSeeder --force
+
 echo "Déploiement terminé !"
