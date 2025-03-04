@@ -9,11 +9,15 @@
                     Ticket #{{ props.ticket?.id }} - {{ props.ticket?.title }}
                 </h2>
                 <div class="flex items-center gap-4">
-                    <Link v-if="$page.props.permissions['tickets.edit']" :href="route('tickets.edit', props.ticket.id)" class="text-indigo-600 hover:text-indigo-700 flex items-center border border-indigo-200 rounded-md px-3 py-1.5 hover:bg-indigo-50 transition-colors">
+                    <Link v-if="$page.props.permissions['tickets.edit'] && !props.ticket?.archived" :href="route('tickets.edit', props.ticket.id)" class="text-indigo-600 hover:text-indigo-700 flex items-center border border-indigo-200 rounded-md px-3 py-1.5 hover:bg-indigo-50 transition-colors">
                         <PencilIcon class="-ml-1 mr-2 h-4 w-4" />
                         Modifier
                     </Link>
-                    <button @click="archiveTicket" class="text-gray-600 hover:text-gray-700 flex items-center border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors">
+                    <button v-if="props.ticket?.archived" @click="unarchiveTicket" class="text-gray-600 hover:text-gray-700 flex items-center border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors">
+                        <ArchiveBoxIcon class="-ml-1 mr-2 h-4 w-4" />
+                        Désarchiver
+                    </button>
+                    <button v-else @click="archiveTicket" class="text-gray-600 hover:text-gray-700 flex items-center border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors">
                         <ArchiveBoxIcon class="-ml-1 mr-2 h-4 w-4" />
                         Archiver
                     </button>
@@ -156,7 +160,10 @@
                             <p v-else class="text-gray-500 italic">{{ $page.props.translations.tickets.comments.no_comments }}</p>
 
                             <!-- Formulaire d'ajout de commentaire -->
-                            <form @submit.prevent="submitComment" class="mt-6 space-y-4">
+                            <div v-if="props.ticket?.archived" class="mt-6 p-3 bg-gray-50 rounded-md">
+                                <p class="text-sm text-gray-500">Les tickets archivés ne peuvent pas recevoir de nouveaux commentaires</p>
+                            </div>
+                            <form v-else @submit.prevent="submitComment" class="mt-6 space-y-4">
                                 <div>
                                     <label for="comment" class="sr-only">{{ $page.props.translations.tickets.comments.add }}</label>
                                     <textarea id="comment"
@@ -224,27 +231,31 @@
                                     <select id="status"
                                             v-model="form.status_id"
                                             @change="updateStatus"
-                                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                            :disabled="props.ticket?.archived"
+                                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md disabled:bg-gray-100 disabled:cursor-not-allowed">
                                         <option v-for="status in statuses"
                                                 :key="status.id"
                                                 :value="status.id">
                                             {{ status.name }}
                                         </option>
                                     </select>
+                                    <p v-if="props.ticket?.archived" class="mt-1 text-xs text-gray-500">Les tickets archivés ne peuvent pas changer de statut</p>
                                 </div>
 
                                 <div v-if="$page.props.permissions['tickets.assign']">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Assignés</label>
                                     <div class="space-y-4">
                                         <MultipleAutocomplete
+                                            v-if="!props.ticket?.archived"
                                             v-model="selectedAssigneeIds"
                                             :search-url="route('users.search')"
                                             placeholder="Rechercher des utilisateurs..."
                                             @update:modelValue="updateAssignees"
                                         />
+                                        <p v-else class="text-xs text-gray-500 mb-2">Les tickets archivés ne peuvent pas être réassignés</p>
                                         <div v-for="assignee in props.ticket?.assignees" :key="assignee.id" class="flex items-center justify-between bg-gray-50 p-2 rounded">
                                             <span>{{ assignee.name }}</span>
-                                            <button @click="removeAssignee(assignee.id)" class="text-red-600 hover:text-red-800">
+                                            <button v-if="!props.ticket?.archived" @click="removeAssignee(assignee.id)" class="text-red-600 hover:text-red-800">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                                 </svg>
@@ -370,6 +381,22 @@ const archiveTicket = () => {
                 toast.success('Ticket archivé avec succès');
                 // Rediriger vers la liste des tickets
                 window.location.href = route('tickets.index');
+            },
+            onError: (errors) => {
+                toast.error(Object.values(errors).join('\n'));
+            }
+        });
+    }
+};
+
+// Fonction pour désarchiver un ticket
+const unarchiveTicket = () => {
+    if (confirm(`Êtes-vous sûr de vouloir désarchiver ce ticket ?`)) {
+        useForm().post(route('tickets.unarchive', props.ticket.id), {}, {
+            onSuccess: () => {
+                toast.success('Ticket désarchivé avec succès');
+                // Recharger la page pour refléter les changements
+                window.location.reload();
             },
             onError: (errors) => {
                 toast.error(Object.values(errors).join('\n'));

@@ -433,43 +433,49 @@ function getStatusColor(statusId) {
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durée</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Facturable</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ticket</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durée</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Facturable</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <tr v-for="entry in recentTimeEntries" :key="entry.id">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td class="px-3 py-2 text-sm text-gray-500">
                                         {{ formatDate(entry.entry_date) }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {{ getTicketName(entry.ticket_id) }}
+                                    <td class="px-3 py-2 text-sm text-gray-900 max-w-[200px]">
+                                        <div class="truncate" :title="getTicketName(entry.ticket_id)">
+                                            {{ getTicketName(entry.ticket_id).length > 30 ? getTicketName(entry.ticket_id).substring(0, 30) + '...' : getTicketName(entry.ticket_id) }}
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td class="px-3 py-2 text-sm text-gray-500">
                                         {{ formatDuration(entry.minutes_spent) }}
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                                        {{ entry.description || '-' }}
+                                    <td class="px-3 py-2 text-sm text-gray-500 max-w-[200px]">
+                                        <div class="truncate" :title="entry.description || '-'">
+                                            {{ entry.description ? (entry.description.length > 30 ? entry.description.substring(0, 30) + '...' : entry.description) : '-' }}
+                                        </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td class="px-3 py-2 text-sm text-gray-500">
                                         <span v-if="entry.billable" class="text-green-600">Oui</span>
                                         <span v-else class="text-red-600">Non</span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <button @click="openEditTimeModal(entry)" class="text-blue-600 hover:text-blue-900 mr-3">
-                                            <PencilIcon class="h-5 w-5" />
-                                        </button>
-                                        <button @click="deleteTimeEntry(entry)" class="text-red-600 hover:text-red-900">
-                                            <TrashIcon class="h-5 w-5" />
-                                        </button>
+                                    <td class="px-3 py-2 text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button @click="openEditTimeModal(entry)" class="text-blue-600 hover:text-blue-900">
+                                                <PencilIcon class="h-4 w-4" />
+                                            </button>
+                                            <button @click="deleteTimeEntry(entry)" class="text-red-600 hover:text-red-900">
+                                                <TrashIcon class="h-4 w-4" />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr v-if="recentTimeEntries.length === 0">
-                                    <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
+                                    <td colspan="6" class="px-3 py-2 text-center text-sm text-gray-500">
                                         Aucune entrée de temps récente
                                     </td>
                                 </tr>
