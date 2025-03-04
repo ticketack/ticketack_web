@@ -2,6 +2,26 @@
 
 echo "Déploiement en production..."
 
+# Vérifier que les conteneurs sont en cours d'exécution
+echo "Vérification des conteneurs..."
+if ! docker compose -f docker-compose.yml -f docker-compose.prod.yml ps | grep -q "app.*running"; then
+    echo "Le conteneur app n'est pas en cours d'exécution. Démarrage des conteneurs..."
+    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+    sleep 10  # Attendre que les conteneurs soient prêts
+fi
+
+# Vérifier le répertoire de travail dans le conteneur
+echo "Vérification du répertoire de travail..."
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "pwd && ls -la"
+
+# Corriger les permissions uniquement pour les fichiers importants
+echo "Correction des permissions des fichiers importants..."
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app bash -c "find /var/www/html/storage -type d -exec chmod 775 {} \; && find /var/www/html/storage -type f -exec chmod 664 {} \; && find /var/www/html/bootstrap/cache -type d -exec chmod 775 {} \; && find /var/www/html/bootstrap/cache -type f -exec chmod 664 {} \;"
+
+# Corriger les permissions pour les fichiers de build
+echo "Correction des permissions pour les fichiers de build..."
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app bash -c "chmod -R 775 /var/www/html/node_modules || true && chmod 775 /var/www/html && chmod 664 /var/www/html/vite.config.js && chmod -R 775 /var/www/html/public && chown -R laravel:laravel /var/www/html/public"
+
 # Nettoyer le cache npm
 echo "Nettoyage du cache npm..."
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app npm cache clean --force
@@ -24,7 +44,12 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app rm -rf 
 
 # Compiler les assets
 echo "Compilation des assets..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app npm run build:prod
+# Exécuter en tant que root pour éviter les problèmes de permission
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app npm run build:prod
+
+# Restaurer les permissions correctes après la compilation
+echo "Restauration des permissions après la compilation..."
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app bash -c "chown -R laravel:laravel /var/www/html/public/build && chmod -R 775 /var/www/html/public/build"
 
 # Nettoyer le cache Laravel
 echo "Nettoyage du cache Laravel..."
