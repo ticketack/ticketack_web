@@ -16,6 +16,14 @@ class DashboardController extends Controller
     {
         // Statistiques des utilisateurs
         $userCount = User::count();
+        
+        // Calculer le temps moyen passé par ticket
+        $avgTimePerTicket = DB::table('time_entries')
+            ->join('tickets', 'time_entries.ticket_id', '=', 'tickets.id')
+            ->select(DB::raw('AVG(time_entries.minutes_spent) as avg_minutes'))
+            ->first();
+        
+        $avgTimeMinutes = $avgTimePerTicket ? round($avgTimePerTicket->avg_minutes) : 0;
         $usersWithMostAssignedTickets = User::withCount(['assignedTickets as assigned_tickets_count' => function($query) {
                 $query->distinct();
             }])
@@ -39,6 +47,23 @@ class DashboardController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'ticket_count' => $user->tickets_count
+                ];
+            });
+            
+        // Utilisateurs avec le plus grand nombre de tickets résolus
+        // On considère qu'un ticket est résolu s'il a le statut 3 (Résolu)
+        $resolvedStatusId = 3; // Statut "Résolu"
+        $usersWithMostResolvedTickets = User::withCount(['assignedTickets as resolved_tickets_count' => function($query) use ($resolvedStatusId) {
+                $query->where('status_id', $resolvedStatusId);
+            }])
+            ->orderByDesc('resolved_tickets_count')
+            ->take(3)
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'ticket_count' => $user->resolved_tickets_count
                 ];
             });
 
@@ -119,7 +144,9 @@ class DashboardController extends Controller
             'ticketStats' => $ticketStats,
             'chartData' => $chartData,
             'usersWithMostAssignedTickets' => $usersWithMostAssignedTickets,
-            'usersWithMostCreatedTickets' => $usersWithMostCreatedTickets
+            'usersWithMostCreatedTickets' => $usersWithMostCreatedTickets,
+            'usersWithMostResolvedTickets' => $usersWithMostResolvedTickets,
+            'avgTimePerTicket' => $avgTimeMinutes
         ]);
     }
 }

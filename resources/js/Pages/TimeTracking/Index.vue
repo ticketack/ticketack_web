@@ -55,10 +55,7 @@ const editForm = useForm({
     billable: true,
 });
 
-// Liste des tickets à afficher (assignés ou tous)
-const displayedTickets = computed(() => {
-    return showAllTicketsToggle.value && props.allTickets ? props.allTickets : props.assignedTickets;
-});
+// Cette définition est déplacée plus bas pour être après la définition des watches
 
 // Construire l'URL avec les paramètres de filtrage
 function buildFilterUrl() {
@@ -77,8 +74,20 @@ watch(showArchivedToggle, () => {
     window.location.href = buildFilterUrl();
 });
 
+// Calculer les tickets affichés en fonction des filtres
+const displayedTickets = computed(() => {
+    let tickets = showAllTicketsToggle.value && props.allTickets ? props.allTickets : props.assignedTickets;
+    return tickets || [];
+});
+
 // Ouvrir le modal d'ajout de temps
 function openAddTimeModal(ticket = null) {
+    // Vérifier si le ticket est archivé
+    if (ticket && ticket.archived) {
+        toast.error('Impossible d\'ajouter du temps sur un ticket archivé');
+        return;
+    }
+    
     selectedTicket.value = ticket;
     form.ticket_id = ticket ? ticket.id : '';
     form.entry_date = today;
@@ -117,6 +126,22 @@ function closeModal() {
 
 // Soumettre le formulaire d'ajout de temps
 function submitTimeEntry() {
+    // Vérifier que le ticket n'est pas archivé
+    const selectedTicket = displayedTickets.value.find(t => t.id === form.ticket_id);
+    if (selectedTicket && selectedTicket.archived) {
+        toast.error('Impossible d\'ajouter du temps sur un ticket archivé');
+        return;
+    }
+    
+    // Vérification supplémentaire pour les tickets archivés qui pourraient ne pas être dans displayedTickets
+    if (props.allTickets) {
+        const archivedTicket = props.allTickets.find(t => t.id === form.ticket_id && t.archived);
+        if (archivedTicket) {
+            toast.error('Impossible d\'ajouter du temps sur un ticket archivé');
+            return;
+        }
+    }
+    
     // Calculer le nombre total de minutes
     const hours = parseInt(form.hours || 0);
     const minutes = parseInt(form.minutes || 0);
@@ -342,8 +367,27 @@ function initChart() {
 
 // Obtenir le nom du ticket
 function getTicketName(ticketId) {
+    // Chercher d'abord dans les tickets affichés (non archivés ou archivés selon le filtre)
     const ticket = displayedTickets.value.find(t => t.id === ticketId);
-    return ticket ? ticket.title : 'Ticket inconnu';
+    if (ticket) return ticket.title;
+    
+    // Si pas trouvé, chercher dans tous les tickets (même si on n'affiche pas les archivés)
+    // Cette partie est importante pour afficher correctement les tickets archivés dans l'historique
+    if (props.allTickets) {
+        const archivedTicket = props.allTickets.find(t => t.id === ticketId);
+        if (archivedTicket) return `${archivedTicket.title} (Archivé)`;
+    }
+    
+    // Si toujours pas trouvé, essayer de chercher dans les entrées récentes
+    // qui pourraient contenir des références aux tickets archivés
+    if (props.recentTimeEntries) {
+        const timeEntry = props.recentTimeEntries.find(entry => entry.ticket_id === ticketId && entry.ticket);
+        if (timeEntry && timeEntry.ticket) {
+            return `${timeEntry.ticket.title} (Archivé)`;
+        }
+    }
+    
+    return 'Ticket inconnu';
 }
 
 // Obtenir la couleur de statut
@@ -398,6 +442,7 @@ function getStatusColor(statusId) {
                             <div class="flex justify-between items-start mb-2">
                                 <h4 class="font-semibold text-blue-600 truncate" :title="ticket.title">
                                     {{ ticket.title }}
+                                    <span v-if="ticket.archived" class="text-xs text-gray-500 ml-1">(Archivé)</span>
                                 </h4>
                                 <span :class="`${getStatusColor(ticket.status.id)} text-white text-xs px-2 py-1 rounded-full`">
                                     {{ ticket.status.name }}
@@ -409,11 +454,14 @@ function getStatusColor(statusId) {
                                 <p><span class="font-medium">Temps total:</span> {{ formatDuration(ticket.total_time_spent || 0) }}</p>
                             </div>
                             <div class="flex justify-end">
-                                <button @click="openAddTimeModal(ticket)" 
+                                <button v-if="!ticket.archived" @click="openAddTimeModal(ticket)" 
                                         class="flex items-center text-sm text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md">
                                     <ClockIcon class="h-4 w-4 mr-1" />
                                     Ajouter du temps
                                 </button>
+                                <span v-else class="text-xs text-gray-500 italic">
+                                    Impossible d'ajouter du temps sur un ticket archivé
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -554,7 +602,7 @@ function getStatusColor(statusId) {
                             required
                         >
                             <option value="" disabled>Sélectionnez un ticket</option>
-                            <option v-for="ticket in displayedTickets" :key="ticket.id" :value="ticket.id">
+                            <option v-for="ticket in displayedTickets.filter(t => !t.archived)" :key="ticket.id" :value="ticket.id">
                                 {{ ticket.title }}
                             </option>
                         </select>

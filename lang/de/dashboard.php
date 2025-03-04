@@ -17,5 +17,7 @@ return [
     'tickets_over_time' => 'Ticketentwicklung der letzten 30 Tage',
     'user_stats' => 'Benutzerstatistiken',
     'most_assigned_tickets' => 'Benutzer mit den meisten zugewiesenen Tickets',
-    'most_created_tickets' => 'Benutzer mit den meisten erstellten Tickets'
+    'most_created_tickets' => 'Benutzer mit den meisten erstellten Tickets',
+    'most_resolved_tickets' => 'Benutzer mit den meisten gelösten Tickets',
+    'avg_time_per_ticket' => 'Durchschnittliche Zeit pro Ticket'
 ];

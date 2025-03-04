@@ -14,6 +14,10 @@ defineProps({
         type: Number,
         required: true
     },
+    avgTimePerTicket: {
+        type: Number,
+        required: true
+    },
     mostTickets: {
         type: Array,
         required: true
@@ -35,6 +39,10 @@ defineProps({
         required: true
     },
     usersWithMostCreatedTickets: {
+        type: Array,
+        required: true
+    },
+    usersWithMostResolvedTickets: {
         type: Array,
         required: true
     }
@@ -80,6 +88,18 @@ defineProps({
                                 <div>
                                     <p class="text-sm text-gray-600">{{ $page.props.translations.dashboard.total_users }}</p>
                                     <p class="text-2xl font-bold text-gray-800">{{ userCount }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4 mt-4">
+                                <div class="p-3 bg-amber-100 rounded-full">
+                                    <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600">{{ $page.props.translations.dashboard.avg_time_per_ticket }}</p>
+                                    <p class="text-2xl font-bold text-gray-800">{{ Math.floor(avgTimePerTicket / 60) }}h {{ avgTimePerTicket % 60 }}min</p>
                                 </div>
                             </div>
                         </div>
@@ -139,9 +159,9 @@ defineProps({
                                 <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.dashboard.by_category }}</h4>
                                 <div class="space-y-2">
                                         <div v-for="(count, category) in ticketStats.byCategory" :key="category" 
-                                             class="flex justify-between items-center p-2 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600">
-                                            <span class="text-sm font-medium text-white">{{ category }}</span>
-                                            <span class="px-3 py-1 bg-white bg-opacity-25 rounded-full text-sm font-medium text-white">{{ count }}</span>
+                                             class="flex justify-between items-center p-2 rounded-lg bg-indigo-50">
+                                            <span class="text-sm font-medium text-gray-800">{{ category }}</span>
+                                            <span class="px-3 py-1 bg-indigo-100 rounded-full text-sm font-medium text-indigo-800">{{ count }}</span>
                                         </div>
                                 </div>
                             </div>
@@ -197,6 +217,31 @@ defineProps({
                                         </div>
                                         <div class="px-3 py-1 bg-purple-100 rounded-full">
                                             <span class="text-sm font-medium text-purple-800">{{ user.ticket_count }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Utilisateurs avec le plus de tickets résolus -->
+                            <div class="mt-6">
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <div class="p-3 bg-green-100 rounded-full">
+                                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">{{ $page.props.translations.dashboard.most_resolved_tickets }}</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div v-for="user in usersWithMostResolvedTickets" :key="user.id" 
+                                         class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800">{{ user.name }}</p>
+                                        </div>
+                                        <div class="px-3 py-1 bg-green-100 rounded-full">
+                                            <span class="text-sm font-medium text-green-800">{{ user.ticket_count }}</span>
                                         </div>
                                     </div>
                                 </div>

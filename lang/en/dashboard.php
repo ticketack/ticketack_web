@@ -17,5 +17,7 @@ return [
     'tickets_over_time' => 'Ticket Evolution Over Last 30 Days',
     'user_stats' => 'User Statistics',
     'most_assigned_tickets' => 'Users with Most Assigned Tickets',
-    'most_created_tickets' => 'Users with Most Created Tickets'
+    'most_created_tickets' => 'Users with Most Created Tickets',
+    'most_resolved_tickets' => 'Users with Most Resolved Tickets',
+    'avg_time_per_ticket' => 'Average Time per Ticket'
 ];
