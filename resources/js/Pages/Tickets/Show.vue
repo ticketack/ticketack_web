@@ -1,19 +1,23 @@
 <template>
     <AuthenticatedLayout :breadcrumbs="[
         { name: 'Tickets', route: 'tickets.index' },
-        { name: `#${props.ticket?.id} - ${props.ticket?.title}` }
+        { name: `#${props.ticket?.id}` }
     ]">
         <template #header>
-            <div class="flex justify-between items-start mx-4">
+            <div class="flex justify-between items-center mx-4">
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight mr-8 max-w-3xl break-words">
                     Ticket #{{ props.ticket?.id }} - {{ props.ticket?.title }}
                 </h2>
                 <div class="flex items-center gap-4">
-                    <button @click="archiveTicket" class="text-gray-600 hover:text-gray-700 flex items-center">
+                    <Link v-if="$page.props.permissions['tickets.edit']" :href="route('tickets.edit', props.ticket.id)" class="text-indigo-600 hover:text-indigo-700 flex items-center border border-indigo-200 rounded-md px-3 py-1.5 hover:bg-indigo-50 transition-colors">
+                        <PencilIcon class="-ml-1 mr-2 h-4 w-4" />
+                        Modifier
+                    </Link>
+                    <button @click="archiveTicket" class="text-gray-600 hover:text-gray-700 flex items-center border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors">
                         <ArchiveBoxIcon class="-ml-1 mr-2 h-4 w-4" />
                         Archiver
                     </button>
-                    <button @click="downloadPdf" class="text-red-600 hover:text-red-700 flex items-center">
+                    <button @click="downloadPdf" class="text-red-600 hover:text-red-700 flex items-center border border-red-200 rounded-md px-3 py-1.5 hover:bg-red-50 transition-colors">
                         <DocumentIcon class="-ml-1 mr-2 h-4 w-4" />
                         PDF
                     </button>
@@ -274,7 +278,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import MultipleAutocomplete from '@/Components/MultipleAutocomplete.vue';
-import { ArchiveBoxIcon } from '@heroicons/vue/24/outline';
+import { ArchiveBoxIcon, PencilIcon } from '@heroicons/vue/24/outline';
 import { useToast } from 'vue-toastification';
 import { Link, useForm, router, usePage } from '@inertiajs/vue3';
 import Autocomplete from '@/Components/Autocomplete.vue';

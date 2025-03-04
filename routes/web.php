@@ -54,6 +54,8 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware([\App\Http\Middleware\CheckPermission::class . ':time_entries.view'])->group(function () {
         Route::get('/time-tracking', [TimeEntryController::class, 'index'])
             ->name('time-tracking.index');
+        Route::get('/time-entries', [TimeEntryController::class, 'list'])
+            ->name('time-entries.list');
         Route::post('/time-entries', [TimeEntryController::class, 'store'])
             ->name('time-entries.store');
         Route::put('/time-entries/{timeEntry}', [TimeEntryController::class, 'update'])
@@ -105,6 +107,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Routes d'édition de tickets
     Route::middleware([\App\Http\Middleware\CheckPermission::class . ':tickets.edit'])->group(function () {
+        Route::get('/tickets/{ticket}/edit', [\App\Http\Controllers\TicketController::class, 'edit'])
+            ->name('tickets.edit');
         Route::put('/tickets/{ticket}', [\App\Http\Controllers\TicketController::class, 'update'])
             ->name('tickets.update');
 

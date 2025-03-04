@@ -419,7 +419,16 @@ function getStatusColor(statusId) {
                     </div>
                     
                     <!-- Entrées de temps récentes -->
-                    <h3 class="text-lg font-semibold mb-4">Mes entrées de temps récentes</h3>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Mes entrées de temps récentes</h3>
+                        <Link 
+                            :href="route('time-entries.list')"
+                            class="flex items-center text-sm text-blue-600 hover:text-blue-800 px-3 py-1 border border-blue-300 rounded-md hover:bg-blue-50 transition-colors"
+                        >
+                            <CalendarIcon class="h-4 w-4 mr-1" />
+                            Voir tous les pointages
+                        </Link>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">

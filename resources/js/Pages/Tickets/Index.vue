@@ -38,53 +38,59 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
+                            <table class="min-w-full divide-y divide-gray-200 table-fixed">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.id }}</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.title }}</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.status }}</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.visibility }}</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.priority }}</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.category }}</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.equipment }}</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.assigned_to }}</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.author }}</th>
-                                        <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.created_at }}</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">{{ $page.props.translations.tickets.index.columns.id }}</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-64">{{ $page.props.translations.tickets.index.columns.title }}</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">{{ $page.props.translations.tickets.index.columns.status }}</th>
+                                        <th scope="col" class="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">{{ $page.props.translations.tickets.index.columns.visibility }}</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">{{ $page.props.translations.tickets.index.columns.priority }}</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">{{ $page.props.translations.tickets.index.columns.category }}</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">{{ $page.props.translations.tickets.index.columns.equipment }}</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">{{ $page.props.translations.tickets.index.columns.assigned_to }}</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">{{ $page.props.translations.tickets.index.columns.author }}</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">{{ $page.props.translations.tickets.index.columns.created_at }}</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     <tr v-for="ticket in tickets.data" :key="ticket.id" class="hover:bg-gray-50">
-                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
                                             #{{ ticket.id }}
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
+                                        <td class="px-2 py-2">
                                             <template v-if="!ticket.is_public && !canViewPrivateTicket(ticket)">
                                                 <span class="italic text-gray-500">Privé</span>
                                             </template>
                                             <template v-else>
-                                                <Link :href="route('tickets.show', ticket.id)" class="text-indigo-600 hover:text-indigo-900">
-                                                    {{ ticket.title }}
-                                                </Link>
+                                                <div class="relative group cursor-help">
+                                                    <Link :href="route('tickets.show', ticket.id)" class="text-indigo-600 hover:text-indigo-900 truncate block w-60">
+                                                        {{ ticket.title.length > 80 ? ticket.title.substring(0, 80) + '...' : ticket.title }}
+                                                    </Link>
+                                                    <div class="hidden group-hover:block absolute z-50 bg-black text-white text-xs rounded py-2 px-3 whitespace-normal max-w-md pointer-events-none" style="bottom: 100%; left: 0; margin-bottom: 5px;" v-if="ticket.title.length > 80">
+                                                        {{ ticket.title }}
+                                                    </div>
+                                                </div>
                                             </template>
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
+                                        <td class="px-2 py-2 whitespace-nowrap">
                                             <TicketStatus :status="ticket.status" />
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap text-center">
+                                        <td class="px-2 py-2 whitespace-nowrap text-center">
                                             <EyeIcon v-if="ticket.is_public" class="h-5 w-5 inline-block text-green-500" />
                                             <EyeSlashIcon v-else class="h-5 w-5 inline-block text-orange-500" />
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
+                                        <td class="px-2 py-2 whitespace-nowrap">
                                             <TicketPriority :priority="ticket.priority" />
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap">
+                                        <td class="px-2 py-2 whitespace-nowrap">
                                             <span v-if="ticket.category" class="px-2 py-1 text-xs font-medium rounded-full"
                                                 :style="{ backgroundColor: ticket.category.color + '20', color: ticket.category.color }">
                                                 {{ ticket.category.name }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
                                             <template v-if="!ticket.is_public && !canViewPrivateTicket(ticket)">
                                                 <span class="italic text-gray-500">Privé</span>
                                             </template>
@@ -92,13 +98,25 @@
                                                 {{ ticket.equipment?.name || '-' }}
                                             </template>
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                                            {{ ticket.assignee?.name || 'Non assigné' }}
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="relative group cursor-help" v-if="ticket.assignee?.name && ticket.assignee.name.length > 12">
+                                                <span class="truncate block w-28">{{ ticket.assignee.name.substring(0, 12) + '...' }}</span>
+                                                <div class="hidden group-hover:block absolute z-50 bg-black text-white text-xs rounded py-2 px-3 whitespace-normal pointer-events-none" style="bottom: 100%; left: 0; margin-bottom: 5px;">
+                                                    {{ ticket.assignee.name }}
+                                                </div>
+                                            </div>
+                                            <span v-else>{{ ticket.assignee?.name || 'Non assigné' }}</span>
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
-                                            {{ ticket.creator?.name || '-' }}
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="relative group cursor-help" v-if="ticket.creator?.name && ticket.creator.name.length > 12">
+                                                <span class="truncate block w-28">{{ ticket.creator.name.substring(0, 12) + '...' }}</span>
+                                                <div class="hidden group-hover:block absolute z-50 bg-black text-white text-xs rounded py-2 px-3 whitespace-normal pointer-events-none" style="bottom: 100%; left: 0; margin-bottom: 5px;">
+                                                    {{ ticket.creator.name }}
+                                                </div>
+                                            </div>
+                                            <span v-else>{{ ticket.creator?.name || '-' }}</span>
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
                                             {{ formatDate(ticket.created_at) }}
                                         </td>
                                         <td class="px-4 py-2 whitespace-nowrap text-sm font-medium">

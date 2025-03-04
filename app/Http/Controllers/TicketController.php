@@ -160,6 +160,20 @@ class TicketController extends Controller
         ]);
     }
 
+    public function edit(Ticket $ticket)
+    {
+        $this->authorize('update', $ticket);
+
+        $ticket->load(['category', 'status', 'creator', 'assignees', 'equipment', 'documents']);
+
+        return Inertia::render('Tickets/Edit', [
+            'ticket' => $ticket,
+            'statuses' => TicketStatus::orderBy('order')->get(),
+            'categories' => TicketCategory::orderBy('order')->get(),
+            'equipments' => \App\Models\Equipment::all(),
+        ]);
+    }
+
     public function update(Request $request, Ticket $ticket)
     {
         $this->authorize('update', $ticket);
@@ -170,19 +184,13 @@ class TicketController extends Controller
             'ticket_assignees_before' => $ticket->assignees->toArray()
         ]);
 
-        $validated = $request->validate([
-            'status_id' => 'sometimes|required|exists:ticket_statuses,id',
-            'assigned_to' => 'sometimes|required|exists:users,id'  // Pour la compatibilité avec le frontend
-        ]);
+        // Si c'est une mise à jour partielle (juste le statut ou l'assignation)
+        if ($request->has('status_id') && count($request->all()) <= 2) { // 2 pour status_id et _method
+            $validated = $request->validate([
+                'status_id' => 'required|exists:ticket_statuses,id',
+            ]);
 
-        \Log::info('Données validées:', [
-            'validated' => $validated,
-            'has_assigned_to' => isset($validated['assigned_to']),
-            'assigned_to_value' => $validated['assigned_to'] ?? null
-        ]);
-
-        // Gestion du changement de statut
-        if (isset($validated['status_id'])) {
+            // Gestion du changement de statut
             $this->authorize('updateStatus', $ticket);
             $oldStatus = $ticket->status;
             $newStatus = TicketStatus::findOrFail($validated['status_id']);
@@ -200,11 +208,64 @@ class TicketController extends Controller
                     'new_status' => $newStatus->name
                 ]);
             }
+            
+            return redirect()->route('tickets.show', $ticket->id);
         }
+        
+        // Si c'est une mise à jour complète du ticket
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'status_id' => 'required|exists:ticket_statuses,id',
+            'priority' => 'required|in:low,medium,high,urgent',
+            'category_id' => 'required|exists:ticket_categories,id',
+            'equipment_id' => 'nullable|exists:equipment,id',
+            'is_public' => 'boolean',
+            'due_date' => 'nullable|date',
+            'documents.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf|max:10240',
+        ]);
+        
+        // Traiter la date d'échéance
+        if (empty($validated['due_date'])) {
+            $validated['due_date'] = null;
+        }
+        
+        // Gestion du changement de statut
+        $oldStatus = $ticket->status;
+        $newStatus = TicketStatus::findOrFail($validated['status_id']);
+        
+        if ($oldStatus->id !== $newStatus->id) {
+            $ticket->addLog('status_changed', "Statut changé de {$oldStatus->name} à {$newStatus->name}");
+        }
+        
+        // Mise à jour des champs du ticket
+        $ticket->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'status_id' => $validated['status_id'],
+            'priority' => $validated['priority'],
+            'category_id' => $validated['category_id'],
+            'equipment_id' => $validated['equipment_id'],
+            'is_public' => $validated['is_public'],
+            'due_date' => $validated['due_date'],
+        ]);
+        
+        // Gestion des documents
+        if ($request->hasFile('documents')) {
+            foreach ($request->file('documents') as $file) {
+                $documentService = new TicketDocumentService();
+                $documentService->storeDocument($ticket, $file);
+            }
+        }
+        
+        $ticket->addLog('updated', "Ticket mis à jour");
+        
+        return redirect()->route('tickets.show', $ticket->id)->with('success', 'Ticket mis à jour avec succès');
 
         // L'assignation est maintenant gérée par les méthodes assign et unassign
 
-        return back()->with('success', 'Ticket mis à jour avec succès.');
+        // Ce code ne sera jamais atteint en raison du return ci-dessus
+        // return back()->with('success', 'Ticket mis à jour avec succès.');
     }
 
     /**

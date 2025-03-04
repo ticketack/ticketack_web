@@ -268,6 +268,72 @@ class TimeEntryController extends Controller
 
         return redirect()->back()->with('success', 'Entrée de temps supprimée avec succès.');
     }
+    
+    /**
+     * Affiche la liste complète des pointages avec filtres
+     */
+    public function list(Request $request)
+    {
+        // Vérifier si l'utilisateur a la permission de voir la page de pointage
+        if (!Auth::user()->can('time_entries.view', TimeEntry::class)) {
+            abort(403, 'Vous n\'avez pas les permissions nécessaires.');
+        }
+        
+        // Paramètres de filtrage
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $ticketId = $request->input('ticket_id');
+        $billable = $request->input('billable');
+        
+        // Récupérer les entrées de temps de l'utilisateur connecté
+        $timeEntriesQuery = TimeEntry::where('user_id', Auth::id())
+            ->orderBy('entry_date', 'desc')
+            ->orderBy('created_at', 'desc');
+        
+        // Appliquer les filtres
+        if ($startDate) {
+            $timeEntriesQuery->where('entry_date', '>=', $startDate);
+        }
+        
+        if ($endDate) {
+            $timeEntriesQuery->where('entry_date', '<=', $endDate);
+        }
+        
+        if ($ticketId) {
+            $timeEntriesQuery->where('ticket_id', $ticketId);
+        }
+        
+        if ($billable !== null && $billable !== '') {
+            $timeEntriesQuery->where('billable', $billable == '1');
+        }
+        
+        // Paginer les résultats
+        $timeEntries = $timeEntriesQuery->with('ticket')->paginate(15)->withQueryString();
+        
+        // Récupérer tous les tickets pour le filtre
+        $tickets = Ticket::select('id', 'title')->orderBy('id', 'desc')->get();
+        
+        // Calculer les statistiques
+        $totalMinutes = $timeEntriesQuery->sum('minutes_spent');
+        $totalHours = floor($totalMinutes / 60);
+        $remainingMinutes = $totalMinutes % 60;
+        
+        return Inertia::render('TimeTracking/List', [
+            'timeEntries' => $timeEntries,
+            'tickets' => $tickets,
+            'filters' => [
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'ticket_id' => $ticketId,
+                'billable' => $billable,
+            ],
+            'statistics' => [
+                'total_hours' => $totalHours,
+                'total_minutes' => $remainingMinutes,
+                'total_entries' => $timeEntriesQuery->count(),
+            ],
+        ]);
+    }
 
     /**
      * Formate une durée en minutes en format lisible (heures et minutes)
