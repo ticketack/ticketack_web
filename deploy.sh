@@ -24,23 +24,23 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app
 
 # Nettoyer le cache npm
 echo "Nettoyage du cache npm..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app npm cache clean --force
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app npm cache clean --force
 
 # Supprimer le dossier node_modules pour une installation propre
 echo "Suppression du dossier node_modules..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app rm -rf node_modules
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app rm -rf node_modules
 
 # Installer les dépendances npm
 echo "Installation des dépendances npm..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app npm install
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app npm install
 
 # Vérifier que les modules FullCalendar sont correctement installés
 echo "Vérification des modules FullCalendar..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app bash -c "ls -la node_modules/@fullcalendar"
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app bash -c "ls -la node_modules/@fullcalendar || echo 'FullCalendar non trouvé, installation en cours...' && npm install @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction @fullcalendar/timegrid @fullcalendar/vue3"
 
 # Nettoyer le cache de Vite
 echo "Nettoyage du cache de Vite..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app rm -rf node_modules/.vite
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app rm -rf node_modules/.vite
 
 # Compiler les assets
 echo "Compilation des assets..."
@@ -55,5 +55,9 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app
 echo "Nettoyage du cache Laravel..."
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php artisan optimize:clear
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php artisan optimize
+
+# Exécuter les migrations
+echo "Exécution des migrations..."
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php artisan migrate --force
 
 echo "Déploiement terminé !"
