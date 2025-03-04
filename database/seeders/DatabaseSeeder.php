@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             SettingsSeeder::class,
             TicketStatusAndCategorySeeder::class,
             TimeTrackingPermissionSeeder::class,
+            NotificationTypeSeeder::class,
         ]);
     }
 }

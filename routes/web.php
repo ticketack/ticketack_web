@@ -11,6 +11,8 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\TimeEntryController;
+use App\Http\Controllers\NotificationPreferenceController;
+use App\Http\Controllers\NotificationLogController;
 use Illuminate\Foundation\Application;
 use Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -144,6 +146,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Routes des préférences de notifications
+    Route::get('/profile/notifications/preferences', [NotificationPreferenceController::class, 'index'])->name('profile.notifications.preferences');
+    Route::post('/profile/notifications/preferences', [NotificationPreferenceController::class, 'update'])->name('profile.notifications.preferences.update');
+    
+    // Routes du journal des notifications
+    Route::get('/profile/notifications/logs', [NotificationLogController::class, 'index'])->name('profile.notifications.logs');
+    Route::post('/profile/notifications/logs/{notificationLog}/read', [NotificationLogController::class, 'markAsRead'])->name('profile.notifications.logs.read');
+    Route::post('/profile/notifications/logs/read-all', [NotificationLogController::class, 'markAllAsRead'])->name('profile.notifications.logs.read-all');
 
     // Routes des équipements avec groupe de middleware
     Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipment.view'])->group(function () {

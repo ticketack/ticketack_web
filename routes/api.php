@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\EquipmentController;
 use App\Http\Controllers\Api\TicketController;
+use App\Http\Controllers\Api\NotificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Tickets management
     Route::apiResource('tickets', TicketController::class, ['as' => 'api']);
+    
+    // Notifications
+    Route::get('notifications/count', [NotificationController::class, 'getUnreadCount'])->name('api.notifications.count');
+    Route::get('notifications/recent', [NotificationController::class, 'getRecentNotifications'])->name('api.notifications.recent');
     
     // Roles management
     Route::middleware('permission:manage roles')->group(function () {

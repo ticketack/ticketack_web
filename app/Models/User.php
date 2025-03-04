@@ -24,6 +24,8 @@ class User extends Authenticatable
         'email',
         'password',
         'color',
+        'phone_number',
+        'api_sms_key',
     ];
 
     /**
@@ -64,5 +66,34 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Ticket::class, 'ticket_assignees')
                     ->withTimestamps();
+    }
+
+    /**
+     * Les préférences de notifications de l'utilisateur
+     */
+    public function notificationPreferences()
+    {
+        return $this->hasMany(NotificationPreference::class);
+    }
+
+    /**
+     * Les logs de notifications de l'utilisateur
+     */
+    public function notificationLogs()
+    {
+        return $this->hasMany(NotificationLog::class);
+    }
+
+    /**
+     * Vérifie si l'utilisateur a une préférence pour un type de notification
+     */
+    public function hasNotificationPreference($notificationTypeKey, $channel = 'in_app')
+    {
+        return $this->notificationPreferences()
+            ->whereHas('notificationType', function ($query) use ($notificationTypeKey) {
+                $query->where('key', $notificationTypeKey);
+            })
+            ->where($channel, true)
+            ->exists();
     }
 }

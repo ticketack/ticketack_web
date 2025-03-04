@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'mailingvox' => [
+        'api_key' => env('MAILINGVOX_API_KEY', 'df3517d5387458ed682c1e90e3cc79c5'),
+    ],
+
 ];

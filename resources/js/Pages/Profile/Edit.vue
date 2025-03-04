@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 
 import { ref } from 'vue';
 
@@ -93,6 +93,34 @@ const copyToken = () => {
                                 >
                                     {{ copied ? $page.props.translations.profile.api_token.copied : $page.props.translations.profile.api_token.copy }}
                                 </button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8">
+                    <section class="max-w-xl">
+                        <header>
+                            <h2 class="text-lg font-medium text-gray-900">Préférences de notifications</h2>
+                            <p class="mt-1 text-sm text-gray-600">
+                                Configurez vos préférences pour les notifications in-app, email et SMS.
+                            </p>
+                        </header>
+
+                        <div class="mt-6">
+                            <div class="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
+                                <Link
+                                    :href="route('profile.notifications.preferences')"
+                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                >
+                                    Gérer les préférences
+                                </Link>
+                                <Link
+                                    :href="route('profile.notifications.logs')"
+                                    class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
+                                >
+                                    Voir l'historique des notifications
+                                </Link>
                             </div>
                         </div>
                     </section>

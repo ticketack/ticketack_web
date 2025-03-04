@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\NotificationLog;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -59,7 +60,18 @@ class HandleInertiaRequests extends Middleware
             }
         }
          
+        // Ajouter l'ID de l'utilisateur pour Laravel Echo dans les props
+        $laravelData = null;
+        if ($request->user()) {
+            $laravelData = [
+                'user' => [
+                    'id' => $request->user()->id
+                ]
+            ];
+        }
+        
         return array_merge(parent::share($request), [
+            'laravel' => $laravelData,
             'auth' => [
                 'user' => $request->user() ? [
                     'id' => $request->user()->id,
@@ -92,6 +104,7 @@ class HandleInertiaRequests extends Middleware
             ], $this->loadTranslationFiles()),
             'locale' => $language,
             'permissions' => $this->getPermissions($request),
+            'unreadNotificationsCount' => $this->getUnreadNotificationsCount($request),
         ]);
     }
 
@@ -131,5 +144,19 @@ class HandleInertiaRequests extends Middleware
         return $request->user()->getAllPermissions()->pluck('name')->mapWithKeys(function ($permission) {
             return [$permission => true];
         })->all();
+    }
+    
+    /**
+     * Récupérer le nombre de notifications non lues pour l'utilisateur connecté
+     */
+    protected function getUnreadNotificationsCount(Request $request): int
+    {
+        if (!$request->user()) {
+            return 0;
+        }
+        
+        return NotificationLog::where('user_id', $request->user()->id)
+            ->where('is_read', false)
+            ->count();
     }
 }

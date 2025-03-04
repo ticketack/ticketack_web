@@ -43,7 +43,8 @@ const currentLogo = computed(() => previewLogo.value || props.settings?.logo || 
 const form = useForm({
     company_name: props.settings.company_name || '',
     logo: null,
-    language: props.settings.language || 'fr'
+    language: props.settings.language || 'fr',
+    sms_api_key: props.settings.sms_api_key || ''
 });
 
 const handleLanguageChange = (event) => {
@@ -245,6 +246,22 @@ const deleteLogo = () => {
                             </div>
 
                             <!-- Sélection de la langue -->
+                            <div>
+                                <label for="sms_api_key" class="block text-sm font-medium text-gray-700">
+                                    Clé API SMS (Mailingvox)
+                                </label>
+                                <input
+                                    id="sms_api_key"
+                                    type="text"
+                                    v-model="form.sms_api_key"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    placeholder="Entrez votre clé API SMS"
+                                />
+                                <p class="mt-1 text-sm text-gray-500">
+                                    Cette clé API sera utilisée pour l'envoi de SMS via le service Mailingvox.
+                                </p>
+                            </div>
+                            
                             <div>
                                 <label for="language" class="block text-sm font-medium text-gray-700">
                                     {{ $page.props.translations.settings.language.title }}

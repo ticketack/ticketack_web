@@ -19,7 +19,8 @@ class SettingsController extends Controller
             'settings' => [
                 'company_name' => $settings['company_name'] ?? '',
                 'logo' => $logo,
-                'language' => $settings['language'] ?? 'fr'
+                'language' => $settings['language'] ?? 'fr',
+                'sms_api_key' => $settings['sms_api_key'] ?? ''
             ]
         ]);
     }
@@ -48,6 +49,9 @@ class SettingsController extends Controller
         if ($request->hasFile('logo')) {
             $rules['logo'] = 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048';
         }
+        if ($request->has('sms_api_key')) {
+            $rules['sms_api_key'] = 'nullable|string|max:255';
+        }
 
         $validated = $request->validate($rules);
 
@@ -69,6 +73,14 @@ class SettingsController extends Controller
                 ['key' => 'language'],
                 ['value' => $validated['language']]
             );
+
+            // Mettre à jour la clé API SMS si présente
+            if (isset($validated['sms_api_key'])) {
+                Setting::updateOrCreate(
+                    ['key' => 'sms_api_key'],
+                    ['value' => $validated['sms_api_key']]
+                );
+            }
 
             \Log::info('Language setting after update:', ['setting' => $languageSetting->toArray()]);
 
