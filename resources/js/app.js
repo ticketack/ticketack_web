@@ -1,6 +1,9 @@
 import '../css/app.css';
 import './bootstrap';
 
+// Importer le script de diagnostic Pusher (à retirer en production)
+import './pusher-check';
+
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';

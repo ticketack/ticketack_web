@@ -135,7 +135,7 @@ onMounted(() => {
     }, 30000);
     
     // Écouter les nouvelles notifications en temps réel
-    if (window.Echo) {
+    if (window.Echo && typeof window.Echo.private === 'function') {
         const userId = window.Laravel?.user?.id || usePage().props.laravel?.user?.id;
         if (userId) {
             window.Echo.private(`notifications.${userId}`)
@@ -174,7 +174,7 @@ onMounted(() => {
         clearInterval(interval);
         
         // Se désabonner du canal de notification
-        if (window.Echo) {
+        if (window.Echo && typeof window.Echo.leave === 'function') {
             const userId = window.Laravel?.user?.id || usePage().props.laravel?.user?.id;
             if (userId) {
                 window.Echo.leave(`notifications.${userId}`);

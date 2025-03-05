@@ -288,37 +288,38 @@ const formatFileSize = (bytes) => {
 };
 
 const submit = () => {
-    // Créer un FormData pour envoyer les fichiers
+    // Créer un FormData pour tous les champs
     const formData = new FormData();
+    
+    // Important : spécifier la méthode PUT pour Laravel
     formData.append('_method', 'PUT');
+    
+    // Ajouter tous les champs de base
     formData.append('title', form.title);
     formData.append('description', form.description);
     formData.append('status_id', form.status_id);
     formData.append('priority', form.priority);
-    formData.append('category_id', form.category_id || '');
-    formData.append('equipment_id', form.equipment_id || '');
-    formData.append('is_public', form.is_public);
-    formData.append('due_date', form.due_date || '');
+    formData.append('category_id', form.category_id);
+    formData.append('equipment_id', form.equipment_id);
+    formData.append('is_public', form.is_public ? '1' : '0');
+    formData.append('due_date', form.due_date);
     
     // Ajouter les fichiers
-    if (form.new_documents.length) {
-        form.new_documents.forEach((file, index) => {
-            formData.append(`documents[${index}]`, file);
-        });
-    }
+    form.new_documents.forEach((file, index) => {
+        formData.append(`new_documents[${index}]`, file);
+    });
 
+    // Soumettre le formulaire avec POST (mais avec _method=PUT)
     router.post(route('tickets.update', props.ticket.id), formData, {
-        forceFormData: true,
+        onStart: () => form.processing = true,
+        onFinish: () => form.processing = false,
         onSuccess: () => {
             toast.success('Ticket mis à jour avec succès');
             router.visit(route('tickets.show', props.ticket.id));
         },
         onError: (errors) => {
-            if (errors.documents) {
-                toast.error('Erreur avec les documents. Vérifiez la taille et le format des fichiers.');
-            } else {
-                toast.error('Erreur lors de la mise à jour du ticket');
-            }
+            console.error('Erreurs:', errors);
+            toast.error('Erreur lors de la mise à jour du ticket');
         }
     });
 };
