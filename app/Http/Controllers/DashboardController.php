@@ -28,7 +28,7 @@ class DashboardController extends Controller
                 $query->distinct();
             }])
             ->orderByDesc('assigned_tickets_count')
-            ->take(3)
+            ->take(2)
             ->get()
             ->map(function ($user) {
                 return [
@@ -40,7 +40,7 @@ class DashboardController extends Controller
 
         $usersWithMostCreatedTickets = User::withCount('tickets')
             ->orderByDesc('tickets_count')
-            ->take(3)
+            ->take(2)
             ->get()
             ->map(function ($user) {
                 return [
@@ -52,12 +52,12 @@ class DashboardController extends Controller
             
         // Utilisateurs avec le plus grand nombre de tickets résolus
         // On considère qu'un ticket est résolu s'il a le statut 3 (Résolu)
-        $resolvedStatusId = 3; // Statut "Résolu"
+        $resolvedStatusId = 4; // Statut "Résolu"
         $usersWithMostResolvedTickets = User::withCount(['assignedTickets as resolved_tickets_count' => function($query) use ($resolvedStatusId) {
                 $query->where('status_id', $resolvedStatusId);
             }])
             ->orderByDesc('resolved_tickets_count')
-            ->take(3)
+            ->take(2)
             ->get()
             ->map(function ($user) {
                 return [
