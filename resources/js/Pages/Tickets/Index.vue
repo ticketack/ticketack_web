@@ -99,13 +99,20 @@
                                             </template>
                                         </td>
                                         <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
-                                            <div class="relative group cursor-help" v-if="ticket.assignee?.name && ticket.assignee.name.length > 12">
-                                                <span class="truncate block w-28">{{ ticket.assignee.name.substring(0, 12) + '...' }}</span>
+                                            <div v-if="ticket.assignees && ticket.assignees.length > 0" class="relative group cursor-help">
+                                                <span v-if="ticket.assignees.length === 1">
+                                                    {{ ticket.assignees[0].name.length > 12 ? ticket.assignees[0].name.substring(0, 12) + '...' : ticket.assignees[0].name }}
+                                                </span>
+                                                <span v-else>
+                                                    {{ ticket.assignees.length }} personnes
+                                                </span>
                                                 <div class="hidden group-hover:block absolute z-50 bg-black text-white text-xs rounded py-2 px-3 whitespace-normal pointer-events-none" style="bottom: 100%; left: 0; margin-bottom: 5px;">
-                                                    {{ ticket.assignee.name }}
+                                                    <div v-for="assignee in ticket.assignees" :key="assignee.id">
+                                                        {{ assignee.name }}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <span v-else>{{ ticket.assignee?.name || 'Non assigné' }}</span>
+                                            <span v-else>Non assigné</span>
                                         </td>
                                         <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
                                             <div class="relative group cursor-help" v-if="ticket.creator?.name && ticket.creator.name.length > 12">
