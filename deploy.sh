@@ -61,7 +61,6 @@ docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chown -R www
 
 # Définir les bonnes permissions pour les fichiers du projet
 echo "Configuration du safe.directory pour git..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app git config --global --add safe.directory /var/www/html
 
 # Permissions spéciales pour les dossiers qui nécessitent des droits d'écriture
 docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chmod -R 775 /var/www/html/storage'
@@ -69,6 +68,6 @@ docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chmod -R 775
 
 # Installer les dépendances Composer
 echo "Installation des dépendances Composer..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app composer install --no-dev --optimize-autoloader
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app composer install --no-dev --optimize-autoloader
 
 echo "Déploiement terminé !"
