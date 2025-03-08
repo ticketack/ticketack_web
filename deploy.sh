@@ -34,10 +34,6 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app
 echo "Installation des dépendances npm..."
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app npm install
 
-# Vérifier que les modules FullCalendar sont correctement installés
-echo "Vérification des modules FullCalendar..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app bash -c "ls -la node_modules/@fullcalendar || echo 'FullCalendar non trouvé, installation en cours...' && npm install @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction @fullcalendar/timegrid @fullcalendar/vue3"
-
 # Nettoyer le cache de Vite
 echo "Nettoyage du cache de Vite..."
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app rm -rf node_modules/.vite
@@ -60,8 +56,8 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php art
 echo "Exécution des migrations..."
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php artisan migrate --force
 
-# Exécuter le seeder des permissions pour le timeTracking
-echo "Exécution du seeder des permissions pour le timeTracking..."
-docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php artisan db:seed --class=Database\\Seeders\\TimeTrackingPermissionSeeder --force
+# Installer les dépendances Composer
+echo "Installation des dépendances Composer..."
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app composer install --no-dev --optimize-autoloader
 
 echo "Déploiement terminé !"
