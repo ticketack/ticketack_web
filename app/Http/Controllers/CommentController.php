@@ -13,7 +13,7 @@ class CommentController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required|string',
-            'attachments.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf|max:10240'
+            'attachments.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf,doc,docx,txt|max:10240'
         ]);
 
         \DB::beginTransaction();

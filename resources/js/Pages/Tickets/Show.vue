@@ -303,6 +303,7 @@ import { useI18n } from 'vue-i18n';
 import TiptapEditor from '@/Components/TiptapEditor.vue';
 
 
+
 const { t } = useI18n();
 const page = usePage();
 
@@ -497,10 +498,10 @@ const submitComment = () => {
         },
         onError: (errors) => {
             commentForm.processing = false;
-            if (errors.attachments) {
-                toast.error(page.props.translations.pages.comments.error.file_size);
+            if (errors && errors.attachments) {
+                alert("Erreur: La taille du fichier est trop grande");
             } else {
-                toast.error(page.props.translations.pages.comments.error.add);
+                alert("Erreur lors de l'ajout du commentaire");
             }
         }
     });
