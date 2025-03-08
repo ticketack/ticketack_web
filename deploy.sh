@@ -60,7 +60,8 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php art
 docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chown -R www-data:www-data /var/www/html'
 
 # Définir les bonnes permissions pour les fichiers du projet
-docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chown -R www-data:www-data /var/www/html'
+echo "Configuration du safe.directory pour git..."
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -u root app git config --global --add safe.directory /var/www/html
 
 # Permissions spéciales pour les dossiers qui nécessitent des droits d'écriture
 docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chmod -R 775 /var/www/html/storage'
