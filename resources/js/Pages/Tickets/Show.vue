@@ -126,7 +126,7 @@
                                                         CM-{{ comment?.id }}
                                                     </span>
                                                 </div>
-                                                <p class="mt-1 text-gray-700">{{ comment?.content }}</p>
+                                                <div class="mt-1 text-gray-700 prose prose-sm" v-html="comment?.content"></div>
                                                 
                                                 <!-- Pièces jointes -->
                                                 <div v-if="comment?.attachments" 
@@ -166,12 +166,11 @@
                             <form v-else @submit.prevent="submitComment" class="mt-6 space-y-4">
                                 <div>
                                     <label for="comment" class="sr-only">{{ $page.props.translations.tickets.comments.add }}</label>
-                                    <textarea id="comment"
-                                              v-model="commentForm.content"
-                                              :placeholder="$page.props.translations.tickets.comments.placeholder"
-                                              rows="3"
-                                              class="shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md"
-                                              required></textarea>
+                                    <TiptapEditor
+                                        v-model="commentForm.content"
+                                        :placeholder="$page.props.translations.tickets.comments.placeholder"
+                                        class="shadow-sm block w-full focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    />
 
                                     <!-- Liste des fichiers sélectionnés -->
                                     <div v-if="commentForm?.attachments" class="mt-2 space-y-2">
@@ -306,6 +305,8 @@ import DocumentPreview from '@/Components/Documents/DocumentPreview.vue';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useI18n } from 'vue-i18n';
+import TiptapEditor from '@/Components/TiptapEditor.vue';
+
 
 const { t } = useI18n();
 const page = usePage();
