@@ -349,7 +349,7 @@ const downloadPdf = async () => {
         window.URL.revokeObjectURL(url);
     } catch (error) {
         console.error('Erreur lors du téléchargement du PDF:', error);
-        toast.error('Erreur lors du téléchargement du PDF');
+        alert('Erreur lors du téléchargement du PDF');
     }
 };
 
@@ -375,12 +375,12 @@ const archiveTicket = () => {
     if (confirm(`Êtes-vous sûr de vouloir archiver ce ticket ?`)) {
         useForm().post(route('tickets.archive', props.ticket.id), {}, {
             onSuccess: () => {
-                toast.success('Ticket archivé avec succès');
+                alert('Ticket archivé avec succès');
                 // Rediriger vers la liste des tickets
                 window.location.href = route('tickets.index');
             },
             onError: (errors) => {
-                toast.error(Object.values(errors).join('\n'));
+                alert(Object.values(errors).join('\n'));
             }
         });
     }
@@ -391,12 +391,12 @@ const unarchiveTicket = () => {
     if (confirm(`Êtes-vous sûr de vouloir désarchiver ce ticket ?`)) {
         useForm().post(route('tickets.unarchive', props.ticket.id), {}, {
             onSuccess: () => {
-                toast.success('Ticket désarchivé avec succès');
+                alert('Ticket désarchivé avec succès');
                 // Recharger la page pour refléter les changements
                 window.location.reload();
             },
             onError: (errors) => {
-                toast.error(Object.values(errors).join('\n'));
+                alert(Object.values(errors).join('\n'));
             }
         });
     }
@@ -418,10 +418,10 @@ const updateAssignees = (newValues) => {
         }, {
             preserveScroll: true,
             onSuccess: () => {
-                toast.success('Assignation ajoutée avec succès');
+                alert('Assignation ajoutée avec succès');
             },
             onError: () => {
-                toast.error('Erreur lors de l\'ajout de l\'assignation');
+                alert('Erreur lors de l\'ajout de l\'assignation');
             }
         });
     });
@@ -431,10 +431,10 @@ const updateAssignees = (newValues) => {
         router.delete(route('tickets.unassign', [props.ticket.id, userId]), {
             preserveScroll: true,
             onSuccess: () => {
-                toast.success('Assignation retirée avec succès');
+                alert('Assignation retirée avec succès');
             },
             onError: () => {
-                toast.error('Erreur lors du retrait de l\'assignation');
+                alert('Erreur lors du retrait de l\'assignation');
             }
         });
     });
@@ -444,10 +444,10 @@ const removeAssignee = (userId) => {
     router.delete(route('tickets.unassign', [props.ticket.id, userId]), {
         preserveScroll: true,
         onSuccess: () => {
-            toast.success('Assignation supprimée avec succès');
+            alert('Assignation supprimée avec succès');
         },
         onError: () => {
-            toast.error('Erreur lors de la suppression de l\'assignation');
+            alert('Erreur lors de la suppression de l\'assignation');
         }
     });
 };
@@ -511,10 +511,10 @@ const deleteComment = (commentId) => {
     if (confirm(t('pages.comments.confirm_delete'))) {
         router.delete(route('tickets.comments.destroy', [props.ticket.id, commentId]), {
             onSuccess: () => {
-                toast.success(t('pages.comments.success.deleted'));
+                alert(t('pages.comments.success.deleted'));
             },
             onError: () => {
-                toast.error(t('pages.comments.error.delete'));
+                alert(t('pages.comments.error.delete'));
             }
         });
     }
