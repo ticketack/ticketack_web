@@ -18,9 +18,15 @@ class CommentController extends Controller
 
         \DB::beginTransaction();
         try {
-            // Créer le commentaire
+            // Purifier le HTML pour éviter les attaques XSS
+            $config = \HTMLPurifier_Config::createDefault();
+            $config->set('HTML.Allowed', 'p,b,i,strong,em,u,a[href|title],ul,ol,li,br,code,pre');
+            $purifier = new \HTMLPurifier($config);
+            $cleanHtml = $purifier->purify($validated['content']);
+
+            // Créer le commentaire avec le HTML purifié
             $comment = $ticket->comments()->create([
-                'content' => $validated['content'],
+                'content' => $cleanHtml,
                 'user_id' => auth()->id(),
             ]);
 
