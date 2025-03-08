@@ -56,6 +56,16 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php art
 echo "Exécution des migrations..."
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app php artisan migrate --force
 
+# Définir les bonnes permissions pour les fichiers du projet
+docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chown -R www-data:www-data /var/www/html'
+
+# Définir les bonnes permissions pour les fichiers du projet
+docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chown -R www-data:www-data /var/www/html'
+
+# Permissions spéciales pour les dossiers qui nécessitent des droits d'écriture
+docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chmod -R 775 /var/www/html/storage'
+docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chmod -R 775 /var/www/html/bootstrap/cache'
+
 # Installer les dépendances Composer
 echo "Installation des dépendances Composer..."
 docker compose -f docker-compose.yml -f docker-compose.prod.yml exec app composer install --no-dev --optimize-autoloader
