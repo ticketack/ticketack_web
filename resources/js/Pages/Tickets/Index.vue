@@ -34,29 +34,29 @@
                     { name: 'Tickets' }
                 ]" />
             </div>
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto sm:px-2 lg:px-2">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
+                    <div class="p-3 text-gray-900">
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 table-fixed">
+                            <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">{{ $page.props.translations.tickets.index.columns.id }}</th>
-                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-64">{{ $page.props.translations.tickets.index.columns.title }}</th>
-                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">{{ $page.props.translations.tickets.index.columns.status }}</th>
-                                        <th scope="col" class="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16">{{ $page.props.translations.tickets.index.columns.visibility }}</th>
-                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">{{ $page.props.translations.tickets.index.columns.priority }}</th>
-                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">{{ $page.props.translations.tickets.index.columns.category }}</th>
-                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">{{ $page.props.translations.tickets.index.columns.equipment }}</th>
-                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">{{ $page.props.translations.tickets.index.columns.assigned_to }}</th>
-                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">{{ $page.props.translations.tickets.index.columns.author }}</th>
-                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">{{ $page.props.translations.tickets.index.columns.created_at }}</th>
-                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">Actions</th>
+                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">#</th>
+                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.title }}</th>
+                                        <th scope="col" class="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16" title="Statut">Statut</th>
+                                        <th scope="col" class="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12" title="Visibilité">Vis.</th>
+                                        <th scope="col" class="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20" title="Priorité">Priorité</th>
+                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12" title="Catégorie">Cat.</th>
+                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" title="Équipement">Éq.</th>
+                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" title="Assigné à">Assigné</th>
+                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" title="Auteur">Auteur</th>
+                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" title="Créé le">Date</th>
+                                        <th scope="col" class="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-10">Act.</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     <tr v-for="ticket in tickets.data" :key="ticket.id" class="hover:bg-gray-50">
-                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-1 py-2 text-sm text-gray-500">
                                             #{{ ticket.id }}
                                         </td>
                                         <td class="px-2 py-2">
@@ -64,74 +64,94 @@
                                                 <span class="italic text-gray-500">Privé</span>
                                             </template>
                                             <template v-else>
-                                                <div class="relative group cursor-help">
-                                                    <Link :href="route('tickets.show', ticket.id)" class="text-indigo-600 hover:text-indigo-900 truncate block w-60">
-                                                        {{ ticket.title.length > 80 ? ticket.title.substring(0, 80) + '...' : ticket.title }}
-                                                    </Link>
-                                                    <div class="hidden group-hover:block absolute z-50 bg-black text-white text-xs rounded py-2 px-3 whitespace-normal max-w-md pointer-events-none" style="bottom: 100%; left: 0; margin-bottom: 5px;" v-if="ticket.title.length > 80">
-                                                        {{ ticket.title }}
+                                                <Link :href="route('tickets.show', ticket.id)" class="text-indigo-600 hover:text-indigo-900 block">
+                                                    <div class="break-words" style="max-width: 100%; word-wrap: break-word; white-space: normal;">
+                                                        {{ ticket.title.length > 300 ? ticket.title.substring(0, 300) + '...' : ticket.title }}
                                                     </div>
-                                                </div>
+                                                </Link>
                                             </template>
                                         </td>
-                                        <td class="px-2 py-2 whitespace-nowrap">
-                                            <TicketStatus :status="ticket.status" />
+                                        <td class="px-1 py-2 text-center">
+                                            <div class="flex justify-center">
+                                                <TicketStatus :status="ticket.status" compact />
+                                            </div>
                                         </td>
-                                        <td class="px-2 py-2 whitespace-nowrap text-center">
-                                            <EyeIcon v-if="ticket.is_public" class="h-5 w-5 inline-block text-green-500" />
-                                            <EyeSlashIcon v-else class="h-5 w-5 inline-block text-orange-500" />
+                                        <td class="px-1 py-2 text-center">
+                                            <EyeIcon v-if="ticket.is_public" class="h-4 w-4 inline-block text-green-500" title="Public" />
+                                            <EyeSlashIcon v-else class="h-4 w-4 inline-block text-orange-500" title="Privé" />
                                         </td>
-                                        <td class="px-2 py-2 whitespace-nowrap">
-                                            <TicketPriority :priority="ticket.priority" />
+                                        <td class="px-1 py-2 text-center">
+                                            <div class="flex justify-center">
+                                                <PriorityGauge :priority="ticket.priority" />
+                                            </div>
                                         </td>
-                                        <td class="px-2 py-2 whitespace-nowrap">
-                                            <span v-if="ticket.category" class="px-2 py-1 text-xs font-medium rounded-full"
-                                                :style="{ backgroundColor: ticket.category.color + '20', color: ticket.category.color }">
-                                                {{ ticket.category.name }}
+                                        <td class="px-1 py-2">
+                                            <div v-if="ticket.category" class="relative group cursor-help">
+                                                <span class="inline-flex items-center justify-center w-4 h-4 rounded-full text-xs font-bold"
+                                                    :style="{ backgroundColor: ticket.category.color + '20', color: ticket.category.color }">
+                                                    {{ ticket.category.name.charAt(0).toUpperCase() }}
+                                                </span>
+                                                <div class="hidden group-hover:block absolute z-50 bg-black text-white text-xs rounded py-1 px-2 whitespace-normal pointer-events-none" style="bottom: 100%; left: 0; margin-bottom: 5px;">
+                                                    {{ ticket.category.name }}
+                                                </div>
+                                            </div>
+                                            <span v-else class="inline-flex items-center justify-center w-4 h-4 rounded-full bg-gray-200 text-gray-500 text-xs font-bold">
+                                                -
                                             </span>
                                         </td>
-                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-1 py-2 text-xs text-gray-500">
                                             <template v-if="!ticket.is_public && !canViewPrivateTicket(ticket)">
                                                 <span class="italic text-gray-500">Privé</span>
                                             </template>
-                                            <template v-else>
-                                                {{ ticket.equipment?.name || '-' }}
+                                            <template v-else>  
+                                                <div v-if="ticket.equipment?.designation && ticket.equipment.designation.length > 10" class="relative group cursor-help">
+                                                    <span class="truncate block">
+                                                        {{ ticket.equipment.designation.substring(0, 10) + '...' }}
+                                                    </span>
+                                                    <div class="hidden group-hover:block absolute z-50 bg-black text-white text-xs rounded py-1 px-2 whitespace-normal pointer-events-none" style="bottom: 100%; left: 0; margin-bottom: 5px;">
+                                                        {{ ticket.equipment.designation }}
+                                                    </div>
+                                                </div>
+                                                <span v-else class="truncate block">
+                                                    {{ ticket.equipment?.designation || '-' }}
+                                                </span>
                                             </template>
+
                                         </td>
-                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-1 py-2 text-xs text-gray-500">
                                             <div v-if="ticket.assignees && ticket.assignees.length > 0" class="relative group cursor-help">
-                                                <span v-if="ticket.assignees.length === 1">
-                                                    {{ ticket.assignees[0].name.length > 12 ? ticket.assignees[0].name.substring(0, 12) + '...' : ticket.assignees[0].name }}
+                                                <span v-if="ticket.assignees.length === 1" class="truncate block">
+                                                    {{ ticket.assignees[0].name.length > 8 ? ticket.assignees[0].name.substring(0, 8) + '...' : ticket.assignees[0].name }}
                                                 </span>
                                                 <span v-else>
-                                                    {{ ticket.assignees.length }} personnes
+                                                    {{ ticket.assignees.length }} pers.
                                                 </span>
-                                                <div class="hidden group-hover:block absolute z-50 bg-black text-white text-xs rounded py-2 px-3 whitespace-normal pointer-events-none" style="bottom: 100%; left: 0; margin-bottom: 5px;">
+                                                <div class="hidden group-hover:block absolute z-50 bg-black text-white text-xs rounded py-1 px-2 whitespace-normal pointer-events-none" style="bottom: 100%; left: 0; margin-bottom: 5px;">
                                                     <div v-for="assignee in ticket.assignees" :key="assignee.id">
                                                         {{ assignee.name }}
                                                     </div>
                                                 </div>
                                             </div>
-                                            <span v-else>Non assigné</span>
+                                            <span v-else>-</span>
                                         </td>
-                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
-                                            <div class="relative group cursor-help" v-if="ticket.creator?.name && ticket.creator.name.length > 12">
-                                                <span class="truncate block w-28">{{ ticket.creator.name.substring(0, 12) + '...' }}</span>
-                                                <div class="hidden group-hover:block absolute z-50 bg-black text-white text-xs rounded py-2 px-3 whitespace-normal pointer-events-none" style="bottom: 100%; left: 0; margin-bottom: 5px;">
+                                        <td class="px-1 py-2 text-xs text-gray-500">
+                                            <div class="relative group cursor-help" v-if="ticket.creator?.name">
+                                                <span class="truncate block" :title="ticket.creator.name">
+                                                    {{ ticket.creator.name.length > 8 ? ticket.creator.name.substring(0, 8) + '...' : ticket.creator.name }}
+                                                </span>
+                                                <div v-if="ticket.creator.name.length > 8" class="hidden group-hover:block absolute z-50 bg-black text-white text-xs rounded py-1 px-2 whitespace-normal pointer-events-none" style="bottom: 100%; left: 0; margin-bottom: 5px;">
                                                     {{ ticket.creator.name }}
                                                 </div>
                                             </div>
-                                            <span v-else>{{ ticket.creator?.name || '-' }}</span>
+                                            <span v-else>-</span>
                                         </td>
-                                        <td class="px-2 py-2 whitespace-nowrap text-sm text-gray-500">
-                                            {{ formatDate(ticket.created_at) }}
+                                        <td class="px-1 py-2 text-xs text-gray-500">
+                                            {{ formatDateCompact(ticket.created_at) }}
                                         </td>
-                                        <td class="px-4 py-2 whitespace-nowrap text-sm font-medium">
-                                            <div class="flex space-x-2">
-                                                <button @click="archiveTicket(ticket)" class="text-gray-600 hover:text-gray-900" title="Archiver ce ticket">
-                                                    <ArchiveBoxIcon class="h-5 w-5" />
-                                                </button>
-                                            </div>
+                                        <td class="px-1 py-2 text-center">
+                                            <button @click="archiveTicket(ticket)" class="text-gray-600 hover:text-gray-900" title="Archiver ce ticket">
+                                                <ArchiveBoxIcon class="h-4 w-4" />
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -160,7 +180,7 @@ import { Link, usePage, useForm } from '@inertiajs/vue3';
 import { EyeIcon, EyeSlashIcon, ArchiveBoxIcon } from '@heroicons/vue/24/outline';
 import { useToast } from 'vue-toastification';
 import TicketStatus from '@/Components/Tickets/TicketStatus.vue';
-import TicketPriority from '@/Components/Tickets/TicketPriority.vue';
+import PriorityGauge from '@/Components/Tickets/PriorityGauge.vue'; // Nouveau composant
 import FilterSidebar from '@/Components/Tickets/FilterSidebar.vue';
 import Breadcrumbs from '@/Components/Breadcrumbs.vue';
 import { ref } from 'vue';
@@ -198,6 +218,11 @@ const formatDate = (date) => {
     return format(new Date(date), 'd MMMM yyyy', { locale: fr });
 };
 
+// Format de date plus compact
+const formatDateCompact = (date) => {
+    return format(new Date(date), 'dd/MM/yy', { locale: fr });
+};
+
 const canViewPrivateTicket = (ticket) => {
     const user = usePage().props.auth.user;
     return user.id === ticket.created_by || 
@@ -221,3 +246,12 @@ const archiveTicket = (ticket) => {
     }
 };
 </script>
+
+<style>
+/* Assurer que le texte des titres de tickets s'enroule correctement */
+.break-words {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+</style>

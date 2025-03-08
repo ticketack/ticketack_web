@@ -2,8 +2,8 @@
     <div class="tiptap-editor">
         <div v-if="showToolbar" class="tiptap-toolbar">
       <button 
-        @click="editor.chain().focus().toggleBold().run()"
-        :class="{ 'is-active': editor.isActive('bold') }"
+        @click="editor?.chain().focus().toggleBold().run()"
+        :class="{ 'is-active': editor?.isActive('bold') }"
         type="button"
         class="toolbar-button"
       >
@@ -13,8 +13,8 @@
         </svg>
       </button>
       <button 
-        @click="editor.chain().focus().toggleItalic().run()"
-        :class="{ 'is-active': editor.isActive('italic') }"
+        @click="editor?.chain().focus().toggleItalic().run()"
+        :class="{ 'is-active': editor?.isActive('italic') }"
         type="button"
         class="toolbar-button"
       >
@@ -24,8 +24,8 @@
         </svg>
       </button>
       <button 
-        @click="editor.chain().focus().toggleBulletList().run()"
-        :class="{ 'is-active': editor.isActive('bulletList') }"
+        @click="editor?.chain().focus().toggleBulletList().run()"
+        :class="{ 'is-active': editor?.isActive('bulletList') }"
         type="button"
         class="toolbar-button"
       >
@@ -35,8 +35,8 @@
         </svg>
       </button>
       <button 
-        @click="editor.chain().focus().toggleOrderedList().run()"
-        :class="{ 'is-active': editor.isActive('orderedList') }"
+        @click="editor?.chain().focus().toggleOrderedList().run()"
+        :class="{ 'is-active': editor?.isActive('orderedList') }"
         type="button"
         class="toolbar-button"
       >
@@ -46,8 +46,8 @@
         </svg>
       </button>
       <button 
-        @click="editor.chain().focus().toggleCodeBlock().run()"
-        :class="{ 'is-active': editor.isActive('codeBlock') }"
+        @click="editor?.chain().focus().toggleCodeBlock().run()"
+        :class="{ 'is-active': editor?.isActive('codeBlock') }"
         type="button"
         class="toolbar-button"
       >

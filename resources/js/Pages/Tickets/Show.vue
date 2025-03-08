@@ -50,6 +50,11 @@
                                                 {{ props.ticket.category.name }}
                                             </span>
                                         </div>
+                                        <!-- Description -->
+                                        <h4 class="text-sm font-medium text-gray-900">Description</h4>
+                                        <div class="mt-2 text-sm text-gray-700 prose prose-sm max-w-none">
+    <div v-html="ticket?.description"></div>
+</div>
                                     </div>
                                     
                                     <div class="space-y-2 text-sm text-gray-500">
@@ -64,16 +69,6 @@
                                         <p v-if="ticket?.due_date">Échéance : {{ formatDate(ticket.due_date) }}</p>
                                     </div>
                                 </div>
-
-                                <!-- Description -->
-                                <div class="mt-6">
-                                    <h4 class="text-sm font-medium text-gray-900">Description</h4>
-                                    <div class="mt-2 text-sm text-gray-700 whitespace-pre-wrap">
-                                        {{ ticket?.description }}
-                                    </div>
-                                </div>
-
-
 
                                 <!-- Documents -->
                                 <div class="mt-8">

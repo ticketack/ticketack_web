@@ -42,14 +42,14 @@
                                 <!-- Description -->
                                 <div>
                                     <InputLabel for="description" :value="$page.props.translations.tickets.create.fields.description" />
-                                    <textarea
+                                    <TiptapEditor
                                         id="description"
                                         v-model="form.description"
                                         class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                        rows="4"
-                                        required
+                                        placeholder="Description détaillée du ticket..."
                                         :disabled="currentStep > 1"
-                                    ></textarea>
+                                        required
+                                    />
                                     <InputError :message="form.errors.description" class="mt-2" />
                                 </div>
 
@@ -225,6 +225,8 @@ import Autocomplete from '@/Components/Autocomplete.vue';
 import DropZone from '@/Components/Documents/DropZone.vue';
 import DocumentPreview from '@/Components/Documents/DocumentPreview.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import TiptapEditor from '@/Components/TiptapEditor.vue';
+
 
 const currentStep = ref(1);
 const ticketId = ref(null);
