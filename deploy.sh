@@ -65,6 +65,8 @@ echo "Configuration du safe.directory pour git..."
 # Permissions spéciales pour les dossiers qui nécessitent des droits d'écriture
 docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chmod -R 775 /var/www/html/storage'
 docker compose -f docker-compose.prod.yml exec -u root app bash -c 'chmod -R 775 /var/www/html/bootstrap/cache'
+docker compose -f docker-compose.prod.yml exec -u root app bash -c "mkdir -p /var/www/html/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer"
+docker compose -f docker-compose.prod.yml exec -u root app bash -c "chmod -R 777 /var/www/html/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer"
 
 # Installer les dépendances Composer
 echo "Installation des dépendances Composer..."

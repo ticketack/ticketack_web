@@ -29,12 +29,12 @@
         </template>
 
         <div class="py-2">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4">
+            <div class="max-w-8xl mx-auto sm:px-2 lg:px-2 mb-4">
                 <Breadcrumbs :items="[
                     { name: 'Tickets' }
                 ]" />
             </div>
-            <div class="max-w-7xl mx-auto sm:px-2 lg:px-2">
+            <div class="max-w-8xl mx-auto sm:px-2 lg:px-2">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-3 text-gray-900">
                         <div class="overflow-x-auto">
@@ -42,15 +42,63 @@
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">#</th>
-                                        <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $page.props.translations.tickets.index.columns.title }}</th>
-                                        <th scope="col" class="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-16" title="Statut">Statut</th>
-                                        <th scope="col" class="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12" title="Visibilité">Vis.</th>
-                                        <th scope="col" class="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20" title="Priorité">Priorité</th>
-                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12" title="Catégorie">Cat.</th>
-                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" title="Équipement">Éq.</th>
-                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" title="Assigné à">Assigné</th>
-                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" title="Auteur">Auteur</th>
-                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" title="Créé le">Date</th>
+                                        <th @click="sortBy('title')" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">
+                                            {{ $page.props.translations.tickets.index.columns.title }}
+                                            <span v-if="isSortedBy('title')">
+                                                {{ getCurrentSortDir('title') === 'asc' ? '▲' : '▼' }}
+                                            </span>
+                                        </th>
+                                        <th @click="sortBy('status')" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer tracking-wider w-16" :title="$page.props.translations.tickets.index.columns.status_long">
+                                            {{ $page.props.translations.tickets.index.columns.status }}
+                                            <span v-if="isSortedBy('status')">
+                                                {{ getCurrentSortDir('status') === 'asc' ? '▲' : '▼' }}
+                                            </span>
+                                        </th>
+                                        <th @click="sortBy('visibility')" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer tracking-wider w-16" :title="$page.props.translations.tickets.index.columns.visibility_long">
+                                            {{ $page.props.translations.tickets.index.columns.visibility }}
+                                            <span v-if="isSortedBy('visibility')">
+                                                {{ getCurrentSortDir('visibility') === 'asc' ? '▲' : '▼' }}
+                                            </span>
+                                        </th>
+                                        <th @click="sortBy('priority')" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer tracking-wider w-16" :title="$page.props.translations.tickets.index.columns.priority_long">
+                                            {{ $page.props.translations.tickets.index.columns.priority }}
+                                            <span v-if="isSortedBy('priority')">
+                                                {{ getCurrentSortDir('priority') === 'asc' ? '▲' : '▼' }}
+                                            </span>
+                                        </th>
+                                        <th @click="sortBy('category')" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12" :title="$page.props.translations.tickets.index.columns.category_long">
+                                            {{ $page.props.translations.tickets.index.columns.category }}
+                                            <span v-if="isSortedBy('category')">
+                                                {{ getCurrentSortDir('category') === 'asc' ? '▲' : '▼' }}
+                                            </span>
+                                        </th>
+                                        <th @click="sortBy('equipment')" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" :title="$page.props.translations.tickets.index.columns.equipment_long">
+                                            {{ $page.props.translations.tickets.index.columns.equipment }}
+                                            <span v-if="isSortedBy('equipment')">
+                                                {{ getCurrentSortDir('equipment') === 'asc' ? '▲' : '▼' }}
+                                            </span>
+                                        </th>
+                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" :title="$page.props.translations.tickets.index.columns.assigned_to_long">
+                                            {{ $page.props.translations.tickets.index.columns.assigned_to }}
+                                        </th>
+                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" :title="$page.props.translations.tickets.index.columns.author_long">
+                                            {{ $page.props.translations.tickets.index.columns.author }}
+                                            <span v-if="isSortedBy('author')">
+                                                {{ getCurrentSortDir('author') === 'asc' ? '▲' : '▼' }}
+                                            </span>
+                                        </th>
+                                        <th @click="sortBy('created_at')" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer tracking-wider w-20" :title="$page.props.translations.tickets.index.columns.created_at_long">
+                                            {{ $page.props.translations.tickets.index.columns.created_at }}
+                                            <span v-if="isSortedBy('created_at')">
+                                                {{ getCurrentSortDir('created_at') === 'asc' ? '▲' : '▼' }}
+                                            </span>
+                                        </th>
+                                        <th @click="sortBy('last_action_at')" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer tracking-wider w-24" :title="$page.props.translations.tickets.index.columns.last_action_at_long">
+                                            {{ $page.props.translations.tickets.index.columns.last_action_at }}
+                                            <span v-if="isSortedBy('last_action_at')">
+                                                {{ getCurrentSortDir('last_action_at') === 'asc' ? '▲' : '▼' }}
+                                            </span>
+                                        </th>
                                         <th scope="col" class="px-1 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-10">Act.</th>
                                     </tr>
                                 </thead>
@@ -148,6 +196,21 @@
                                         <td class="px-1 py-2 text-xs text-gray-500">
                                             {{ formatDateCompact(ticket.created_at) }}
                                         </td>
+                                        <td class="px-1 py-2 whitespace-nowrap text-xs text-gray-500">
+                                            <template v-if="ticket.last_action_at">
+                                                {{ new Date(ticket.last_action_at).toLocaleDateString('fr-FR', { 
+                                                    day: '2-digit', 
+                                                    month: '2-digit', 
+                                                    year: 'numeric'
+                                                }) }}
+                                                <br>
+                                                {{ new Date(ticket.last_action_at).toLocaleTimeString('fr-FR', { 
+                                                    hour: '2-digit', 
+                                                    minute: '2-digit' 
+                                                }) }}
+                                            </template>
+                                            <template v-else>-</template>
+                                        </td>
                                         <td class="px-1 py-2 text-center">
                                             <button @click="archiveTicket(ticket)" class="text-gray-600 hover:text-gray-900" title="Archiver ce ticket">
                                                 <ArchiveBoxIcon class="h-4 w-4" />
@@ -187,6 +250,42 @@ import { ref } from 'vue';
 import Pagination from '@/Components/Pagination.vue';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { router } from '@inertiajs/vue3';
+
+// gérer le tri
+function sortBy(field) {
+    const params = new URLSearchParams(window.location.search);
+    const currentSortField = params.get('sort_by') || 'created_at';
+    const currentSortDir = params.get('sort_dir') || 'desc';
+    
+    // Si on clique sur la même colonne, inverser la direction
+    const newSortDir = (field === currentSortField && currentSortDir === 'asc') ? 'desc' : 'asc';
+    
+    router.get(route('tickets.index'), {
+        ...route().params,
+        sort_by: field,
+        sort_dir: newSortDir
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+        only: ['tickets']
+    });
+}
+
+// Fonction pour déterminer si la colonne est actuellement triée
+function isSortedBy(field) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('sort_by') === field;
+}
+
+// Fonction pour obtenir la direction de tri actuelle
+function getCurrentSortDir(field) {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('sort_by') === field) {
+        return params.get('sort_dir') || 'desc';
+    }
+    return null;
+}
 
 const showFilters = ref(false);
 const toast = useToast();

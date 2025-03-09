@@ -30,6 +30,7 @@ class TicketController extends Controller
         $user = Auth::user();
         $query = Ticket::query()
             ->with(['category', 'status', 'creator', 'assignees', 'equipment'])
+            ->withLastActionDate()
             ->where('archived', false);
 
         // Si l'utilisateur est un "tiers", ne montrer que ses tickets
@@ -69,8 +70,45 @@ class TicketController extends Controller
         if ($request->filled('date_to')) {
             $query->whereDate('created_at', '<=', $request->date_to);
         }
+        // Gestion du tri
+        $sortField = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_dir', 'desc');
+        
+        // Liste des champs autorisés pour le tri
+        $allowedSortFields = ['title', 'priority', 'created_at', 'due_date', 'last_action_at', 'category', 'equipment', 'author'];
+        if (in_array($sortField, $allowedSortFields)) {
+            if ($sortField === 'last_action_at') {
+                // Tri spécial pour le champ calculé
+                $query->orderByRaw("(SELECT MAX(created_at) FROM ticket_logs WHERE ticket_id = tickets.id) $sortDirection");
+            } 
+            // Tri pour les relations
+            else if ($sortField === 'category') {
+                $query->leftjoin('ticket_categories', 'tickets.category_id', '=', 'ticket_categories.id')
+                      ->orderBy('ticket_categories.name', $sortDirection)
+                      ->select('tickets.*');
+            }
+            else if ($sortField === 'equipment') {
+                $query->leftjoin('equipment', 'tickets.equipment_id', '=', 'equipment.id')
+                      ->orderBy('equipment.designation', $sortDirection)
+                      ->select('tickets.*');
+            }
+            // Pour l'auteur
+            else if ($sortField === 'author') {
+                $query->leftjoin('users', 'tickets.created_by', '=', 'users.id')
+                    ->orderBy('users.name', $sortDirection)
+                    ->select('tickets.*');
+            }
+            else {
+                $query->orderBy($sortField, $sortDirection);
+            }
+        } else {
+            // Tri par défaut
+            $query->latest();
+        }
 
-        $tickets = $query->latest()->paginate(50)->withQueryString();
+        $tickets = $query->paginate(50)->withQueryString();
+
+
 
         // Récupérer les données pour les filtres
         $statuses = TicketStatus::orderBy('order')->get();
@@ -78,6 +116,8 @@ class TicketController extends Controller
         $users = User::whereDoesntHave('roles', function($query) {
             $query->where('name', 'tiers');
         })->get();
+
+
 
         return Inertia::render('Tickets/Index', [
             'tickets' => $tickets,

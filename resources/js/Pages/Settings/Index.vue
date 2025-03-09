@@ -155,7 +155,7 @@ const deleteLogo = () => {
         </template>
 
         <!-- Messages de notification -->
-        <div class="max-w-7xl mx-auto mt-4 sm:px-6 lg:px-8 space-y-4">
+        <div class="max-w-8xl mx-auto sm:px-2 lg:px-2 mt-4 space-y-4">
             <!-- Message de succès -->
             <div v-if="successMessage" class="bg-green-50 border border-green-200 rounded-md p-4">
                 <div class="flex">
@@ -186,7 +186,7 @@ const deleteLogo = () => {
         </div>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-8xl mx-auto sm:px-2 lg:px-2">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <!-- Formulaire -->

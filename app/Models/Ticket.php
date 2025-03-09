@@ -38,6 +38,16 @@ class Ticket extends Model
         'planned_end' => 'datetime',
     ];
 
+    public function scopeWithLastActionDate($query)
+    {
+        return $query->addSelect([
+            'last_action_at' => TicketLog::select('created_at')
+                ->whereColumn('ticket_id', 'tickets.id')
+                ->orderByDesc('created_at')
+                ->limit(1)
+        ]);
+    }
+    
     public function category(): BelongsTo
     {
         return $this->belongsTo(TicketCategory::class);

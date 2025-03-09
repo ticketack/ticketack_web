@@ -80,7 +80,7 @@ function copyToClipboard(text) {
         </template>
 
         <div class="py-12">
-            <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8 relative">
+            <div class="mx-auto max-w-8xl space-y-6 sm:px-2 lg:px-2 relative">
                 <!-- Sommaire repliable -->
                 <div class="fixed right-0 top-4 flex transition-transform duration-300"
                      :class="{ 'translate-x-[calc(100%-2rem)]': !showSummary }">

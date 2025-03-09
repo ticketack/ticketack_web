@@ -8,7 +8,7 @@
         </template>
 
         <div class="py-2">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-8xl mx-auto sm:px-2 lg:px-2">
                 <!-- Stats -->
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 mb-2">
                     <h3 class="text-lg font-semibold mb-4">{{ $page.props.translations.solver.assigned_tickets }}</h3>

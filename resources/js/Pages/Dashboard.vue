@@ -62,7 +62,7 @@ defineProps({
         </template>
 
         <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="max-w-8xl mx-auto sm:px-2 lg:px-2">
                 <div class="grid grid-cols-4 gap-6">
                     <!-- Panneau Statistiques -->
                     <div class="overflow-hidden bg-white shadow-lg rounded-lg">
