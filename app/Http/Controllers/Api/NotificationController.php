@@ -14,7 +14,7 @@ class NotificationController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getUnreadCount()
+    public function count()
     {
         $user = Auth::user();
         $count = NotificationLog::where('user_id', $user->id)
@@ -31,7 +31,7 @@ class NotificationController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getRecentNotifications()
+    public function recent()
     {
         $user = Auth::user();
         $notifications = NotificationLog::where('user_id', $user->id)

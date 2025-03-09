@@ -23,6 +23,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('user', [AuthController::class, 'user']);
     
+    // Ajouter ces routes de notification
+    Route::get('/notifications/count', [NotificationController::class, 'count'])->name('api.notifications.count');
+    Route::get('/notifications/recent', [NotificationController::class, 'recent'])->name('api.notifications.recent');
+
     // Equipment management
     Route::get('equipment/search', [EquipmentController::class, 'search'])->name('api.equipment.search');
     Route::apiResource('equipment', EquipmentController::class, ['as' => 'api']);
