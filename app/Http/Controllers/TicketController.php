@@ -75,7 +75,7 @@ class TicketController extends Controller
         $sortDirection = $request->input('sort_dir', 'desc');
         
         // Liste des champs autorisés pour le tri
-        $allowedSortFields = ['title', 'priority', 'created_at', 'due_date', 'last_action_at', 'category', 'equipment', 'author'];
+        $allowedSortFields = ['title', 'priority', 'status', 'created_at', 'due_date', 'last_action_at', 'category', 'equipment', 'author'];
         if (in_array($sortField, $allowedSortFields)) {
             if ($sortField === 'last_action_at') {
                 // Tri spécial pour le champ calculé
@@ -87,10 +87,20 @@ class TicketController extends Controller
                       ->orderBy('ticket_categories.name', $sortDirection)
                       ->select('tickets.*');
             }
+            // Pour le statut
+            else if ($sortField === 'status') {
+                $query->leftJoin('ticket_statuses', 'tickets.status_id', '=', 'ticket_statuses.id')
+                    ->orderBy('ticket_statuses.name', $sortDirection)
+                    ->select('tickets.*');
+            }
             else if ($sortField === 'equipment') {
                 $query->leftjoin('equipment', 'tickets.equipment_id', '=', 'equipment.id')
                       ->orderBy('equipment.designation', $sortDirection)
                       ->select('tickets.*');
+            }
+            // Pour la visibilité (is_public)
+            else if ($sortField === 'visibility') {
+                $query->orderBy('is_public', $sortDirection);
             }
             // Pour l'auteur
             else if ($sortField === 'author') {

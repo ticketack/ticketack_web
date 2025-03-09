@@ -81,7 +81,7 @@
                                         <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" :title="$page.props.translations.tickets.index.columns.assigned_to_long">
                                             {{ $page.props.translations.tickets.index.columns.assigned_to }}
                                         </th>
-                                        <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" :title="$page.props.translations.tickets.index.columns.author_long">
+                                        <th @click="sortBy('author')" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24" :title="$page.props.translations.tickets.index.columns.author_long">
                                             {{ $page.props.translations.tickets.index.columns.author }}
                                             <span v-if="isSortedBy('author')">
                                                 {{ getCurrentSortDir('author') === 'asc' ? '▲' : '▼' }}
