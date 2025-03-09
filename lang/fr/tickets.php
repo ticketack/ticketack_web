@@ -23,7 +23,9 @@ return [
             'assigned_to_long' => 'Assigné à',
             'author' => 'Aut',
             'author_long' => 'Auteur',
-            'created_at' => 'Créé le'
+            'created_at' => 'Créé le',
+            'last_action_at' => 'MAJ le',
+            'last_action_at_long' => 'Dernière mise à jour'
         ]
     ],
     'create' => [
