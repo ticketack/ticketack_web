@@ -75,7 +75,7 @@ class TicketController extends Controller
         $sortDirection = $request->input('sort_dir', 'desc');
         
         // Liste des champs autorisés pour le tri
-        $allowedSortFields = ['title', 'priority', 'status', 'created_at', 'due_date', 'last_action_at', 'category', 'equipment', 'author'];
+        $allowedSortFields = ['title', 'priority', 'status', 'created_at', 'visibility', 'due_date', 'last_action_at', 'category', 'equipment', 'author'];
         if (in_array($sortField, $allowedSortFields)) {
             if ($sortField === 'last_action_at') {
                 // Tri spécial pour le champ calculé
