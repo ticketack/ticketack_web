@@ -45,6 +45,10 @@ defineProps({
     usersWithMostResolvedTickets: {
         type: Array,
         required: true
+    },
+    topEquipmentsByTime: {
+        type: Array,
+        required: true
     }
 });
 </script>
@@ -272,7 +276,7 @@ defineProps({
                             </div>
 
                             <!-- Équipements avec le moins de tickets -->
-                            <div>
+                            <div class="mb-6">
                                 <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.dashboard.least_tickets }}</h4>
                                 <div class="space-y-3">
                                     <div v-for="equipment in leastTickets" :key="equipment.id" 
@@ -287,6 +291,25 @@ defineProps({
                                     </div>
                                 </div>
                             </div>
+                            <!-- Top 3 des équipements par temps passé -->
+                            <div class="mb-6">
+                                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ $page.props.translations.dashboard.top_3_equipments_by_time }}</h4>
+                                <div class="space-y-3">
+                                    <div v-for="equipment in topEquipmentsByTime" :key="equipment.id" 
+                                        class="flex items-center justify-between p-3 bg-teal-50 rounded-lg">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800">{{ equipment.name }}</p>
+                                        </div>
+                                        <!-- Ajouter ce code juste au-dessus de votre boucle d'affichage -->
+
+                                        <div class="px-3 py-1 bg-teal-100 rounded-full">
+                                            <span class="text-sm font-medium text-teal-800">
+                                                {{ Math.floor(equipment.total_time / 60) }}h {{ equipment.total_time % 60 }}min
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                            
                         </div>
                     </div>
                 </div>

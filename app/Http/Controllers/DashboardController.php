@@ -87,6 +87,20 @@ class DashboardController extends Controller
         $mostTickets = $equipmentStats->take(3)->values();
         $leastTickets = $equipmentStats->reverse()->take(2)->values();
 
+        // Top 3 des équipements par temps passé
+        $topEquipmentsByTime = DB::table('time_entries')
+            ->join('tickets', 'time_entries.ticket_id', '=', 'tickets.id')
+            ->join('equipment', 'tickets.equipment_id', '=', 'equipment.id')
+            ->select(
+                'equipment.id',
+                'equipment.designation as name',
+                DB::raw('SUM(time_entries.minutes_spent) as total_time')
+            )
+            ->groupBy('equipment.id', 'equipment.designation')
+            ->orderByDesc('total_time')
+            ->take(3)
+            ->get();
+
         // Statistiques des tickets
         $ticketStats = [
             'total' => Ticket::count(),
@@ -146,7 +160,8 @@ class DashboardController extends Controller
             'usersWithMostAssignedTickets' => $usersWithMostAssignedTickets,
             'usersWithMostCreatedTickets' => $usersWithMostCreatedTickets,
             'usersWithMostResolvedTickets' => $usersWithMostResolvedTickets,
-            'avgTimePerTicket' => $avgTimeMinutes
+            'avgTimePerTicket' => $avgTimeMinutes,
+            'topEquipmentsByTime' => $topEquipmentsByTime
         ]);
     }
 }
