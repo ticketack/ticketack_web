@@ -23,31 +23,20 @@ class NotificationController extends Controller
     public function getUnreadCount()
     {
         try {
-            Log::debug('Auth attempt', [
-                'user' => Auth::check() ? Auth::id() : 'none',
-            ]);
-    
             $user = Auth::user();
-            $count = 0;
-            
-            if ($user) {
-                // Utiliser notifications()->whereNull('read_at') au lieu de unreadNotifications()
-                $count = $user->notifications()->whereNull('read_at')->count();
-                
-                // Si vous préférez utiliser votre modèle personnalisé:
-                // $count = $user->notificationLogs()->where('is_read', false)->count();
+            if (!$user) {
+                return response()->json(['count' => 0]);
             }
             
-            return response()->json([
-                'count' => $count
-            ]);
+            // Utiliser uniquement NotificationLog (votre système personnalisé)
+            $count = NotificationLog::where('user_id', $user->id)
+                ->where('is_read', false)
+                ->count();
+                
+            return response()->json(['count' => $count]);
         } catch (\Exception $e) {
-            Log::error('Error in getUnreadCount: ' . $e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ]);
-            
-            // En production, retourner 0 sans erreur
+            Log::error('NotificationCount error: ' . $e->getMessage());
+            // Toujours renvoyer un JSON valide avec HTTP 200
             return response()->json(['count' => 0]);
         }
     }

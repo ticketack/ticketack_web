@@ -269,11 +269,7 @@ const chartCanvas = ref(null);
 // Initialiser le graphique
 let timeChart = null;
 
-onMounted(() => {
-    // Déboguer les données du graphique
-    console.log('Chart Data:', props.chartData);
-    console.log('Statistics:', props.statistics);
-    
+onMounted(() => {   
     // Enregistrer les composants Chart.js
     Chart.register(...registerables);
     
@@ -287,14 +283,6 @@ onMounted(() => {
 });
 
 function initChart() {
-    console.log('Initializing chart...');
-    
-    // Vérifier si la référence du canvas existe
-    if (!chartCanvas.value) {
-        console.error('Canvas reference not found');
-        return;
-    }
-    
     // Détruire le graphique existant s'il y en a un
     if (timeChart) {
         timeChart.destroy();
@@ -304,12 +292,8 @@ function initChart() {
     const dates = props.chartData.map(item => formatChartDate(item.date));
     const hours = props.chartData.map(item => item.hours);
     
-    console.log('Dates for chart:', dates);
-    console.log('Hours for chart:', hours);
-    
     // Créer des données de test si nécessaire pour le débogage
     if (hours.every(h => h === 0)) {
-        console.log('No data available, using test data');
         // Générer des données de test aléatoires
         for (let i = 0; i < 5; i++) {
             const randomIndex = Math.floor(Math.random() * hours.length);
@@ -359,9 +343,6 @@ function initChart() {
                 }
             }
         });
-        console.log('Chart created successfully:', timeChart);
-    } catch (error) {
-        console.error('Error creating chart:', error);
     }
 }
 
