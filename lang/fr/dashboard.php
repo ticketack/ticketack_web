@@ -11,7 +11,7 @@ return [
     'top_3_equipments_by_time' => 'Top 3 des équipements par temps passé',
     'ticket_count' => 'Nombre de tickets : :count',
     'ticket_stats' => 'Statistiques des tickets',
-    'total_tickets' => 'Nombre total de tickets',
+    'total_tickets' => 'Total des tickets',
     'by_status' => 'Par statut',
     'by_priority' => 'Par priorité',
     'by_category' => 'Par catégorie',
@@ -21,7 +21,8 @@ return [
     'most_created_tickets' => 'Utilisateurs avec le plus de tickets créés',
     'most_resolved_tickets' => 'Utilisateurs avec le plus de tickets résolus',
     'avg_time_per_ticket' => 'Temps moyen par ticket',
-    'active_tickets' => 'Tickets actifs',
-    'archived_tickets' => 'Tickets archivés'
+    'active_tickets' => 'Nombre totale de tickets actifs',
+    'archived_tickets' => 'tickets archivés',
+    'plus' => '+',
 ];
 
