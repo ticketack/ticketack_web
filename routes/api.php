@@ -20,30 +20,27 @@ Route::get('ping', function () {
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
+    // Auth
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('user', [AuthController::class, 'user']);
     
-    // Ajouter ces routes de notification
-    Route::get('/notifications/count', [NotificationController::class, 'count'])->name('api.notifications.count');
-    Route::get('/notifications/recent', [NotificationController::class, 'recent'])->name('api.notifications.recent');
-
-    // Equipment management
-    Route::get('equipment/search', [EquipmentController::class, 'search'])->name('api.equipment.search');
-    Route::apiResource('equipment', EquipmentController::class, ['as' => 'api']);
-
-    // Tickets management
-    Route::apiResource('tickets', TicketController::class, ['as' => 'api']);
-    
-    // Notifications
+    // Notifications - uniformisé pour éviter les doublons
     Route::get('notifications/count', [NotificationController::class, 'getUnreadCount'])->name('api.notifications.count');
     Route::get('notifications/recent', [NotificationController::class, 'getRecentNotifications'])->name('api.notifications.recent');
     
-    // Roles management
+    // Equipment management
+    Route::get('equipment/search', [EquipmentController::class, 'search'])->name('api.equipment.search');
+    Route::apiResource('equipment', EquipmentController::class, ['as' => 'api']);
+    
+    // Tickets management
+    Route::apiResource('tickets', TicketController::class, ['as' => 'api']);
+    
+    // Roles management (avec permission)
     Route::middleware('permission:manage roles')->group(function () {
         Route::apiResource('roles', RoleController::class, ['as' => 'api']);
     });
-
-    // Permissions management
+    
+    // Permissions management (avec permission)
     Route::middleware('permission:manage permissions')->group(function () {
         Route::apiResource('permissions', PermissionController::class, ['as' => 'api']);
     });
