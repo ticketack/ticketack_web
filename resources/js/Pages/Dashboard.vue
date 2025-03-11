@@ -124,6 +124,10 @@ defineProps({
                                 <div>
                                     <p class="text-sm text-gray-600">{{ $page.props.translations.dashboard.total_tickets }}</p>
                                     <p class="text-2xl font-bold text-gray-800">{{ ticketStats.total }}</p>
+                                    <div class="mt-1 text-xs text-gray-500">
+                                        <p>{{ $page.props.translations.dashboard.active_tickets || 'Dont tickets actifs' }}: <span class="font-medium">{{ ticketStats.active }}</span></p>
+                                        <p>{{ $page.props.translations.dashboard.archived_tickets || 'Et tickets archivés' }}: <span class="font-medium">{{ ticketStats.archived }}</span></p>
+                                    </div>
                                 </div>
                             </div>
 

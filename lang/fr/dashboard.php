@@ -20,5 +20,8 @@ return [
     'most_assigned_tickets' => 'Utilisateurs avec le plus de tickets assignés',
     'most_created_tickets' => 'Utilisateurs avec le plus de tickets créés',
     'most_resolved_tickets' => 'Utilisateurs avec le plus de tickets résolus',
-    'avg_time_per_ticket' => 'Temps moyen par ticket'
+    'avg_time_per_ticket' => 'Temps moyen par ticket',
+    'active_tickets' => 'Tickets actifs',
+    'archived_tickets' => 'Tickets archivés'
 ];
+

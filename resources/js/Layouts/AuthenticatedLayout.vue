@@ -10,6 +10,8 @@ import Breadcrumbs from '@/Components/Breadcrumbs.vue';
 import NotificationBell from '@/Components/NotificationBell.vue';
 import { Link } from '@inertiajs/vue3';
 
+
+
 const showingNavigationDropdown = ref(false);
 const sidebarCollapsed = ref(false);
 

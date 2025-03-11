@@ -104,6 +104,8 @@ class DashboardController extends Controller
         // Statistiques des tickets
         $ticketStats = [
             'total' => Ticket::count(),
+            'active' => Ticket::where('archived', false)->count(), // Tickets actifs
+            'archived' => Ticket::where('archived', true)->count(), // Tickets archivés        
             'byStatus' => Ticket::select('status_id', DB::raw('count(*) as count'))
                 ->groupBy('status_id')
                 ->with('status')
