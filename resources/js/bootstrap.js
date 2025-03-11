@@ -1,15 +1,45 @@
 import axios from 'axios';
 window.axios = axios;
 window.axios.defaults.withCredentials = true;
+
+// Fonction pour obtenir la valeur d'un cookie
+function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
+    return match ? match[3] : null;
+}
+
+// Ajouter les jetons CSRF à chaque requête
+window.axios.interceptors.request.use(config => {
+    // Ajouter le jeton CSRF aux headers
+    const token = document.querySelector('meta[name="csrf-token"]');
+    if (token) {
+        config.headers['X-CSRF-TOKEN'] = token.content;
+        
+        // Ajouter également le jeton XSRF pour Sanctum
+        const xsrfToken = getCookie('XSRF-TOKEN');
+        if (xsrfToken) {
+            config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
+        }
+    }
+    return config;
+});
+
+// Gérer les réponses et intercepter les erreurs 401
 window.axios.interceptors.response.use(
     response => response,
     error => {
+        // Log pour déboguer en production
+        console.error(`Axios error: ${error.config?.url} - Status: ${error.response?.status}`);
+        
         if (error.response && error.response.status === 401) {
-            // Ne rediriger que si l'erreur ne vient pas d'une connexion Pusher
-            if (!error.config.url.includes('broadcasting/auth')) {
-                window.location.href = '/login';
+            // Ignorer les erreurs 401 de ces endpoints spécifiques
+            if (error.config.url.includes('broadcasting/auth') || 
+                error.config.url.includes('notifications/count') ||
+                error.config.url.includes('api/notifications')) {
+                console.warn(`Erreur 401 ignorée pour: ${error.config.url}`);
             } else {
-                console.warn('Erreur d\'authentification Pusher ignorée pour éviter une redirection');
+                // Pour toutes les autres requêtes, rediriger vers login
+                window.location.href = '/login';
             }
         }
         return Promise.reject(error);
@@ -28,6 +58,16 @@ window.Pusher = Pusher;
 const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;
 const pusherCluster = import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'eu';
 
+// Récupérer préventivement un cookie CSRF au démarrage pour Sanctum
+(async function() {
+    try {
+        await axios.get('/sanctum/csrf-cookie');
+        console.log('Cookie CSRF actualisé pour Sanctum');
+    } catch (error) {
+        console.warn('Impossible d\'actualiser le cookie CSRF:', error);
+    }
+})();
+
 // Ne créer Echo que si la clé Pusher est définie
 if (pusherKey) {
     window.Echo = new Echo({
@@ -42,7 +82,8 @@ if (pusherKey) {
         // Ajouter les informations d'authentification CSRF
         auth: {
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                'X-XSRF-TOKEN': decodeURIComponent(getCookie('XSRF-TOKEN') || '')
             }
         },
     });

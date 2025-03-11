@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
+    
     /**
      * Récupérer le nombre de notifications non lues
      *
@@ -23,6 +28,11 @@ class NotificationController extends Controller
 
         return response()->json([
             'count' => $count
+        ]);
+        Log::debug('Auth attempt', [
+            'user' => Auth::check() ? Auth::id() : 'none',
+            'headers' => request()->headers->all(),
+            'cookies' => request()->cookies->all()
         ]);
     }
 

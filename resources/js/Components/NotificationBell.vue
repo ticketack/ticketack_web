@@ -121,7 +121,14 @@ const getChannelColor = (channel) => {
 // Vérifier s'il y a des notifications non lues
 const hasUnread = computed(() => unreadCount.value > 0);
 
-onMounted(() => {
+onMounted(async () => {
+    // S'assurer d'avoir un cookie CSRF valide avant de faire des requêtes
+    try {
+        await axios.get('/sanctum/csrf-cookie');
+        // Continuez avec l'initialisation normale...
+    } catch (error) {
+        console.error('Erreur lors de la récupération du cookie CSRF', error);
+    }
     document.addEventListener('click', closeDropdown);
     
     // Mettre à jour le compteur de notifications toutes les 30 secondes
