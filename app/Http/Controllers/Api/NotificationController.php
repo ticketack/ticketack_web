@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\NotificationLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
@@ -19,23 +20,31 @@ class NotificationController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function count()
+    public function getUnreadCount()
     {
-        $user = Auth::user();
-        $count = NotificationLog::where('user_id', $user->id)
-            ->where('is_read', false)
-            ->count();
-
-        return response()->json([
-            'count' => $count
-        ]);
         Log::debug('Auth attempt', [
             'user' => Auth::check() ? Auth::id() : 'none',
             'headers' => request()->headers->all(),
             'cookies' => request()->cookies->all()
         ]);
-    }
 
+        $user = Auth::user();
+        $count = 0;
+        
+        if ($user) {
+            // Méthode 1: Utiliser la relation unreadNotifications de Laravel
+            $count = $user->unreadNotifications()->count();
+            
+            // Méthode 2: Utiliser NotificationLog si vous préférez
+            // $count = NotificationLog::where('user_id', $user->id)
+            //    ->where('is_read', false)
+            //    ->count();
+        }
+        
+        return response()->json([
+            'count' => $count
+        ]);
+    }
     /**
      * Récupérer les notifications récentes
      *
