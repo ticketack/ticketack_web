@@ -49,8 +49,19 @@ defineProps({
     topEquipmentsByTime: {
         type: Array,
         required: true
+    },
+    topUsersByTime: {
+        type: Array,
+        required: true
     }
 });
+
+const formatTime = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h ${mins}m`;
+};
+
 </script>
 
 <template>
@@ -249,6 +260,31 @@ defineProps({
                                         </div>
                                         <div class="px-3 py-1 bg-green-100 rounded-full">
                                             <span class="text-sm font-medium text-green-800">{{ user.ticket_count }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Utilisateurs avec le plus de temps passé -->
+                            <div class="mt-6">
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <div class="p-3 bg-blue-100 rounded-full">
+                                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">{{ $page.props.translations.dashboard.most_time_spent || 'Plus de temps passé' }}</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-3">
+                                    <div v-for="user in topUsersByTime" :key="user.id" 
+                                        class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800">{{ user.name }}</p>
+                                        </div>
+                                        <div class="px-3 py-1 bg-blue-100 rounded-full">
+                                            <span class="text-sm font-medium text-blue-800">{{ formatTime(user.total_time) }}</span>
                                         </div>
                                     </div>
                                 </div>

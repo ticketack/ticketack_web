@@ -23,6 +23,7 @@ return [
     'avg_time_per_ticket' => 'Temps moyen par ticket',
     'active_tickets' => 'Nombre totale de tickets actifs',
     'archived_tickets' => 'tickets archivés',
+    'most_time_spent' => 'Utilisateurs avec le plus de temps passé',
     'plus' => '+',
 ];
 

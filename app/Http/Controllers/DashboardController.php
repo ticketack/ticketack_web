@@ -128,6 +128,19 @@ class DashboardController extends Controller
                 })
         ];
 
+        // Top 3 des utilisateurs par temps passé
+        $topUsersByTime = DB::table('time_entries')
+        ->join('users', 'time_entries.user_id', '=', 'users.id')
+        ->select(
+            'users.id',
+            'users.name',
+            DB::raw('SUM(time_entries.minutes_spent) as total_time')
+        )
+        ->groupBy('users.id', 'users.name')
+        ->orderByDesc('total_time')
+        ->take(3)
+        ->get();
+
         // Données pour le graphique des 30 derniers jours
         $thirtyDaysAgo = now()->subDays(29)->startOfDay();
         $ticketsPerDay = Ticket::where('created_at', '>=', $thirtyDaysAgo)
@@ -163,7 +176,8 @@ class DashboardController extends Controller
             'usersWithMostCreatedTickets' => $usersWithMostCreatedTickets,
             'usersWithMostResolvedTickets' => $usersWithMostResolvedTickets,
             'avgTimePerTicket' => $avgTimeMinutes,
-            'topEquipmentsByTime' => $topEquipmentsByTime
+            'topEquipmentsByTime' => $topEquipmentsByTime,
+            'topUsersByTime' => $topUsersByTime
         ]);
     }
 }
