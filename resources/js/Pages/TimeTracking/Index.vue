@@ -438,22 +438,29 @@ function getStatusColor(statusId) {
                     <!-- Liste des tickets -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                         <div v-for="ticket in displayedTickets" :key="ticket.id" 
-                             class="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                            <div class="flex justify-between items-start mb-2">
-                                <h4 class="font-semibold text-blue-600 truncate" :title="ticket.title">
-                                    {{ ticket.title }}
-                                    <span v-if="ticket.archived" class="text-xs text-gray-500 ml-1">(Archivé)</span>
-                                </h4>
-                                <span :class="`${getStatusColor(ticket.status.id)} text-white text-xs px-2 py-1 rounded-full`">
-                                    {{ ticket.status.name }}
-                                </span>
+                            class="border rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col h-full">
+                            
+                            <!-- Contenu principal du ticket (ajout de flex-grow pour pousser le bouton vers le bas) -->
+                            <div class="flex-grow">
+                                <!-- Titre + statut -->
+                                <div class="grid grid-cols-[1fr_auto] gap-2 mb-2 items-start">
+                                    <h4 class="font-semibold text-blue-600 break-words" :title="ticket.title">
+                                        {{ ticket.title }}
+                                        <span v-if="ticket.archived" class="text-xs text-gray-500 ml-1">(Archivé)</span>
+                                    </h4>
+                                    <div class="whitespace-nowrap" :class="`${getStatusColor(ticket.status.id)} text-white text-xs px-3 py-1 rounded-full`">
+                                        {{ ticket.status.name }}
+                                    </div>
+                                </div>
+
+                                <div class="text-sm text-gray-600 mb-2">
+                                    <p><span class="font-medium">Catégorie:</span> {{ ticket.category.name }}</p>
+                                    <p v-if="ticket.equipment"><span class="font-medium">Équipement:</span> {{ ticket.equipment.name }}</p>
+                                    <p><span class="font-medium">Temps total:</span> {{ formatDuration(ticket.total_time_spent || 0) }}</p>
+                                </div>
                             </div>
-                            <div class="text-sm text-gray-600 mb-2">
-                                <p><span class="font-medium">Catégorie:</span> {{ ticket.category.name }}</p>
-                                <p v-if="ticket.equipment"><span class="font-medium">Équipement:</span> {{ ticket.equipment.name }}</p>
-                                <p><span class="font-medium">Temps total:</span> {{ formatDuration(ticket.total_time_spent || 0) }}</p>
-                            </div>
-                            <div class="flex justify-end">
+                            <!-- Bouton toujours en bas (mt-auto pour le pousser vers le bas) -->
+                            <div class="mt-auto flex justify-end">
                                 <button v-if="!ticket.archived" @click="openAddTimeModal(ticket)" 
                                         class="flex items-center text-sm text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md">
                                     <ClockIcon class="h-4 w-4 mr-1" />
