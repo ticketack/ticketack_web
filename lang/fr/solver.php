@@ -17,6 +17,10 @@ return [
     'assigned_tickets' => 'Tickets assignés',
     'scheduled_tickets' => 'Tickets planifiés',
     'calendar' => 'Calendrier',
+    'author' => 'Auteur',
+    'due_date' => 'Date',
+    'equipment' => 'Équip.',
+    'not_available' => 'N/A',
     'schedule' => [
         'title' => 'Planifier l\'intervention',
         'start_date' => 'Date de début',
@@ -25,5 +29,12 @@ return [
         'save' => 'Enregistrer',
         'cancel' => 'Annuler',
         'button' => 'Planifier'
+    ],
+
+    'priorities' => [
+    'low' => 'Basse',
+    'medium' => 'Moyenne',
+    'high' => 'Haute',
+    'critical' => 'Critique',
     ]
 ];

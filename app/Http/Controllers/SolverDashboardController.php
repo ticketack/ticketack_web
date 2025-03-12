@@ -25,15 +25,22 @@ class SolverDashboardController extends Controller
         $user = $request->user();
         
         // Récupérer les tickets assignés au solver
-        $assignedTickets = Ticket::with(['category', 'status'])
-            ->whereHas('assignees', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->whereHas('status', function ($query) {
-                $query->where('is_closed', false);
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $assignedTickets = Ticket::with(['category', 'status', 'equipment', 'creator'])
+        ->whereHas('assignees', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->whereHas('status', function ($query) {
+            $query->where('is_closed', false);
+        })
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(function ($ticket) {
+            // Utiliser designation comme nom d'équipement
+            $ticket->equipment_name = $ticket->equipment ? $ticket->equipment->designation : null;
+            // Ajouter le nom de l'auteur en utilisant la relation creator
+            $ticket->author_name = $ticket->creator ? $ticket->creator->name : null;
+            return $ticket;
+        });
 
         // Récupérer les planifications du solver avec toutes les relations nécessaires
         $schedules = TicketSchedule::with('ticket', 'ticket.status', 'ticket.category')

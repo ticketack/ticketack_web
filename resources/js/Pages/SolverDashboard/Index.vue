@@ -47,24 +47,45 @@
                                     :data-ticket="JSON.stringify(ticket)"
                                     :title="ticket.title"
                                 >
-                                    <!-- Première ligne: numéro, titre tronqué, état -->
+                                    <!-- Première ligne: numéro, titre, état -->
                                     <div class="flex items-center gap-2 mb-1 w-full">
                                         <span class="font-medium text-gray-600 shrink-0">#{{ ticket.id }}</span>
-                                        <Link :href="`/tickets/${ticket.id}`" class="text-indigo-600 hover:text-indigo-900 font-medium truncate flex-grow">
-                                            {{ ticket.title.length > 20 ? ticket.title.substring(0, 20) + '...' : ticket.title }}
+                                        <Link :href="`/tickets/${ticket.id}`" class="text-indigo-600 hover:text-indigo-900 font-medium flex-grow break-words">
+                                            {{ ticket.title }}
                                         </Link>
                                         <span :class="getStatusClass(ticket.status)" class="shrink-0">
-                                            {{ ticket.status?.name || 'Nouveau' }}
+                                            {{ ticket.status?.name }}
                                         </span>
                                     </div>
-                                    
-                                    <!-- Deuxième ligne: auteur, date souhaitée, équipement, priorité -->
-                                    <div class="flex items-center justify-between w-full text-sm">
-                                        <span class="text-gray-500 truncate max-w-[70px]" :title="ticket.user?.name || 'Anonyme'">{{ ticket.user?.name || 'Anonyme' }}</span>
-                                        <span class="text-gray-500">{{ ticket.desired_resolution_date ? new Date(ticket.desired_resolution_date).toLocaleDateString() : 'N/A' }}</span>
-                                        <span class="text-gray-500 truncate max-w-[80px]" :title="ticket.equipment?.name || 'N/A'">{{ ticket.equipment?.name || 'N/A' }}</span>
+                                    <!-- Deuxième ligne: auteur (gauche) et date souhaitée (droite) -->
+                                    <div class="flex justify-between items-center w-full text-xs">
+                                        <!-- Auteur (à gauche) -->
+                                        <span class="text-gray-500">
+                                            {{ $page.props.translations.solver.author }}: {{ ticket.author_name || $page.props.translations.solver.not_available }}
+                                        </span>
+                                        <!-- Date de résolution (à droite) - masquée si non définie -->
+                                        <span v-if="ticket.due_date" class="text-gray-500">
+                                            {{ $page.props.translations.solver.due_date }}: {{ new Date(ticket.due_date).toLocaleDateString() }}
+                                        </span>
+                                        <!-- Espace réservé si pas de date (pour maintenir l'alignement) -->
+                                        <span v-else class="text-gray-500 opacity-0">.</span>
+                                    </div>
+
+                                    <!-- Troisième Ligne : équipement (gauche) et priorité (droite) -->
+                                    <div class="flex justify-between items-center w-full text-xs mt-1">
+                                        <!-- Équipement (à gauche) - masqué si non défini -->
+                                        <span v-if="ticket.equipment_name" class="text-gray-500">
+                                            {{ $page.props.translations.solver.equipment }}: {{ ticket.equipment_name }}
+                                        </span>
+                                        <!-- Espace réservé si pas d'équipement (pour maintenir l'alignement) -->
+                                        <span v-else class="text-gray-500 opacity-0">.</span>
+                                        
+                                        <!-- Priorité (à droite) -->
                                         <span :class="getPriorityClass(ticket.priority)">
-                                            {{ typeof ticket.priority === 'object' ? ticket.priority.name : ticket.priority }}
+                                            {{ typeof ticket.priority === 'object' 
+                                                ? $page.props.translations.solver.priorities[ticket.priority.name.toLowerCase()] || ticket.priority.name
+                                                : $page.props.translations.solver.priorities[ticket.priority.toLowerCase()] || ticket.priority 
+                                            }}
                                         </span>
                                     </div>
                                 </div>
@@ -318,7 +339,6 @@ const calendarOptions = {
     // Cela garantit que les dates sont utilisées telles quelles, sans aucune conversion
     timeZone: 'local',
     eventReceive: (info) => {
-        console.log('Event received:', info);
         const ticket = info.event.extendedProps.ticket;
         
         // Créer le schedule dans la base de données
@@ -348,22 +368,6 @@ const calendarOptions = {
                 // Supprimer l'événement en cas d'erreur
                 info.event.remove();
             });
-    },
-    drop: (info) => {
-        console.log('=== DROP EVENT FROM CALENDAR ===');
-        console.log('Drop info:', {
-            date: info.date,
-            draggedEl: info.draggedEl?.className,
-            jsEvent: info.jsEvent?.type,
-            resource: info.resource,
-            allDay: info.allDay
-        });
-    },
-    eventDragStart: (info) => {
-        console.log('Event drag start:', info);
-    },
-    eventDragStop: (info) => {
-        console.log('Event drag stop:', info);
     },
     initialView: 'timeGridWeek',
     headerToolbar: {
@@ -396,15 +400,6 @@ const calendarOptions = {
         // Ouvrir le modal avec les détails de l'événement
         selectedEvent.value = info.event;
         
-        // Afficher les informations de l'événement pour le débogage
-        console.log('Event clicked:', {
-            id: info.event.id,
-            title: info.event.title,
-            start: info.event.start,
-            end: info.event.end,
-            extendedProps: info.event.extendedProps
-        });
-        
         // Pour les champs datetime-local, utiliser le format YYYY-MM-DDThh:mm
         // sans fuseau horaire, car le navigateur s'attend à ce format
         const startDate = info.event.start;
@@ -421,7 +416,7 @@ const calendarOptions = {
     },
     eventResize: async (info) => {
         try {
-            console.log('Event resized:', info);
+
             
             // Calculer la durée en minutes entre le début et la fin
             const start = info.event.start;
@@ -528,35 +523,23 @@ function getStatusClass(status) {
 }
 
 function getPriorityClass(priority) {
-    const baseClasses = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full'
-    const colorClasses = {
-        'low': 'bg-green-100 text-green-800',
-        'medium': 'bg-yellow-100 text-yellow-800',
-        'high': 'bg-red-100 text-red-800'
+    if (!priority) return 'text-gray-500';
+    
+    // Si priority est un objet, on utilise le nom, sinon on utilise la valeur directement
+    const priorityValue = typeof priority === 'object' ? priority.name.toLowerCase() : priority.toLowerCase();
+    
+    switch (priorityValue) {
+        case 'low':
+            return 'text-green-600 bg-green-100 px-2 py-0.5 rounded';
+        case 'medium':
+            return 'text-yellow-600 bg-yellow-100 px-2 py-0.5 rounded';
+        case 'high':
+            return 'text-orange-600 bg-orange-100 px-2 py-0.5 rounded';
+        case 'critical':
+            return 'text-red-600 bg-red-100 px-2 py-0.5 rounded';
+        default:
+            return 'text-gray-500';
     }
-    
-    // Déterminer la priorité à partir de l'objet ou de la chaîne
-    let priorityKey = 'medium';
-    
-    if (typeof priority === 'object') {
-        // Si c'est un objet, essayer d'utiliser le nom pour déterminer la priorité
-        const name = (priority.name || '').toLowerCase();
-        if (name.includes('faible') || name.includes('basse')) {
-            priorityKey = 'low';
-        } else if (name.includes('haute') || name.includes('élevée') || name.includes('urgent')) {
-            priorityKey = 'high';
-        }
-    } else if (typeof priority === 'string') {
-        // Si c'est une chaîne, essayer de déterminer la priorité directement
-        const p = priority.toLowerCase();
-        if (p.includes('faible') || p.includes('basse') || p === 'low') {
-            priorityKey = 'low';
-        } else if (p.includes('haute') || p.includes('élevée') || p.includes('urgent') || p === 'high') {
-            priorityKey = 'high';
-        }
-    }
-    
-    return `${baseClasses} ${colorClasses[priorityKey] || colorClasses['medium']}`
 }
 
 function getPriorityColor(priority) {
@@ -656,31 +639,22 @@ async function deleteEvent() {
     try {
         // Récupérer l'ID correct de l'événement
         const eventId = selectedEvent.value.id;
-        console.log('Deleting event with ID:', eventId);
         
-        // Ajouter un log pour voir la réponse du serveur
-        const response = await axios.delete(`/schedules/${eventId}`);
-        console.log('Delete response:', response);
+        // Envoyer la requête de suppression
+        await axios.delete(`/api/schedules/${eventId}`);
         
-        // Supprimer l'événement du calendrier sans recharger la page
-        if (selectedEvent.value) {
-            console.log('Removing event from calendar');
-            selectedEvent.value.remove();
-        } else {
-            console.warn('Selected event is null, cannot remove');
-        }
+        // Supprimer l'événement du calendrier
+        selectedEvent.value.remove();
         
-        // Fermer les modales
+        // Fermer les modaux
         closeDeleteModal();
+        closeEventModal();
+        
     } catch (error) {
-        console.error('Error deleting event:', error);
-        if (error.response) {
-            console.error('Server response:', error.response.data);
-        }
-        alert('Une erreur est survenue lors de la suppression de l\'événement');
-        closeDeleteModal();
+        // Gérer l'erreur
+        alert('Erreur lors de la suppression: ' + (error.response?.data?.message || error.message));
     }
-}
+} 
 
 async function updateEvent() {
     if (!selectedEvent.value) return;

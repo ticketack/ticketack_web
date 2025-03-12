@@ -269,7 +269,11 @@ const chartCanvas = ref(null);
 // Initialiser le graphique
 let timeChart = null;
 
-onMounted(() => {   
+onMounted(() => {
+    // Déboguer les données du graphique
+    console.log('Chart Data:', props.chartData);
+    console.log('Statistics:', props.statistics);
+    
     // Enregistrer les composants Chart.js
     Chart.register(...registerables);
     
@@ -283,6 +287,14 @@ onMounted(() => {
 });
 
 function initChart() {
+    console.log('Initializing chart...');
+    
+    // Vérifier si la référence du canvas existe
+    if (!chartCanvas.value) {
+        console.error('Canvas reference not found');
+        return;
+    }
+    
     // Détruire le graphique existant s'il y en a un
     if (timeChart) {
         timeChart.destroy();
@@ -292,8 +304,12 @@ function initChart() {
     const dates = props.chartData.map(item => formatChartDate(item.date));
     const hours = props.chartData.map(item => item.hours);
     
+    console.log('Dates for chart:', dates);
+    console.log('Hours for chart:', hours);
+    
     // Créer des données de test si nécessaire pour le débogage
     if (hours.every(h => h === 0)) {
+        console.log('No data available, using test data');
         // Générer des données de test aléatoires
         for (let i = 0; i < 5; i++) {
             const randomIndex = Math.floor(Math.random() * hours.length);
@@ -343,6 +359,9 @@ function initChart() {
                 }
             }
         });
+        console.log('Chart created successfully:', timeChart);
+    } catch (error) {
+        console.error('Error creating chart:', error);
     }
 }
 
@@ -412,7 +431,7 @@ function getStatusColor(statusId) {
         </template>
 
         <div class="py-12">
-            <div class="max-w-8xl mx-auto sm:px-2 lg:px-2">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-semibold mb-4">Tickets disponibles pour le pointage</h3>
                     
