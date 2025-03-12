@@ -454,7 +454,7 @@ function getStatusColor(statusId) {
                                 </div>
 
                             </div>
-                            <!-- Bas de ticket en deux colonnes -->
+                            <!-- Bas de ticket en 2 colonnes-->
                             <div class="mt-auto grid grid-cols-[1fr_auto] gap-2 items-center">
                                 <!-- Colonne 1: Infos -->
                                 <div class="text-sm text-gray-600">

@@ -46,7 +46,7 @@
 
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import TreeNode from './Partials/TreeNode.vue';
 
 defineProps({
@@ -64,8 +64,10 @@ const editEquipment = (id) => {
     router.visit(route('equipment.edit', id));
 };
 
+const page = usePage(); // Ajouter cette ligne
+
 const deleteEquipment = (id) => {
-    if (confirm($page.props.translations.equipment.index.confirm_delete)) {
+    if (confirm(page.props.translations.equipment.index.confirm_delete)) { // Utiliser page au lieu de $page
         router.delete(route('equipment.destroy', id));
     }
 };
