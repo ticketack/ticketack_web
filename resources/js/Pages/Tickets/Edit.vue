@@ -101,7 +101,7 @@
                                     >
                                         <option value="">Aucun</option>
                                         <option v-for="equipment in props.equipments" :key="equipment.id" :value="equipment.id">
-                                            {{ equipment.name }}
+                                            {{ equipment.designation }}
                                         </option>
                                     </SelectInput>
                                     <InputError class="mt-2" :message="form.errors.equipment_id" />
