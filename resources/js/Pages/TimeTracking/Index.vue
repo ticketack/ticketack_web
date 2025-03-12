@@ -453,22 +453,27 @@ function getStatusColor(statusId) {
                                     </div>
                                 </div>
 
-                                <div class="text-sm text-gray-600 mb-2">
+                            </div>
+                            <!-- Bas de ticket en deux colonnes -->
+                            <div class="mt-auto grid grid-cols-[1fr_auto] gap-2 items-center">
+                                <!-- Colonne 1: Infos -->
+                                <div class="text-sm text-gray-600">
                                     <p><span class="font-medium">Catégorie:</span> {{ ticket.category.name }}</p>
                                     <p v-if="ticket.equipment"><span class="font-medium">Équipement:</span> {{ ticket.equipment.name }}</p>
                                     <p><span class="font-medium">Temps total:</span> {{ formatDuration(ticket.total_time_spent || 0) }}</p>
                                 </div>
-                            </div>
-                            <!-- Bouton toujours en bas (mt-auto pour le pousser vers le bas) -->
-                            <div class="mt-auto flex justify-end">
-                                <button v-if="!ticket.archived" @click="openAddTimeModal(ticket)" 
-                                        class="flex items-center text-sm text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md">
-                                    <ClockIcon class="h-4 w-4 mr-1" />
-                                    Ajouter du temps
-                                </button>
-                                <span v-else class="text-xs text-gray-500 italic">
-                                    Impossible d'ajouter du temps sur un ticket archivé
-                                </span>
+                                
+                                <!-- Colonne 2: Bouton -->
+                                <div>
+                                    <button v-if="!ticket.archived" @click="openAddTimeModal(ticket)" 
+                                            class="flex items-center text-sm text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md whitespace-nowrap">
+                                        <ClockIcon class="h-4 w-4 mr-1" />
+                                        Ajouter du temps
+                                    </button>
+                                    <span v-else class="text-xs text-gray-500 italic">
+                                        Impossible d'ajouter du temps sur un ticket archivé
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

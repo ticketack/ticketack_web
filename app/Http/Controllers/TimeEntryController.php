@@ -44,7 +44,8 @@ class TimeEntryController extends Controller
         }
         
         $assignedTickets = $assignedTicketsQuery
-            ->with(['status', 'category', 'equipment', 'assignees'])
+            ->with(['status', 'category', 'equipment', 'assignees', 'timeEntries'])
+            ->withSum('timeEntries as total_time_spent', 'minutes_spent')  // Ajouter cette ligne
             ->get();
 
         // Récupérer tous les tickets si nécessaire
@@ -58,8 +59,9 @@ class TimeEntryController extends Controller
             }
             
             $allTickets = $allTicketsQuery
-                ->with(['status', 'category', 'equipment', 'assignees'])
-                ->get();
+            ->with(['status', 'category', 'equipment', 'assignees', 'timeEntries'])
+            ->withSum('timeEntries as total_time_spent', 'minutes_spent')  // Ajouter cette ligne
+            ->get();
         }
 
         // Récupérer les entrées de temps récentes de l'utilisateur
