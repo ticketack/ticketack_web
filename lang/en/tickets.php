@@ -3,6 +3,8 @@
 return [
     'index' => [
         'title' => 'Tickets',
+        'search' => 'Search in titles and descriptions...',
+        'search_button' => 'Search',
         'filters' => 'Filters',
         'new_ticket' => 'New Ticket',
         'private' => 'Private',

@@ -3,6 +3,8 @@
 return [
     'index' => [
         'title' => 'Tickets',
+        'search' => 'Rechercher dans les titres et descriptions...',
+        'search_button' => 'Rechercher',
         'filters' => 'Filtres',
         'new_ticket' => 'Nouveau Ticket',
         'private' => 'Privé',

@@ -34,6 +34,32 @@
                     { name: 'Tickets' }
                 ]" />
             </div>
+            <div class="max-w-8xl mx-auto sm:px-2 lg:px-2 mb-4">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4">
+                    <div class="flex">
+                        <div class="flex-grow">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    v-model="search"
+                                    type="text"
+                                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#3eb489] focus:border-[#3eb489] sm:text-sm"
+                                    :placeholder="$page.props.translations.tickets.index.search"
+                                    @keyup.enter="performSearch"
+                                />
+                            </div>
+                        </div>
+                        <button
+                            @click="performSearch"
+                            class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#3eb489] hover:bg-[#2d8b6a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3eb489]"
+                        >
+                            {{ $page.props.translations.tickets.index.search_button }}
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="max-w-8xl mx-auto sm:px-2 lg:px-2">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-3 text-gray-900">
@@ -42,7 +68,7 @@
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th scope="col" class="px-1 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">#</th>
-                                        <th @click="sortBy('title')" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">
+                                        <th @click="sortBy('title')" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer min-w-[150px]">
                                             {{ $page.props.translations.tickets.index.columns.title }}
                                             <span v-if="isSortedBy('title')">
                                                 {{ getCurrentSortDir('title') === 'asc' ? '▲' : '▼' }}
@@ -107,7 +133,7 @@
                                         <td class="px-1 py-2 text-sm text-gray-500">
                                             #{{ ticket.id }}
                                         </td>
-                                        <td class="px-2 py-2">
+                                        <td class="px-2 py-2 min-w-[150px]">
                                             <template v-if="!ticket.is_public && !canViewPrivateTicket(ticket)">
                                                 <span class="italic text-gray-500">Privé</span>
                                             </template>
@@ -240,7 +266,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Link, usePage, useForm } from '@inertiajs/vue3';
-import { EyeIcon, EyeSlashIcon, ArchiveBoxIcon } from '@heroicons/vue/24/outline';
+import { EyeIcon, EyeSlashIcon, ArchiveBoxIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { useToast } from 'vue-toastification';
 import TicketStatus from '@/Components/Tickets/TicketStatus.vue';
 import PriorityGauge from '@/Components/Tickets/PriorityGauge.vue'; // Nouveau composant
@@ -251,6 +277,7 @@ import Pagination from '@/Components/Pagination.vue';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { router } from '@inertiajs/vue3';
+import { watch, onMounted } from 'vue';
 
 // gérer le tri
 function sortBy(field) {
@@ -288,9 +315,26 @@ function getCurrentSortDir(field) {
 }
 
 const showFilters = ref(false);
+const search = ref('');
 const toast = useToast();
 
-defineProps({
+// Fonction pour effectuer la recherche
+const performSearch = () => {
+    router.get(
+        route('tickets.index'),
+        {
+            ...route().params,
+            search: search.value,
+            page: 1 // Réinitialiser à la première page lors d'une nouvelle recherche
+        },
+        {
+            preserveState: true,
+            replace: true
+        }
+    );
+};
+
+const props = defineProps({
     tickets: {
         type: Object,
         required: true
@@ -344,6 +388,20 @@ const archiveTicket = (ticket) => {
         });
     }
 };
+
+// Initialiser la valeur de recherche à partir des filtres existants
+onMounted(() => {
+    if (props.filters.search) {
+        search.value = props.filters.search;
+    }
+});
+
+// Observer les changements de filtres
+watch(() => props.filters, (newFilters) => {
+    if (newFilters.search !== undefined) {
+        search.value = newFilters.search;
+    }
+});
 </script>
 
 <style>

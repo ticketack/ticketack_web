@@ -70,6 +70,16 @@ class TicketController extends Controller
         if ($request->filled('date_to')) {
             $query->whereDate('created_at', '<=', $request->date_to);
         }
+        
+        // Recherche par texte dans le titre et la description
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('description', 'like', '%' . $searchTerm . '%');
+            });
+        }
+        
         // Gestion du tri
         $sortField = $request->input('sort_by', 'created_at');
         $sortDirection = $request->input('sort_dir', 'desc');

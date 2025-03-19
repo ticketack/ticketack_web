@@ -41,7 +41,7 @@ const props = defineProps({
             <div class="p-4 flex items-center justify-between">
                 <ApplicationLogo class="block h-14 w-auto fill-current text-white" v-if="!sidebarCollapsed" :logo-url="logo" />
                 <button @click="toggleSidebar" class="text-white hover:text-gray-300">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6" fill="none" stroke="grey" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
                     </svg>
                 </button>
