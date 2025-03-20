@@ -26,5 +26,6 @@ return [
     'tickets.view' => 'Tickets anzeigen',
     'tickets.create' => 'Tickets erstellen',
     'tickets.edit' => 'Tickets bearbeiten',
-    'tickets.delete' => 'Tickets löschen'
+    'tickets.delete' => 'Tickets löschen',
+    'tickets.edit_author' => 'Ticket-Autor bearbeiten'
 ];

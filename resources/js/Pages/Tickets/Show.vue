@@ -42,10 +42,10 @@
                                 <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
                                     <div class="space-y-4">
 
-                                        <div class="flex flex-wrap gap-2">
+                                        <div class="flex flex-wrap gap-2 items-center justify-start">
                                             <TicketStatus :status="props.ticket?.status" />
                                             <TicketPriority :priority="props.ticket?.priority" />
-                                            <span v-if="props.ticket?.category" class="px-2 py-1 text-xs font-medium rounded-full"
+                                            <span v-if="props.ticket?.category" class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full h-6"
                                                 :style="{ backgroundColor: props.ticket.category.color + '20', color: props.ticket.category.color }">
                                                 {{ props.ticket.category.name }}
                                             </span>

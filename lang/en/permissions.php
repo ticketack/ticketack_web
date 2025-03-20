@@ -26,5 +26,6 @@ return [
     'tickets.view' => 'View tickets',
     'tickets.create' => 'Create tickets',
     'tickets.edit' => 'Edit tickets',
-    'tickets.delete' => 'Delete tickets'
+    'tickets.delete' => 'Delete tickets',
+    'tickets.edit_author' => 'Edit ticket author'
 ];

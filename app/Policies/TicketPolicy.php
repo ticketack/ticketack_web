@@ -51,6 +51,11 @@ class TicketPolicy
         return $user->hasPermissionTo('tickets.assign');
     }
 
+    public function editAuthor(User $user, Ticket $ticket): bool
+    {
+        return $user->hasPermissionTo('tickets.edit_author');
+    }
+
     public function updateStatus(User $user, Ticket $ticket): bool
     {
         return $user->hasPermissionTo('update_ticket_status');

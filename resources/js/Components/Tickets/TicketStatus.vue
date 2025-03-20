@@ -1,6 +1,6 @@
 <template>
-    <div class="relative group cursor-help">
-        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full" 
+    <div class="relative group cursor-help inline-flex">
+        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full h-6" 
               :style="{ backgroundColor: status.color + '20', color: status.color }">
             <i v-if="status.icon" :class="status.icon"></i>
             <template v-if="compact">

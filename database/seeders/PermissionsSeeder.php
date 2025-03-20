@@ -42,6 +42,7 @@ class PermissionsSeeder extends Seeder
             'tickets.create',
             'tickets.edit',
             'tickets.delete',
+            'tickets.edit_author',
             'update_ticket_status',
         ];
 

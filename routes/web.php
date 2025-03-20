@@ -18,6 +18,11 @@ use Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Inclure les routes de test en environnement local
+if (app()->environment('local')) {
+    require __DIR__.'/web-test.php';
+}
+
 Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('dashboard');

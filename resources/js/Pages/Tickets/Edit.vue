@@ -34,16 +34,43 @@
                             <!-- Description -->
                             <div>
                                 <InputLabel for="description" value="Description" />
-                                <TextArea
-                                    id="description"
-                                    class="mt-1 block w-full"
-                                    v-model="form.description"
-                                    rows="6"
-                                />
+                                <TiptapEditor
+                                        id="description"
+                                        v-model="form.description"
+                                        class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                        placeholder="Description détaillée du ticket..."
+                                        :disabled="currentStep > 1"
+                                        required
+                                    />
                                 <InputError class="mt-2" :message="form.errors.description" />
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Auteur -->
+                                <div v-if="$page.props.auth.user.permissions.includes('tickets.edit_author')">
+                                    <InputLabel for="created_by" value="Auteur" />
+                                    <SelectInput
+                                        id="created_by"
+                                        class="mt-1 block w-full"
+                                        v-model="form.created_by"
+                                        required
+                                    >
+                                        <option value="">Sélectionnez un auteur</option>
+                                        <option v-for="user in props.users" :key="user.id" :value="user.id">
+                                            {{ user.name }}
+                                        </option>
+                                    </SelectInput>
+                                    <InputError class="mt-2" :message="form.errors.created_by" />
+                                </div>
+                                <!-- Auteur (lecture seule) -->
+                                <div v-else>
+                                    <InputLabel for="created_by_readonly" value="Auteur" />
+                                    <div class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 bg-gray-50">
+                                        {{ getUserName(form.created_by) }}
+                                    </div>
+                                    <input type="hidden" v-model="form.created_by" />
+                                </div>
+                                
                                 <!-- Statut -->
                                 <div>
                                     <InputLabel for="status_id" value="Statut" />
@@ -218,6 +245,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DropZone from '@/Components/Documents/DropZone.vue';
 import DocumentPreview from '@/Components/Documents/DocumentPreview.vue';
 import { useToast } from 'vue-toastification';
+import TiptapEditor from '@/Components/TiptapEditor.vue';
+
 
 const toast = useToast();
 
@@ -237,6 +266,10 @@ const props = defineProps({
     equipments: {
         type: Array,
         required: true
+    },
+    users: {
+        type: Array,
+        required: true
     }
 });
 
@@ -249,6 +282,7 @@ const form = useForm({
     equipment_id: props.ticket?.equipment?.id || '',
     is_public: props.ticket?.is_public ?? true,
     due_date: props.ticket?.due_date || '',
+    created_by: props.ticket?.creator?.id || props.ticket?.created_by || '',
     new_documents: []
 });
 
@@ -287,6 +321,11 @@ const formatFileSize = (bytes) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
+const getUserName = (userId) => {
+    const user = props.users.find(u => u.id === userId);
+    return user ? user.name : 'Inconnu';
+};
+
 const submit = () => {
     // Créer un FormData pour tous les champs
     const formData = new FormData();
@@ -303,6 +342,7 @@ const submit = () => {
     formData.append('equipment_id', form.equipment_id);
     formData.append('is_public', form.is_public ? '1' : '0');
     formData.append('due_date', form.due_date);
+    formData.append('created_by', form.created_by);
     
     // Ajouter les fichiers
     form.new_documents.forEach((file, index) => {

@@ -1,5 +1,5 @@
 <template>
-    <span :class="priorityClasses" class="px-2 py-1 text-xs font-medium rounded-full">
+    <span :class="priorityClasses" class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full h-6">
         {{ priorityLabel }}
     </span>
 </template>

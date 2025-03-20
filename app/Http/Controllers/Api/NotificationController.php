@@ -23,11 +23,6 @@ class NotificationController extends Controller
     public function getUnreadCount()
     {
         try {
-            return response()->json(['count' => 0, 'status' => 'ok']);
-        } catch (\Exception $e) {
-            return response()->json(['count' => 0, 'status' => 'error']);
-        }
-        try {
             $user = Auth::user();
             if (!$user) {
                 return response()->json(['count' => 0]);
@@ -50,7 +45,7 @@ class NotificationController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function recent()
+    public function getRecentNotifications()
     {
         $user = Auth::user();
         $notifications = NotificationLog::where('user_id', $user->id)

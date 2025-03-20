@@ -28,6 +28,7 @@ return [
     'tickets.create' => 'Créer des tickets',
     'tickets.edit' => 'Modifier les tickets',
     'tickets.delete' => 'Supprimer les tickets',
+    'tickets.edit_author' => 'Modifier l\'auteur des tickets',
     'update_ticket_status' => 'Mettre à jour le statut des tickets',
     'tickets.schedule' => 'Planifier les tickets',
     'tickets.assign' => 'Assigner les tickets',

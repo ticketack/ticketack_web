@@ -225,12 +225,16 @@ class TicketController extends Controller
         $this->authorize('update', $ticket);
 
         $ticket->load(['category', 'status', 'creator', 'assignees', 'equipment', 'documents']);
+        
+        // Récupérer la liste des utilisateurs pour le sélecteur d'auteur
+        $users = User::orderBy('name')->get();
 
         return Inertia::render('Tickets/Edit', [
             'ticket' => $ticket,
             'statuses' => TicketStatus::orderBy('order')->get(),
             'categories' => TicketCategory::orderBy('order')->get(),
             'equipments' => \App\Models\Equipment::all(),
+            'users' => $users,
         ]);
     }
 
@@ -282,6 +286,7 @@ class TicketController extends Controller
             'equipment_id' => 'nullable|exists:equipment,id',
             'is_public' => 'boolean',
             'due_date' => 'nullable|date',
+            'created_by' => 'required|exists:users,id',
             'documents.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,pdf|max:10240',
         ]);
         
@@ -298,6 +303,22 @@ class TicketController extends Controller
             $ticket->addLog('status_changed', "Statut changé de {$oldStatus->name} à {$newStatus->name}");
         }
         
+        // Vérifier si l'auteur a changé
+        $oldAuthorId = $ticket->created_by;
+        $newAuthorId = $validated['created_by'];
+        
+        if ($oldAuthorId != $newAuthorId) {
+            // Vérifier la permission
+            $this->authorize('editAuthor', $ticket);
+            
+            $oldAuthor = User::find($oldAuthorId);
+            $newAuthor = User::find($newAuthorId);
+            $oldAuthorName = $oldAuthor ? $oldAuthor->name : 'Inconnu';
+            $newAuthorName = $newAuthor ? $newAuthor->name : 'Inconnu';
+            
+            $ticket->addLog('author_changed', "Auteur changé de {$oldAuthorName} à {$newAuthorName}");
+        }
+        
         // Mise à jour des champs du ticket
         $ticket->update([
             'title' => $validated['title'],
@@ -308,6 +329,7 @@ class TicketController extends Controller
             'equipment_id' => $validated['equipment_id'],
             'is_public' => $validated['is_public'],
             'due_date' => $validated['due_date'],
+            'created_by' => $validated['created_by'],
         ]);
         
         // Gestion des documents
