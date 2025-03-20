@@ -71,7 +71,7 @@ class TicketController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'priority' => 'required|string|in:low,medium,high',
+            'priority' => 'required|string|in:low,medium,high,critical',
             'status_id' => 'required|exists:ticket_statuses,id',
             'equipement_id' => 'required|exists:equipements,id',
             'user_id' => 'required|exists:users,id'
@@ -122,7 +122,7 @@ class TicketController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
-            'priority' => 'sometimes|required|string|in:low,medium,high',
+            'priority' => 'sometimes|required|string|in:low,medium,high,critical',
             'status_id' => 'sometimes|required|exists:ticket_statuses,id',
             'equipement_id' => 'sometimes|required|exists:equipements,id',
             'user_id' => 'sometimes|required|exists:users,id'

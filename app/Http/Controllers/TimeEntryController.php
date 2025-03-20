@@ -149,6 +149,7 @@ class TimeEntryController extends Controller
             'recentTimeEntries' => $recentTimeEntries,
             'showAllTickets' => $request->input('show_all_tickets', false),
             'showArchived' => $showArchived,
+            'search' => $request->input('search', ''),
             'chartData' => $chartData,
             'statistics' => [
                 'today' => [

@@ -1,11 +1,11 @@
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { format, parseISO, subMonths } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useToast } from 'vue-toastification';
-import { PencilIcon, TrashIcon, ClockIcon, ChartBarIcon, DocumentTextIcon, CalendarIcon } from '@heroicons/vue/24/outline';
+import { PencilIcon, TrashIcon, ClockIcon, ChartBarIcon, DocumentTextIcon, CalendarIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { Switch, Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 import { Chart, registerables } from 'chart.js';
 
@@ -17,6 +17,10 @@ const props = defineProps({
     showArchived: Boolean,
     chartData: Array,
     statistics: Object,
+    search: {
+        type: String,
+        default: ''
+    }
 });
 
 const toast = useToast();
@@ -27,6 +31,7 @@ const showTimeEntryModal = ref(false);
 const showPdfReportModal = ref(false);
 const editingTimeEntry = ref(null);
 const today = new Date().toISOString().split('T')[0];
+const search = ref(props.search || '');
 
 // Formulaire pour le rapport PDF
 const pdfReportForm = useForm({
@@ -62,6 +67,7 @@ function buildFilterUrl() {
     const params = [];
     if (showAllTicketsToggle.value) params.push('show_all_tickets=1');
     if (showArchivedToggle.value) params.push('show_archived=1');
+    if (search.value) params.push(`search=${encodeURIComponent(search.value)}`);
     return `/time-tracking${params.length ? '?' + params.join('&') : ''}`;
 }
 
@@ -74,10 +80,27 @@ watch(showArchivedToggle, () => {
     window.location.href = buildFilterUrl();
 });
 
-// Calculer les tickets affichés en fonction des filtres
+// Fonction pour effectuer la recherche
+function performSearch() {
+    window.location.href = buildFilterUrl();
+}
+
+// Calculer les tickets affichés en fonction des filtres et de la recherche
 const displayedTickets = computed(() => {
     let tickets = showAllTicketsToggle.value && props.allTickets ? props.allTickets : props.assignedTickets;
-    return tickets || [];
+    tickets = tickets || [];
+    
+    // Filtrer par recherche si une valeur est présente
+    if (search.value && tickets.length > 0) {
+        const searchLower = search.value.toLowerCase();
+        tickets = tickets.filter(ticket => 
+            ticket.title.toLowerCase().includes(searchLower) ||
+            ticket.id.toString().includes(searchLower) ||
+            (ticket.description && ticket.description.toLowerCase().includes(searchLower))
+        );
+    }
+    
+    return tickets;
 });
 
 // Ouvrir le modal d'ajout de temps
@@ -432,6 +455,31 @@ function getStatusColor(statusId) {
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-4">
+                    <div class="flex">
+                        <div class="flex-grow">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    v-model="search"
+                                    type="text"
+                                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#3eb489] focus:border-[#3eb489] sm:text-sm"
+                                    placeholder="Rechercher un ticket..."
+                                    @keyup.enter="performSearch"
+                                />
+                            </div>
+                        </div>
+                        <button
+                            @click="performSearch"
+                            class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#3eb489] hover:bg-[#2d8b6a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3eb489]"
+                        >
+                            Rechercher
+                        </button>
+                    </div>
+                </div>
+                
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-lg font-semibold mb-4">Tickets disponibles pour le pointage</h3>
                     

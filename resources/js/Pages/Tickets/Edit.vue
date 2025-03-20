@@ -97,7 +97,7 @@
                                         <option value="low">Basse</option>
                                         <option value="medium">Moyenne</option>
                                         <option value="high">Haute</option>
-                                        <option value="urgent">Urgente</option>
+                                        <option value="critical">Urgente</option>
                                     </SelectInput>
                                     <InputError class="mt-2" :message="form.errors.priority" />
                                 </div>

@@ -13,11 +13,11 @@
                         <PencilIcon class="-ml-1 mr-2 h-4 w-4" />
                         Modifier
                     </Link>
-                    <button v-if="props.ticket?.archived" @click="unarchiveTicket" class="text-gray-600 hover:text-gray-700 flex items-center border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors">
+                    <button v-if="props.ticket?.archived" @click="openUnarchiveModal" class="text-gray-600 hover:text-gray-700 flex items-center border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors">
                         <ArchiveBoxIcon class="-ml-1 mr-2 h-4 w-4" />
                         Désarchiver
                     </button>
-                    <button v-else @click="archiveTicket" class="text-gray-600 hover:text-gray-700 flex items-center border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors">
+                    <button v-else @click="openArchiveModal" class="text-gray-600 hover:text-gray-700 flex items-center border border-gray-300 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors">
                         <ArchiveBoxIcon class="-ml-1 mr-2 h-4 w-4" />
                         Archiver
                     </button>
@@ -144,7 +144,7 @@
                                         <!-- Actions -->
                                         <div v-if="$page.props.auth.user.id === comment.user_id || $page.props.auth.user.roles?.includes('admin')" 
                                              class="flex space-x-2">
-                                            <button @click="deleteComment(comment.id)" 
+                                            <button @click="openDeleteCommentModal(comment.id)" 
                                                     class="text-red-600 hover:text-red-800">
                                                 <TrashIcon class="h-5 w-5" />
                                             </button>
@@ -278,6 +278,84 @@
             </div>
         </div>
     </AuthenticatedLayout>
+
+    <!-- Modal de confirmation d'archivage -->
+    <Modal :show="archiveModalOpen" @close="closeArchiveModal">
+        <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-600 mb-4">
+                Confirmer l'archivage
+            </h3>
+            <p class="mb-4">Êtes-vous sûr de vouloir archiver ce ticket ?</p>
+            <div class="flex justify-end space-x-3">
+                <button
+                    type="button"
+                    @click="closeArchiveModal"
+                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                    Annuler
+                </button>
+                <button
+                    type="button"
+                    @click="archiveTicket"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                >
+                    Archiver
+                </button>
+            </div>
+        </div>
+    </Modal>
+
+    <!-- Modal de confirmation de désarchivage -->
+    <Modal :show="unarchiveModalOpen" @close="closeUnarchiveModal">
+        <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-600 mb-4">
+                Confirmer le désarchivage
+            </h3>
+            <p class="mb-4">Êtes-vous sûr de vouloir désarchiver ce ticket ?</p>
+            <div class="flex justify-end space-x-3">
+                <button
+                    type="button"
+                    @click="closeUnarchiveModal"
+                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                    Annuler
+                </button>
+                <button
+                    type="button"
+                    @click="unarchiveTicket"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-gray-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                >
+                    Désarchiver
+                </button>
+            </div>
+        </div>
+    </Modal>
+    
+    <!-- Modal de confirmation de suppression de commentaire -->
+    <Modal :show="deleteCommentModalOpen" @close="closeDeleteCommentModal">
+        <div class="p-6">
+            <h3 class="text-lg font-medium text-red-600 mb-4">
+                Confirmer la suppression
+            </h3>
+            <p class="mb-4">{{ t('pages.comments.confirm_delete') }}</p>
+            <div class="flex justify-end space-x-3">
+                <button
+                    type="button"
+                    @click="closeDeleteCommentModal"
+                    class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                    Annuler
+                </button>
+                <button
+                    type="button"
+                    @click="deleteComment"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                >
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    </Modal>
 </template>
 
 <script setup>
@@ -297,6 +375,7 @@ import TicketPriority from '@/Components/Tickets/TicketPriority.vue';
 import Timeline from '@/Components/Tickets/Timeline.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import DocumentPreview from '@/Components/Documents/DocumentPreview.vue';
+import Modal from '@/Components/Modal.vue';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useI18n } from 'vue-i18n';
@@ -370,36 +449,64 @@ const updateStatus = () => {
 const selectedAssigneeIds = ref(props.ticket?.assignees?.map(a => a.id) || []);
 const toast = useToast();
 
+// Variables pour contrôler l'affichage des modales
+const archiveModalOpen = ref(false);
+const unarchiveModalOpen = ref(false);
+const deleteCommentModalOpen = ref(false);
+const commentToDelete = ref(null);
+
+// Fonction pour ouvrir la modale d'archivage
+const openArchiveModal = () => {
+    archiveModalOpen.value = true;
+};
+
+// Fonction pour fermer la modale d'archivage
+const closeArchiveModal = () => {
+    archiveModalOpen.value = false;
+};
+
+// Fonction pour ouvrir la modale de désarchivage
+const openUnarchiveModal = () => {
+    unarchiveModalOpen.value = true;
+};
+
+// Fonction pour fermer la modale de désarchivage
+const closeUnarchiveModal = () => {
+    unarchiveModalOpen.value = false;
+};
+
 // Fonction pour archiver un ticket
 const archiveTicket = () => {
-    if (confirm(`Êtes-vous sûr de vouloir archiver ce ticket ?`)) {
-        useForm().post(route('tickets.archive', props.ticket.id), {}, {
-            onSuccess: () => {
-                toast.success('Ticket archivé avec succès');
-                // Rediriger vers la liste des tickets
-                window.location.href = route('tickets.index');
-            },
-            onError: (errors) => {
-                toast.error(Object.values(errors).join('\n'));
-            }
-        });
-    }
+    useForm().post(route('tickets.archive', props.ticket.id), {}, {
+        onSuccess: () => {
+            // Fermer la modale avant de rediriger
+            closeArchiveModal();
+            toast.success('Ticket archivé avec succès');
+            // Rediriger vers la liste des tickets
+            window.location.href = route('tickets.index');
+        },
+        onError: (errors) => {
+            toast.error(Object.values(errors).join('\n'));
+            closeArchiveModal();
+        }
+    });
 };
 
 // Fonction pour désarchiver un ticket
 const unarchiveTicket = () => {
-    if (confirm(`Êtes-vous sûr de vouloir désarchiver ce ticket ?`)) {
-        useForm().post(route('tickets.unarchive', props.ticket.id), {}, {
-            onSuccess: () => {
-                toast.success('Ticket désarchivé avec succès');
-                // Recharger la page pour refléter les changements
-                window.location.reload();
-            },
-            onError: (errors) => {
-                toast.error(Object.values(errors).join('\n'));
-            }
-        });
-    }
+    useForm().post(route('tickets.unarchive', props.ticket.id), {}, {
+        onSuccess: () => {
+            // Fermer la modale avant de recharger la page
+            closeUnarchiveModal();
+            toast.success('Ticket désarchivé avec succès');
+            // Recharger la page pour refléter les changements
+            window.location.reload();
+        },
+        onError: (errors) => {
+            toast.error(Object.values(errors).join('\n'));
+            closeUnarchiveModal();
+        }
+    });
 };
 
 const updateAssignees = (newValues) => {
@@ -507,16 +614,31 @@ const submitComment = () => {
     });
 };
 
-const deleteComment = (commentId) => {
-    if (confirm(t('pages.comments.confirm_delete'))) {
-        router.delete(route('tickets.comments.destroy', [props.ticket.id, commentId]), {
-            onSuccess: () => {
-                toast.success(t('pages.comments.success.deleted'));
-            },
-            onError: () => {
-                toast.error(t('pages.comments.error.delete'));
-            }
-        });
-    }
+// Fonction pour ouvrir la modale de suppression de commentaire
+const openDeleteCommentModal = (commentId) => {
+    commentToDelete.value = commentId;
+    deleteCommentModalOpen.value = true;
+};
+
+// Fonction pour fermer la modale de suppression de commentaire
+const closeDeleteCommentModal = () => {
+    deleteCommentModalOpen.value = false;
+    commentToDelete.value = null;
+};
+
+// Fonction pour supprimer un commentaire
+const deleteComment = () => {
+    if (!commentToDelete.value) return;
+    
+    router.delete(route('tickets.comments.destroy', [props.ticket.id, commentToDelete.value]), {
+        onSuccess: () => {
+            closeDeleteCommentModal();
+            toast.success(t('pages.comments.success.deleted'));
+        },
+        onError: () => {
+            closeDeleteCommentModal();
+            toast.error(t('pages.comments.error.delete'));
+        }
+    });
 };
 </script>

@@ -281,7 +281,7 @@ class TicketController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'status_id' => 'required|exists:ticket_statuses,id',
-            'priority' => 'required|in:low,medium,high,urgent',
+            'priority' => 'required|in:low,medium,high,critical',
             'category_id' => 'required|exists:ticket_categories,id',
             'equipment_id' => 'nullable|exists:equipment,id',
             'is_public' => 'boolean',
