@@ -9,7 +9,7 @@
                     Ticket #{{ props.ticket?.id }} - {{ props.ticket?.title }}
                 </h2>
                 <div class="flex items-center gap-4">
-                    <Link v-if="$page.props.permissions['tickets.edit'] && !props.ticket?.archived" :href="route('tickets.edit', props.ticket.id)" class="text-indigo-600 hover:text-indigo-700 flex items-center border border-indigo-200 rounded-md px-3 py-1.5 hover:bg-indigo-50 transition-colors">
+                    <Link v-if="$page.props.permissions && $page.props.permissions['tickets.edit'] && !props.ticket?.archived" :href="route('tickets.edit', props.ticket.id)" class="text-indigo-600 hover:text-indigo-700 flex items-center border border-indigo-200 rounded-md px-3 py-1.5 hover:bg-indigo-50 transition-colors">
                         <PencilIcon class="-ml-1 mr-2 h-4 w-4" />
                         Modifier
                     </Link>
@@ -220,7 +220,7 @@
                     <div class="w-[30%]">
                         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg sticky top-6">
                             <div class="p-6 space-y-4">
-                                <div v-if="$page.props.permissions['update_ticket_status']" class="mb-4">
+                                <div v-if="$page.props.permissions && $page.props.permissions['update_ticket_status']" class="mb-4">
                                     <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
                                     <select id="status"
                                             v-model="form.status_id"
@@ -236,7 +236,7 @@
                                     <p v-if="props.ticket?.archived" class="mt-1 text-xs text-gray-500">Les tickets archivés ne peuvent pas changer de statut</p>
                                 </div>
 
-                                <div v-if="$page.props.permissions['tickets.assign']">
+                                <div v-if="$page.props.permissions && $page.props.permissions['tickets.assign']">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Assignés</label>
                                     <div class="space-y-4">
                                         <MultipleAutocomplete

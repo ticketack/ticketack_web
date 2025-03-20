@@ -29,7 +29,7 @@
                     </div>
                     <div class="flex items-center space-x-2">
                         <button
-                            v-if="page.props.permissions['equipment.edit']"
+                            v-if="page.props.permissions && page.props.permissions['equipment.edit']"
                             @click="$emit('edit', node.id)"
                             class="p-2 text-blue-600 hover:text-blue-800 transition-colors"
                         >
@@ -38,7 +38,7 @@
                             </svg>
                         </button>
                         <button
-                            v-if="page.props.permissions['equipment.delete']"
+                            v-if="page.props.permissions && page.props.permissions['equipment.delete']"
                             @click="$emit('delete', node.id)"
                             class="p-2 text-red-600 hover:text-red-800 transition-colors"
                         >

@@ -8,7 +8,7 @@
                     {{ $page.props.translations.roles.index.title }}
                 </h2>
                 <Link
-                    v-if="$page.props.permissions['roles.create']"
+                    v-if="$page.props.permissions && $page.props.permissions['roles.create']"
                     :href="route('roles.create')"
                     class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
                 >
@@ -67,14 +67,14 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <Link
-                                            v-if="$page.props.permissions['roles.edit']"
+                                            v-if="$page.props.permissions && $page.props.permissions['roles.edit']"
                                             :href="route('roles.edit', role.id)"
                                             class="text-indigo-600 hover:text-indigo-900 mr-4"
                                         >
                                             {{ $page.props.translations.roles.index.edit }}
                                         </Link>
                                         <button
-                                            v-if="$page.props.permissions['roles.delete'] && role.name !== 'admin'"
+                                            v-if="$page.props.permissions && $page.props.permissions['roles.delete'] && role.name !== 'admin'"
                                             @click="deleteRole(role)"
                                             class="text-red-600 hover:text-red-900"
                                         >

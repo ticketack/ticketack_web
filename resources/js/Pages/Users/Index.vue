@@ -8,7 +8,7 @@
                     {{ $page.props.translations.users.index.title }}
                 </h2>
                 <Link
-                    v-if="$page.props.permissions['users.create']"
+                    v-if="$page.props.permissions && $page.props.permissions['users.create']"
                     :href="route('users.create')"
                     class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
                 >
@@ -68,14 +68,14 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <Link
-                                            v-if="$page.props.permissions['users.edit'] && user.email !== 'admin@example.com'"
+                                            v-if="$page.props.permissions && $page.props.permissions['users.edit'] && user.email !== 'admin@example.com'"
                                             :href="route('users.edit', user.id)"
                                             class="text-indigo-600 hover:text-indigo-900 mr-4"
                                         >
                                         {{ $page.props.translations.users.index.edit }}
                                         </Link>
                                         <button
-                                            v-if="$page.props.permissions['users.delete'] && user.email !== 'admin@example.com'"
+                                            v-if="$page.props.permissions && $page.props.permissions['users.delete'] && user.email !== 'admin@example.com'"
                                             @click="deleteUser(user)"
                                             class="text-red-600 hover:text-red-900"
                                         >

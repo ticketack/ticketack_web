@@ -56,7 +56,7 @@ const props = defineProps({
                     <span v-if="!sidebarCollapsed" class="ml-3">{{ $page.props.translations.menu.dashboard }}</span>
                 </Link>
                 
-                <Link v-if="$page.props.permissions['planning.view']" :href="route('planning.index')" :class="{'justify-center': sidebarCollapsed}" class="flex items-center px-4 py-2 text-black hover:bg-gray-100 rounded-lg">
+                <Link v-if="$page.props.permissions && $page.props.permissions['planning.view']" :href="route('planning.index')" :class="{'justify-center': sidebarCollapsed}" class="flex items-center px-4 py-2 text-black hover:bg-gray-100 rounded-lg">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -140,7 +140,7 @@ const props = defineProps({
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
-                                    v-if="$page.props.permissions['roles.view']"
+                                    v-if="$page.props.permissions && $page.props.permissions['roles.view']"
                                     :href="route('roles.index')"
                                     :active="route().current('roles.*')"
                                 >
@@ -148,7 +148,7 @@ const props = defineProps({
                                 </NavLink>
 
                                 <NavLink
-                                    v-if="$page.props.permissions['users.view']"
+                                    v-if="$page.props.permissions && $page.props.permissions['users.view']"
                                     :href="route('users.index')"
                                     :active="route().current('users.*')"
                                     class="ml-4"
@@ -157,7 +157,7 @@ const props = defineProps({
                                 </NavLink>
 
                                 <NavLink
-                                    v-if="$page.props.permissions['settings.view']"
+                                    v-if="$page.props.permissions && $page.props.permissions['settings.view']"
                                     :href="route('settings.index')"
                                     :active="route().current('settings.*')"
                                     class="ml-4"
@@ -271,21 +271,21 @@ const props = defineProps({
                 >
                     <div class="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
-                            v-if="$page.props.permissions['roles.view']"
+                            v-if="$page.props.permissions && $page.props.permissions['roles.view']"
                             :href="route('roles.index')"
                             :active="route().current('roles.*')"
                         >
                             {{ $page.props.translations.menu.roles }}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            v-if="$page.props.permissions['users.view']"
+                            v-if="$page.props.permissions && $page.props.permissions['users.view']"
                             :href="route('users.index')"
                             :active="route().current('users.*')"
                         >
                             {{ $page.props.translations.menu.users }}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            v-if="$page.props.permissions['settings.view']"
+                            v-if="$page.props.permissions && $page.props.permissions['settings.view']"
                             :href="route('settings.index')"
                             :active="route().current('settings.*')"
                         >

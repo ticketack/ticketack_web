@@ -8,7 +8,7 @@
                     {{ $page.props.translations.equipment.index.title }}
                 </h2>
                 <Link
-                    v-if="$page.props.permissions['equipment.create']"
+                    v-if="$page.props.permissions && $page.props.permissions['equipment.create']"
                     :href="route('equipment.create')"
                     class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
                 >
