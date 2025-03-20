@@ -6,6 +6,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import i18n, { updateMessages } from './i18n';
+import { Toast, options } from './plugins/toast';
 
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
@@ -24,6 +25,7 @@ createInertiaApp({
         app.use(plugin);
         app.use(ZiggyVue);
         app.use(i18n);
+        app.use(Toast, options);
 
         // Initialiser les traductions
         if (props.translations) {

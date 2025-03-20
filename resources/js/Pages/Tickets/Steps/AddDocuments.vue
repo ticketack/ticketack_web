@@ -49,6 +49,7 @@
 <script setup>
 import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import { useToast } from 'vue-toastification';
 import DropZone from '@/Components/Documents/DropZone.vue';
 import DocumentPreview from '@/Components/Documents/DocumentPreview.vue';
 
@@ -59,6 +60,7 @@ const props = defineProps({
     }
 });
 
+const toast = useToast();
 const dropZone = ref(null);
 const documents = ref([]);
 
@@ -78,7 +80,9 @@ const handleFiles = async (files) => {
             });
             
             documents.value.push(response.data.document);
+            toast.success('Document ajouté avec succès');
         } catch (error) {
+            toast.error($page.props.translations.tickets.documents.errors.file_type || 'Erreur lors du téléversement du fichier');
             console.error($page.props.translations.tickets.documents.errors.file_type, error);
         }
     }
@@ -90,7 +94,9 @@ const removeDocument = async (document) => {
     try {
         await axios.delete(route('tickets.documents.destroy', [props.ticket.id, document.id]));
         documents.value = documents.value.filter(doc => doc.id !== document.id);
+        toast.success('Document supprimé avec succès');
     } catch (error) {
+        toast.error('Erreur lors de la suppression du document');
         console.error($page.props.translations.tickets.documents.errors.file_type, error);
     }
 };

@@ -221,6 +221,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { useToast } from 'vue-toastification';
 import Autocomplete from '@/Components/Autocomplete.vue';
 import DropZone from '@/Components/Documents/DropZone.vue';
 import DocumentPreview from '@/Components/Documents/DocumentPreview.vue';
@@ -228,6 +229,7 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TiptapEditor from '@/Components/TiptapEditor.vue';
 
 
+const toast = useToast();
 const currentStep = ref(1);
 const ticketId = ref(null);
 const dropZone = ref(null);
@@ -257,9 +259,6 @@ const form = useForm({
 
 
 const submitStep1 = () => {
-    console.log('Submitting form, current step:', currentStep.value);
-    console.log('Form data:', form);
-
     if (currentStep.value === 1) {
         form.post(route('tickets.store'), {
             preserveScroll: true,
@@ -267,9 +266,11 @@ const submitStep1 = () => {
                 if (page?.props?.ticket?.id) {
                     ticketId.value = page.props.ticket.id;
                     currentStep.value = 2;
+                    toast.success('Ticket créé avec succès');
                 }
             },
             onError: (errors) => {
+                toast.error('Erreur lors de la création du ticket');
                 console.error('Form errors:', errors);
             }
         });
@@ -277,9 +278,10 @@ const submitStep1 = () => {
         form.put(route('tickets.update', ticketId.value), {
             preserveScroll: true,
             onSuccess: () => {
-                console.log('Update successful');
+                toast.success('Ticket mis à jour avec succès');
             },
             onError: (errors) => {
+                toast.error('Erreur lors de la mise à jour du ticket');
                 console.error('Update errors:', errors);
             }
         });
@@ -308,7 +310,9 @@ const handleFiles = async (files) => {
             });
             
             documents.value.push(response.data.document);
+            toast.success('Document ajouté avec succès');
         } catch (error) {
+            toast.error('Erreur lors du téléversement du fichier');
             console.error('Erreur lors du téléversement:', error);
         }
     }
@@ -320,7 +324,9 @@ const removeDocument = async (document) => {
     try {
         await axios.delete(route('tickets.documents.destroy', [ticketId.value, document.id]));
         documents.value = documents.value.filter(doc => doc.id !== document.id);
+        toast.success('Document supprimé avec succès');
     } catch (error) {
+        toast.error('Erreur lors de la suppression du document');
         console.error('Erreur lors de la suppression:', error);
     }
 };

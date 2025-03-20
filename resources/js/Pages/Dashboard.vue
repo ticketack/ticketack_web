@@ -4,6 +4,23 @@ import { Head } from '@inertiajs/vue3';
 import { getPriorityColor } from '@/Utils/ticketPriorityColors';
 import { getStatusColor } from '@/Utils/ticketStatusColors';
 import TicketsChart from '@/Components/Dashboard/TicketsChart.vue';
+import { useToast } from 'vue-toastification';
+import { ref } from 'vue';
+
+const toast = useToast();
+
+function testNotifications() {
+    toast.success("Ceci est un message de succès");
+    setTimeout(() => {
+        toast.error("Ceci est un message d'erreur");
+    }, 1000);
+    setTimeout(() => {
+        toast.info("Ceci est un message d'information");
+    }, 2000);
+    setTimeout(() => {
+        toast.warning("Ceci est un message d'avertissement");
+    }, 3000);
+}
 
 defineProps({
     equipmentCount: {
@@ -69,11 +86,19 @@ const formatTime = (minutes) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2
-                class="text-xl font-semibold leading-tight text-gray-800"
-            >
-                {{ $page.props.translations.dashboard.title }}
-            </h2>
+            <div class="flex justify-between items-center">
+                <h2
+                    class="text-xl font-semibold leading-tight text-gray-800"
+                >
+                    {{ $page.props.translations.dashboard.title }}
+                </h2>
+                <button
+                    @click="testNotifications"
+                    class="px-4 py-2 bg-[#3eb489] hover:bg-[#2d8b6a] text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3eb489]"
+                >
+                    Tester les notifications
+                </button>
+            </div>
         </template>
 
         <div class="py-12">

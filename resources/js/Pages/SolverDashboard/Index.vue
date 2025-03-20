@@ -248,6 +248,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { Head } from '@inertiajs/vue3'
+import { useToast } from 'vue-toastification'
 import AppLayout from '@/Layouts/AuthenticatedLayout.vue'
 import Modal from '@/Components/Modal.vue'
 import { Calendar } from '@fullcalendar/core'
@@ -262,6 +263,7 @@ import axios from 'axios'
 
 import { usePage, Link } from '@inertiajs/vue3'
 
+const toast = useToast()
 const page = usePage()
 const props = defineProps({
     assignedTickets: Array,
@@ -641,7 +643,7 @@ async function deleteEvent() {
         const eventId = selectedEvent.value.id;
         
         // Envoyer la requête de suppression
-        await axios.delete(`/api/schedules/${eventId}`);
+        await axios.delete(`/schedules/${eventId}`);
         
         // Supprimer l'événement du calendrier
         selectedEvent.value.remove();
@@ -650,9 +652,11 @@ async function deleteEvent() {
         closeDeleteModal();
         closeEventModal();
         
+        toast.success('Événement supprimé avec succès');
+        
     } catch (error) {
         // Gérer l'erreur
-        alert('Erreur lors de la suppression: ' + (error.response?.data?.message || error.message));
+        toast.error('Erreur lors de la suppression: ' + (error.response?.data?.message || error.message));
     }
 } 
 
@@ -689,13 +693,14 @@ async function updateEvent() {
             selectedEvent.value.setEnd(endDate);
         }
         
+        toast.success('Événement mis à jour avec succès');
         closeEventModal();
     } catch (error) {
         console.error('Error updating event:', error);
         if (error.response) {
             console.error('Server response:', error.response.data);
         }
-        alert('Une erreur est survenue lors de la mise à jour de l\'événement');
+        toast.error('Une erreur est survenue lors de la mise à jour de l\'événement');
         closeEventModal();
     }
 }
@@ -721,12 +726,14 @@ async function submitSchedule(data = null) {
         await axios.post('/schedules', scheduleData);
 
         if (!data) {
+            toast.success('Ticket planifié avec succès');
             closeScheduleModal();
             // Recharger la page seulement si on vient du modal
             window.location.reload();
         }
     } catch (error) {
         console.error('Error scheduling ticket:', error);
+        toast.error('Une erreur est survenue lors de la planification du ticket');
     }
 }
 </script>

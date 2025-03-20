@@ -95,6 +95,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { useToast } from 'vue-toastification';
 
 defineProps({
     users: {
@@ -103,11 +104,20 @@ defineProps({
     }
 });
 
+const toast = useToast();
+
 const deleteUser = (user) => {
     const page = usePage();
     const confirmMessage = page.props.translations.users.index.confirm_delete.replace('{name}', user.name);
     if (confirm(confirmMessage)) {
-        router.delete(route('users.destroy', user.id));
+        router.delete(route('users.destroy', user.id), {
+            onSuccess: () => {
+                toast.success(page.props.translations.users.index.deleted_success || 'Utilisateur supprimé avec succès');
+            },
+            onError: (errors) => {
+                toast.error(Object.values(errors).join('\n') || 'Erreur lors de la suppression de l\'utilisateur');
+            }
+        });
     }
 };
 </script>

@@ -349,7 +349,7 @@ const downloadPdf = async () => {
         window.URL.revokeObjectURL(url);
     } catch (error) {
         console.error('Erreur lors du téléchargement du PDF:', error);
-        alert('Erreur lors du téléchargement du PDF');
+        toast.error('Erreur lors du téléchargement du PDF');
     }
 };
 
@@ -375,12 +375,12 @@ const archiveTicket = () => {
     if (confirm(`Êtes-vous sûr de vouloir archiver ce ticket ?`)) {
         useForm().post(route('tickets.archive', props.ticket.id), {}, {
             onSuccess: () => {
-                alert('Ticket archivé avec succès');
+                toast.success('Ticket archivé avec succès');
                 // Rediriger vers la liste des tickets
                 window.location.href = route('tickets.index');
             },
             onError: (errors) => {
-                alert(Object.values(errors).join('\n'));
+                toast.error(Object.values(errors).join('\n'));
             }
         });
     }
@@ -391,12 +391,12 @@ const unarchiveTicket = () => {
     if (confirm(`Êtes-vous sûr de vouloir désarchiver ce ticket ?`)) {
         useForm().post(route('tickets.unarchive', props.ticket.id), {}, {
             onSuccess: () => {
-                alert('Ticket désarchivé avec succès');
+                toast.success('Ticket désarchivé avec succès');
                 // Recharger la page pour refléter les changements
                 window.location.reload();
             },
             onError: (errors) => {
-                alert(Object.values(errors).join('\n'));
+                toast.error(Object.values(errors).join('\n'));
             }
         });
     }
@@ -418,10 +418,10 @@ const updateAssignees = (newValues) => {
         }, {
             preserveScroll: true,
             onSuccess: () => {
-                alert('Assignation ajoutée avec succès');
+                toast.success('Assignation ajoutée avec succès');
             },
             onError: () => {
-                alert('Erreur lors de l\'ajout de l\'assignation');
+                toast.error('Erreur lors de l\'ajout de l\'assignation');
             }
         });
     });
@@ -431,10 +431,10 @@ const updateAssignees = (newValues) => {
         router.delete(route('tickets.unassign', [props.ticket.id, userId]), {
             preserveScroll: true,
             onSuccess: () => {
-                alert('Assignation retirée avec succès');
+                toast.success('Assignation retirée avec succès');
             },
             onError: () => {
-                alert('Erreur lors du retrait de l\'assignation');
+                toast.error('Erreur lors du retrait de l\'assignation');
             }
         });
     });
@@ -444,10 +444,10 @@ const removeAssignee = (userId) => {
     router.delete(route('tickets.unassign', [props.ticket.id, userId]), {
         preserveScroll: true,
         onSuccess: () => {
-            alert('Assignation supprimée avec succès');
+            toast.success('Assignation supprimée avec succès');
         },
         onError: () => {
-            alert('Erreur lors de la suppression de l\'assignation');
+            toast.error('Erreur lors de la suppression de l\'assignation');
         }
     });
 };
@@ -499,9 +499,9 @@ const submitComment = () => {
         onError: (errors) => {
             commentForm.processing = false;
             if (errors && errors.attachments) {
-                alert("Erreur: La taille du fichier est trop grande");
+                toast.error("Erreur: La taille du fichier est trop grande");
             } else {
-                alert("Erreur lors de l'ajout du commentaire");
+                toast.error("Erreur lors de l'ajout du commentaire");
             }
         }
     });
@@ -511,10 +511,10 @@ const deleteComment = (commentId) => {
     if (confirm(t('pages.comments.confirm_delete'))) {
         router.delete(route('tickets.comments.destroy', [props.ticket.id, commentId]), {
             onSuccess: () => {
-                alert(t('pages.comments.success.deleted'));
+                toast.success(t('pages.comments.success.deleted'));
             },
             onError: () => {
-                alert(t('pages.comments.error.delete'));
+                toast.error(t('pages.comments.error.delete'));
             }
         });
     }

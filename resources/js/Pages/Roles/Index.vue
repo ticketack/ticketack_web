@@ -94,6 +94,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { useToast } from 'vue-toastification';
 
 defineProps({
     roles: {
@@ -102,9 +103,18 @@ defineProps({
     }
 });
 
+const toast = useToast();
+
 const deleteRole = (role) => {
     if (confirm($page.props.translations.roles.confirm_delete.replace(':name', role.name))) {
-        router.delete(route('roles.destroy', role.id));
+        router.delete(route('roles.destroy', role.id), {
+            onSuccess: () => {
+                toast.success($page.props.translations.roles.deleted_success || 'Rôle supprimé avec succès');
+            },
+            onError: (errors) => {
+                toast.error(Object.values(errors).join('\n') || 'Erreur lors de la suppression du rôle');
+            }
+        });
     }
 };
 </script>

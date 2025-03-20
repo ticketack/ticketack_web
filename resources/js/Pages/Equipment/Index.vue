@@ -47,6 +47,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { useToast } from 'vue-toastification';
 import TreeNode from './Partials/TreeNode.vue';
 
 defineProps({
@@ -64,11 +65,19 @@ const editEquipment = (id) => {
     router.visit(route('equipment.edit', id));
 };
 
-const page = usePage(); // Ajouter cette ligne
+const page = usePage();
+const toast = useToast();
 
 const deleteEquipment = (id) => {
-    if (confirm(page.props.translations.equipment.index.confirm_delete)) { // Utiliser page au lieu de $page
-        router.delete(route('equipment.destroy', id));
+    if (confirm(page.props.translations.equipment.index.confirm_delete)) {
+        router.delete(route('equipment.destroy', id), {
+            onSuccess: () => {
+                toast.success(page.props.translations.equipment.index.deleted_success || 'Équipement supprimé avec succès');
+            },
+            onError: (errors) => {
+                toast.error(Object.values(errors).join('\n') || 'Erreur lors de la suppression de l\'équipement');
+            }
+        });
     }
 };
 </script>
