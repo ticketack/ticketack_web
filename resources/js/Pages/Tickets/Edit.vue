@@ -47,7 +47,7 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Auteur -->
-                                <div v-if="$page.props.auth.user.permissions.includes('tickets.edit_author')">
+                                <div v-if="$page.props.auth.user.permissions && $page.props.auth.user.permissions.includes('tickets.edit_author')">
                                     <InputLabel for="created_by" value="Auteur" />
                                     <SelectInput
                                         id="created_by"
