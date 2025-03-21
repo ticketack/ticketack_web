@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller;
 use App\Models\Ticket;
 use App\Models\TicketSchedule;
 use App\Models\TicketStatus;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -25,22 +26,33 @@ class SolverDashboardController extends Controller
         $user = $request->user();
         
         // Récupérer les tickets assignés au solver
-        $assignedTickets = Ticket::with(['category', 'status', 'equipment', 'creator'])
-        ->whereHas('assignees', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
-        ->whereHas('status', function ($query) {
-            $query->where('is_closed', false);
-        })
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->map(function ($ticket) {
-            // Utiliser designation comme nom d'équipement
-            $ticket->equipment_name = $ticket->equipment ? $ticket->equipment->designation : null;
-            // Ajouter le nom de l'auteur en utilisant la relation creator
-            $ticket->author_name = $ticket->creator ? $ticket->creator->name : null;
-            return $ticket;
-        });
+        $query = Ticket::with(['category', 'status', 'equipment', 'creator'])
+            ->whereHas('assignees', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->whereHas('status', function ($query) {
+                $query->where('is_closed', false);
+            });
+            
+        // Filtrer par recherche si une valeur est présente
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('id', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        $assignedTickets = $query->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($ticket) {
+                // Utiliser designation comme nom d'équipement
+                $ticket->equipment_name = $ticket->equipment ? $ticket->equipment->designation : null;
+                // Ajouter le nom de l'auteur en utilisant la relation creator
+                $ticket->author_name = $ticket->creator ? $ticket->creator->name : null;
+                return $ticket;
+            });
 
         // Récupérer les planifications du solver avec toutes les relations nécessaires
         $schedules = TicketSchedule::with('ticket', 'ticket.status', 'ticket.category')
@@ -68,7 +80,7 @@ class SolverDashboardController extends Controller
                 'totalEstimatedTime' => $totalEstimatedTime,
                 'ticketStats' => $ticketStats,
             ],
-
+            'search' => $request->input('search', ''),
         ]);
     }
 
@@ -103,6 +115,12 @@ class SolverDashboardController extends Controller
             'estimated_duration' => $validated['estimated_duration'],
             'comments' => $validated['comments'],
         ]);
+        
+        // Ajouter un log pour la planification
+        $ticket->addLog('scheduled', "Ticket planifié par {$request->user()->name}");
+        
+        // Envoyer des notifications aux personnes concernées
+        $this->sendScheduleNotifications($ticket, $schedule);
 
         return response()->json($schedule->load(['ticket' => function($query) {
             $query->with('status');
@@ -134,5 +152,52 @@ class SolverDashboardController extends Controller
         $schedule->delete();
         
         return response()->json(['message' => 'Schedule deleted successfully']);
+    }
+    
+    /**
+     * Envoie des notifications aux personnes concernées lors de la planification d'un ticket
+     *
+     * @param Ticket $ticket Le ticket planifié
+     * @param TicketSchedule $schedule La planification créée
+     * @return void
+     */
+    private function sendScheduleNotifications(Ticket $ticket, TicketSchedule $schedule): void
+    {
+        $currentUser = auth()->user();
+        $notificationService = app(NotificationService::class);
+        $scheduledDate = $schedule->start_at->format('d/m/Y \à H:i');
+        $content = "Le ticket #{$ticket->id} '{$ticket->title}' a été planifié pour le {$scheduledDate} par {$currentUser->name}";
+        
+        // Récupérer les destinataires (auteur et assignés)
+        $recipients = collect();
+        
+        // Ajouter l'auteur s'il n'est pas la personne qui planifie
+        if ($ticket->creator && $ticket->creator->id !== $currentUser->id) {
+            $recipients->push($ticket->creator);
+        }
+        
+        // Ajouter les assignés qui ne sont pas la personne qui planifie
+        foreach ($ticket->assignees as $assignee) {
+            if ($assignee->id !== $currentUser->id) {
+                $recipients->push($assignee);
+            }
+        }
+        
+        // Envoyer la notification à chaque destinataire
+        foreach ($recipients->unique('id') as $recipient) {
+            $notificationService->sendNotification(
+                $recipient,
+                'ticket_scheduled',
+                $content,
+                [
+                    'ticket_id' => $ticket->id,
+                    'schedule_id' => $schedule->id,
+                    'scheduled_by' => $currentUser->id,
+                    'scheduled_by_name' => $currentUser->name,
+                    'scheduled_date' => $schedule->start_at->toIso8601String(),
+                    'estimated_duration' => $schedule->estimated_duration
+                ]
+            );
+        }
     }
 }

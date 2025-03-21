@@ -27,6 +27,32 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Barre de recherche -->
+                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 mb-2 mt-2">
+                    <div class="flex">
+                        <div class="flex-grow">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                    v-model="search"
+                                    type="text"
+                                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-[#3eb489] focus:border-[#3eb489] sm:text-sm"
+                                    :placeholder="$page.props.translations.solver.search_placeholder || 'Rechercher un ticket...'"
+                                    @keyup.enter="performSearch"
+                                />
+                            </div>
+                        </div>
+                        <button
+                            @click="performSearch"
+                            class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#3eb489] hover:bg-[#2d8b6a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#3eb489]"
+                        >
+                            {{ $page.props.translations.solver.search || 'Rechercher' }}
+                        </button>
+                    </div>
+                </div>
 
                 <div class="flex gap-2 mt-2">
                     <!-- Calendrier -->
@@ -260,16 +286,29 @@ import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import frLocale from '@fullcalendar/core/locales/fr'
 import axios from 'axios'
+import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 
 import { usePage, Link } from '@inertiajs/vue3'
 
 const toast = useToast()
 const page = usePage()
+
 const props = defineProps({
     assignedTickets: Array,
     schedules: Array,
     stats: Object,
+    search: {
+        type: String,
+        default: ''
+    },
 })
+
+const search = ref(props.search || '')
+
+// Fonction pour effectuer la recherche
+function performSearch() {
+    window.location.href = `/solver-dashboard${search.value ? `?search=${encodeURIComponent(search.value)}` : ''}`;
+}
 
 const scheduleModalOpen = ref(false)
 const eventModalOpen = ref(false)

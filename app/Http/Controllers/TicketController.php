@@ -7,6 +7,7 @@ use App\Models\TicketCategory;
 use App\Models\TicketStatus;
 use App\Models\TicketDocument;
 use App\Models\User;
+use App\Services\NotificationService;
 use App\Services\TicketDocumentService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,14 +17,14 @@ use Inertia\Response;
 
 class TicketController extends Controller
 {
+    use AuthorizesRequests;
+    
     public function documents(Ticket $ticket): Response
     {
         return Inertia::render('Tickets/Steps/AddDocuments', [
             'ticket' => $ticket
         ]);
     }
-
-    use AuthorizesRequests;
 
     public function index(Request $request)
     {
@@ -342,6 +343,9 @@ class TicketController extends Controller
         
         $ticket->addLog('updated', "Ticket mis à jour");
         
+        // Envoyer des notifications aux personnes concernées (sauf l'utilisateur qui fait la modification)
+        $this->sendTicketUpdateNotifications($ticket);
+        
         return redirect()->route('tickets.show', $ticket->id)->with('success', 'Ticket mis à jour avec succès');
 
         // L'assignation est maintenant gérée par les méthodes assign et unassign
@@ -515,5 +519,47 @@ class TicketController extends Controller
             'categories' => $categories,
             'users' => $users
         ]);
+    }
+    
+    /**
+     * Envoie des notifications aux personnes concernées lors de la mise à jour d'un ticket
+     *
+     * @param Ticket $ticket Le ticket mis à jour
+     * @return void
+     */
+    private function sendTicketUpdateNotifications(Ticket $ticket): void
+    {
+        $currentUser = Auth::user();
+        $notificationService = app(NotificationService::class);
+        $content = "Le ticket #{$ticket->id} '{$ticket->title}' a été mis à jour par {$currentUser->name}";
+        
+        // Récupérer les destinataires (auteur et assignés)
+        $recipients = collect();
+        
+        // Ajouter l'auteur s'il n'est pas la personne qui fait la modification
+        if ($ticket->creator && $ticket->creator->id !== $currentUser->id) {
+            $recipients->push($ticket->creator);
+        }
+        
+        // Ajouter les assignés qui ne sont pas la personne qui fait la modification
+        foreach ($ticket->assignees as $assignee) {
+            if ($assignee->id !== $currentUser->id) {
+                $recipients->push($assignee);
+            }
+        }
+        
+        // Envoyer la notification à chaque destinataire
+        foreach ($recipients->unique('id') as $recipient) {
+            $notificationService->sendNotification(
+                $recipient,
+                'ticket_updated',
+                $content,
+                [
+                    'ticket_id' => $ticket->id,
+                    'updated_by' => $currentUser->id,
+                    'updated_by_name' => $currentUser->name
+                ]
+            );
+        }
     }
 }

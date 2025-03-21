@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Ticket;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class CommentController extends Controller
@@ -52,6 +54,9 @@ class CommentController extends Controller
                 'comment_id' => $comment->id,
                 'user_name' => auth()->user()->name
             ]);
+            
+            // Envoyer des notifications aux personnes concernées
+            $this->sendCommentNotifications($ticket, $comment);
 
             \DB::commit();
 
@@ -94,6 +99,50 @@ class CommentController extends Controller
             \DB::rollback();
             \Log::error('Erreur lors de la suppression du commentaire:', ['error' => $e->getMessage()]);
             return back()->with('error', 'Une erreur est survenue lors de la suppression du commentaire');
+        }
+    }
+    
+    /**
+     * Envoie des notifications aux personnes concernées lors de l'ajout d'un commentaire
+     *
+     * @param Ticket $ticket Le ticket commenté
+     * @param Comment $comment Le commentaire ajouté
+     * @return void
+     */
+    private function sendCommentNotifications(Ticket $ticket, Comment $comment): void
+    {
+        $currentUser = Auth::user();
+        $notificationService = app(NotificationService::class);
+        $content = "Un nouveau commentaire a été ajouté au ticket #{$ticket->id} '{$ticket->title}' par {$currentUser->name}";
+        
+        // Récupérer les destinataires (auteur et assignés)
+        $recipients = collect();
+        
+        // Ajouter l'auteur s'il n'est pas la personne qui commente
+        if ($ticket->creator && $ticket->creator->id !== $currentUser->id) {
+            $recipients->push($ticket->creator);
+        }
+        
+        // Ajouter les assignés qui ne sont pas la personne qui commente
+        foreach ($ticket->assignees as $assignee) {
+            if ($assignee->id !== $currentUser->id) {
+                $recipients->push($assignee);
+            }
+        }
+        
+        // Envoyer la notification à chaque destinataire
+        foreach ($recipients->unique('id') as $recipient) {
+            $notificationService->sendNotification(
+                $recipient,
+                'ticket_commented',
+                $content,
+                [
+                    'ticket_id' => $ticket->id,
+                    'comment_id' => $comment->id,
+                    'commented_by' => $currentUser->id,
+                    'commented_by_name' => $currentUser->name
+                ]
+            );
         }
     }
 }

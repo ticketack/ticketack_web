@@ -106,8 +106,8 @@ class TimeEntryController extends Controller
             $currentDate->addDay();
         }
         
-        // S'assurer qu'il y a des données de test pour le débogage
-        if (empty(array_filter($chartData, function($item) { return $item['minutes'] > 0; }))) {
+        // S'assurer qu'il y a des données de test pour le débogage (uniquement en environnement non-production)
+        if (app()->environment('local', 'development', 'testing') && empty(array_filter($chartData, function($item) { return $item['minutes'] > 0; }))) {
             // Ajouter des données factices pour le débogage
             for ($i = 0; $i < 5; $i++) {
                 $randomIndex = rand(0, count($chartData) - 1);
@@ -136,8 +136,8 @@ class TimeEntryController extends Controller
             return $entryDate >= $startOfMonth && $entryDate <= $endOfMonth;
         })->sum('minutes_spent');
         
-        // Si aucune donnée n'est disponible, ajouter des valeurs factices pour le débogage
-        if ($todayMinutes == 0 && $weekMinutes == 0 && $monthMinutes == 0) {
+        // Si aucune donnée n'est disponible, ajouter des valeurs factices pour le débogage (uniquement en environnement non-production)
+        if (app()->environment('local', 'development', 'testing') && $todayMinutes == 0 && $weekMinutes == 0 && $monthMinutes == 0) {
             $todayMinutes = rand(30, 240); // Entre 30 min et 4h
             $weekMinutes = $todayMinutes + rand(120, 600); // Entre 2h et 10h de plus
             $monthMinutes = $weekMinutes + rand(300, 1200); // Entre 5h et 20h de plus

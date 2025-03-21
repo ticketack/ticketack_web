@@ -493,6 +493,7 @@ function getStatusColor(statusId) {
                                 <!-- Titre + statut -->
                                 <div class="grid grid-cols-[1fr_auto] gap-2 mb-2 items-start">
                                     <h4 class="font-semibold text-blue-600 break-words" :title="ticket.title">
+                                        <span class="text-gray-600 mr-1">#{{ ticket.id }}</span>
                                         {{ ticket.title }}
                                         <span v-if="ticket.archived" class="text-xs text-gray-500 ml-1">(Archivé)</span>
                                     </h4>
