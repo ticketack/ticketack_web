@@ -14,11 +14,11 @@ return new class extends Migration
         // Ajouter la nouvelle permission
         $permission = \Spatie\Permission\Models\Permission::findOrCreate('tickets.edit_author');
         
+        // Créer le rôle admin s'il n'existe pas
+        $adminRole = \Spatie\Permission\Models\Role::findOrCreate('admin');
+        
         // Attribuer la permission au rôle admin
-        $adminRole = \Spatie\Permission\Models\Role::findByName('admin');
-        if ($adminRole) {
-            $adminRole->givePermissionTo($permission);
-        }
+        $adminRole->givePermissionTo($permission);
     }
 
     /**

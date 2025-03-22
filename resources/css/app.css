@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import PrimeVue styles */
+@import './primevue.css';
+
 /* Custom Padding Override */
 .py-12 {
     padding-top: 0.5rem !important;

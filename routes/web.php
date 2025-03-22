@@ -167,6 +167,8 @@ Route::middleware(['auth'])->group(function () {
             ->name('equipment.search');
         Route::get('equipment', [EquipmentController::class, 'index'])
             ->name('equipment.index');
+        Route::get('equipment/{equipment}', [EquipmentController::class, 'show'])
+            ->name('equipment.show');
 
         Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipment.create'])->group(function () {
             Route::get('equipment/create', [EquipmentController::class, 'create'])
@@ -187,6 +189,30 @@ Route::middleware(['auth'])->group(function () {
         Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipment.delete'])->group(function () {
             Route::delete('equipment/{equipment}', [EquipmentController::class, 'destroy'])
                 ->name('equipment.destroy');
+        });
+        
+        // Routes pour les documents d'équipement
+        // Utiliser les permissions existantes liées aux équipements
+        Route::get('equipment/{equipment}/documents', [\App\Http\Controllers\EquipmentDocumentController::class, 'index'])
+            ->name('equipment.documents.index');
+        Route::get('equipment/documents/{document}', [\App\Http\Controllers\EquipmentDocumentController::class, 'show'])
+            ->name('equipment.documents.show');
+        Route::get('equipment/documents/{document}/download', [\App\Http\Controllers\EquipmentDocumentController::class, 'download'])
+            ->name('equipment.documents.download');
+        
+        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipment.create'])->group(function () {
+            Route::post('equipment/{equipment}/documents', [\App\Http\Controllers\EquipmentDocumentController::class, 'store'])
+                ->name('equipment.documents.store');
+        });
+        
+        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipment.edit'])->group(function () {
+            Route::put('equipment/documents/{document}', [\App\Http\Controllers\EquipmentDocumentController::class, 'update'])
+                ->name('equipment.documents.update');
+        });
+        
+        Route::middleware([\App\Http\Middleware\CheckPermission::class . ':equipment.delete'])->group(function () {
+            Route::delete('equipment/documents/{document}', [\App\Http\Controllers\EquipmentDocumentController::class, 'destroy'])
+                ->name('equipment.documents.destroy');
         });
     });
 

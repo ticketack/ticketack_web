@@ -24,24 +24,43 @@ window.axios.interceptors.request.use(config => {
     return config;
 });
 
-// Gérer les réponses et intercepter les erreurs 401
+// Gérer les réponses et intercepter les erreurs
 window.axios.interceptors.response.use(
     response => response,
     error => {
-        // Log pour déboguer en production
-        console.error(`Axios error: ${error.config?.url} - Status: ${error.response?.status}`);
-        
-        if (error.response && error.response.status === 401) {
-            // Ignorer les erreurs 401 de ces endpoints spécifiques
-            if (error.config.url.includes('broadcasting/auth') || 
-                error.config.url.includes('notifications/count') ||
-                error.config.url.includes('api/notifications')) {
-                console.warn(`Erreur 401 ignorée pour: ${error.config.url}`);
-            } else {
-                // Pour toutes les autres requêtes, rediriger vers login
-                window.location.href = '/login';
+        // Déterminer le type d'erreur et logger les informations pertinentes
+        if (error.response) {
+            // Erreur de réponse du serveur (4xx, 5xx)
+            console.error(`Axios error: ${error.config?.url} - Status: ${error.response.status} - ${error.response.statusText}`);
+            
+            // Gérer les erreurs 401 (non autorisé)
+            if (error.response.status === 401) {
+                // Ignorer les erreurs 401 de ces endpoints spécifiques
+                if (error.config.url.includes('broadcasting/auth') || 
+                    error.config.url.includes('notifications/count') ||
+                    error.config.url.includes('api/notifications')) {
+                    console.warn(`Erreur 401 ignorée pour: ${error.config.url}`);
+                } else {
+                    // Pour toutes les autres requêtes, rediriger vers login
+                    window.location.href = '/login';
+                }
             }
+        } else if (error.request) {
+            // La requête a été faite mais aucune réponse n'a été reçue
+            // error.request est une instance de XMLHttpRequest
+            console.error(`Axios error: ${error.config?.url} - No response received from server`);
+            // Essayer de recharger la page après un court délai si c'est une requête GET
+            if (error.config?.method === 'get') {
+                console.warn('Tentative de rechargement de la page dans 2 secondes...');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }
+        } else {
+            // Une erreur s'est produite lors de la configuration de la requête
+            console.error(`Axios error: ${error.message}`);
         }
+        
         return Promise.reject(error);
     }
 );

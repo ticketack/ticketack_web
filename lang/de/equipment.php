@@ -33,5 +33,31 @@ return [
         'confirm_text' => 'Sind Sie sicher, dass Sie dieses Gerät löschen möchten?',
         'cancel' => 'Abbrechen',
         'confirm' => 'Löschen'
+    ],
+    'documents' => [
+        'title' => 'Dokumente',
+        'list' => 'Dokumentenliste',
+        'empty' => 'Keine Dokumente verfügbar',
+        'add' => 'Dokument hinzufügen',
+        'upload' => 'Dokument hochladen',
+        'description' => 'Beschreibung',
+        'description_placeholder' => 'Dokumentbeschreibung (optional)',
+        'file' => 'Datei',
+        'file_type' => 'Dateityp',
+        'file_size' => 'Dateigröße',
+        'upload_date' => 'Hochladedatum',
+        'actions' => 'Aktionen',
+        'download' => 'Herunterladen',
+        'view' => 'Ansehen',
+        'edit' => 'Bearbeiten',
+        'delete' => 'Löschen',
+        'confirm_delete' => 'Sind Sie sicher, dass Sie dieses Dokument löschen möchten?',
+        'preview' => 'Vorschau',
+        'no_preview' => 'Vorschau für diesen Dateityp nicht verfügbar',
+        'drop_files' => 'Dateien hier ablegen oder zum Durchsuchen klicken',
+        'max_size' => 'Maximale Größe: 10 MB',
+        'save' => 'Speichern',
+        'cancel' => 'Abbrechen',
+        'back_to_list' => 'Zurück zur Liste'
     ]
 ];

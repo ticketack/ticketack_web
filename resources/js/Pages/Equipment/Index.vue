@@ -28,13 +28,101 @@
                         <div class="mb-4">
                             <h3 class="text-lg font-medium">{{ $page.props.translations.equipment.index.list }}</h3>
                         </div>
+                        
+                        <!-- Barre de recherche -->
+                        <div class="mb-6">
+                            <div class="flex items-center">
+                                <div class="relative flex-grow">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                                        </svg>
+                                    </div>
+                                    <input
+                                        v-model="searchQuery"
+                                        type="text"
+                                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        :placeholder="$page.props.translations.equipment.index.search_placeholder || 'Rechercher un équipement...'"
+                                        @keyup.enter="performSearch"
+                                    />
+                                </div>
+                                <button
+                                    @click="performSearch"
+                                    :disabled="isSearching"
+                                    class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white"
+                                    :class="isSearching ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'"
+                                >
+                                    <svg v-if="isSearching" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    {{ $page.props.translations.equipment.index.search || 'Rechercher' }}
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Section de débogage -->
+                        <div v-if="$page.props.search" class="mb-4 p-4 bg-gray-100 rounded-md">
+                            <h3 class="text-lg font-semibold mb-2">Débogage de recherche</h3>
+                            <div class="text-sm">
+                                <p><strong>Terme recherché:</strong> {{ $page.props.search }}</p>
+                                <p><strong>Nombre d'équipements de premier niveau:</strong> {{ treeData.length }}</p>
+                                <div v-if="allEquipment">
+                                    <p><strong>Nombre total d'équipements:</strong> {{ allEquipment.length }}</p>
+                                    <p><strong>Équipements correspondants:</strong> {{ allEquipment.filter(e => e.matches_search === true).length }}</p>
+                                    <p><strong>Parents d'équipements correspondants:</strong> {{ allEquipment.filter(e => e.is_parent === true).length }}</p>
+                                    <div class="mt-2 max-h-40 overflow-y-auto">
+                                        <p class="font-semibold">Détails des correspondances:</p>
+                                        <ul class="list-disc pl-5">
+                                            <li v-for="item in allEquipment.filter(e => e.matches_search === true)" :key="item.id">
+                                                {{ item.designation }} (ID: {{ item.id }}, Parent ID: {{ item.parent_id || 'Aucun' }})
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="mt-2">
+                                        <p class="font-semibold">Parents:</p>
+                                        <ul class="list-disc pl-5">
+                                            <li v-for="item in allEquipment.filter(e => e.is_parent === true)" :key="item.id">
+                                                {{ item.designation }} (ID: {{ item.id }}, Parent ID: {{ item.parent_id || 'Aucun' }})
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="mt-4 flex space-x-2">
+                                        <button 
+                                            type="button" 
+                                            @click="forceRefresh" 
+                                            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                        >
+                                            Forcer le rafraîchissement
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            @click="toggleAllNodes(true)" 
+                                            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                        >
+                                            Ouvrir tous les nœuds
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            @click="toggleAllNodes(false)" 
+                                            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                                        >
+                                            Fermer tous les nœuds
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="space-y-4">
-                            <TreeNode 
-                                v-for="equipment in equipment" 
-                                :key="equipment.id" 
-                                :node="equipment"
+                            <PrimeTreeComponent 
+                                :treeData="treeData"
+                                :search="searchQuery"
+                                :matchingIds="matchingIds"
+                                :parentIds="parentIds"
+                                @view="viewEquipment"
                                 @edit="editEquipment"
                                 @delete="deleteEquipment"
+                                ref="treeComponent"
                             />
                         </div>
                     </div>
@@ -48,18 +136,31 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { useToast } from 'vue-toastification';
-import TreeNode from './Partials/TreeNode.vue';
+import PrimeTreeComponent from './Partials/PrimeTreeComponent.vue';
+import { ref } from 'vue';
 
 defineProps({
-    equipment: {
+    treeData: {
         type: Array,
         required: true
     },
     allEquipment: {
         type: Array,
         required: true
+    },
+    matchingIds: {
+        type: Array,
+        default: () => []
+    },
+    parentIds: {
+        type: Array,
+        default: () => []
     }
 });
+
+const viewEquipment = (id) => {
+    router.visit(route('equipment.show', id));
+};
 
 const editEquipment = (id) => {
     router.visit(route('equipment.edit', id));
@@ -67,6 +168,44 @@ const editEquipment = (id) => {
 
 const page = usePage();
 const toast = useToast();
+
+// Initialiser la recherche avec la valeur provenant des props
+const searchQuery = ref(page.props.search || '');
+const isSearching = ref(false);
+let searchTimeout = null;
+
+// Fonction pour effectuer la recherche
+function performSearch() {
+    // Prévenir les erreurs en désactivant temporairement le bouton de recherche
+    isSearching.value = true;
+    
+    // Utiliser un délai pour éviter les requêtes trop fréquentes
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        router.get(route('equipment.index'), { search: searchQuery.value }, {
+            preserveState: true,
+            replace: true,
+            onSuccess: () => {
+                isSearching.value = false;
+                
+                // Attendre que les composants soient mis à jour avec les nouveaux résultats
+                setTimeout(() => {
+                    // Si la recherche n'est pas vide, envoyer un événement pour ouvrir uniquement les nœuds pertinents
+                    if (searchQuery.value && searchQuery.value.trim() !== '') {
+                        console.log('Ouverture sélective des nœuds après recherche');
+                        // Créer un événement personnalisé pour ouvrir uniquement les nœuds pertinents
+                        const event = new CustomEvent('open-relevant-nodes');
+                        document.dispatchEvent(event);
+                    }
+                }, 200);
+            },
+            onError: () => {
+                isSearching.value = false;
+                toast.error('Erreur lors de la recherche. Veuillez réessayer.');
+            }
+        });
+    }, 300);
+}
 
 const deleteEquipment = (id) => {
     if (confirm(page.props.translations.equipment.index.confirm_delete)) {
@@ -78,6 +217,39 @@ const deleteEquipment = (id) => {
                 toast.error(Object.values(errors).join('\n') || 'Erreur lors de la suppression de l\'équipement');
             }
         });
+    }
+};
+
+// Fonction pour forcer un rafraîchissement de l'arborescence
+const forceRefresh = () => {
+    console.log('Forçage du rafraîchissement de l\'arborescence');
+    // Utiliser router.visit au lieu de router.reload pour conserver l'état de la recherche
+    router.visit(route('equipment.index'), {
+        data: { search: searchQuery.value },
+        preserveState: false,  // Ne pas préserver l'état pour forcer un rechargement complet
+        replace: true,
+        onSuccess: () => {
+            console.log('Rafraîchissement réussi');
+            // Forcer l'ouverture des nœuds après un court délai
+            setTimeout(() => {
+                toggleAllNodes(true);
+            }, 200);
+        }
+    });
+};
+
+// Fonction pour ouvrir ou fermer tous les nœuds
+const treeComponent = ref(null);
+const toggleAllNodes = (open) => {
+    console.log(`${open ? 'Ouverture' : 'Fermeture'} de tous les nœuds`);
+    if (treeComponent.value) {
+        if (open) {
+            treeComponent.value.expandAll();
+        } else {
+            treeComponent.value.collapseAll();
+        }
+    } else {
+        console.log('Référence au composant d\'arbre non disponible');
     }
 };
 </script>

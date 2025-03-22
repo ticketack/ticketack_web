@@ -8,6 +8,10 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import i18n, { updateMessages } from './i18n';
 import { Toast, options } from './plugins/toast';
 
+// Import PrimeVue
+import PrimeVue from 'primevue/config';
+import Tree from 'primevue/tree';
+
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -26,6 +30,15 @@ createInertiaApp({
         app.use(ZiggyVue);
         app.use(i18n);
         app.use(Toast, options);
+        
+        // Configuration de PrimeVue
+        app.use(PrimeVue, {
+            ripple: true,
+            inputStyle: 'outlined'
+        });
+        
+        // Enregistrement global des composants PrimeVue
+        app.component('Tree', Tree);
 
         // Initialiser les traductions
         if (props.translations) {

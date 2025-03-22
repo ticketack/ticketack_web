@@ -30,13 +30,26 @@ class Equipment extends Model
         return $this->hasMany(Equipment::class, 'parent_id');
     }
 
+    /**
+     * Récupère tous les enfants de l'équipement de manière récursive
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function allChildren(): HasMany
     {
-        return $this->children()->with('allChildren');
+        return $this->hasMany(Equipment::class, 'parent_id')->with('allChildren');
     }
 
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class, 'equipment_id');
+    }
+
+    /**
+     * Get the documents for the equipment.
+     */
+    public function documents(): HasMany
+    {
+        return $this->hasMany(EquipmentDocument::class, 'equipment_id');
     }
 }
