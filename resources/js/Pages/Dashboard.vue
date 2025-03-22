@@ -385,7 +385,7 @@ const formatTime = (minutes) => {
                 <!-- Graphique des tickets actifs -->
                 <div class="mt-6 overflow-hidden bg-white shadow-lg rounded-lg">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Nombre de tickets actifs</h3>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.dashboard.active_tickets_over_time }}</h3>
                         <ActiveTicketsChart :data="activeTicketsData" />
                     </div>
                 </div>
