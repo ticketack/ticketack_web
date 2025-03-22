@@ -164,6 +164,30 @@ class DashboardController extends Controller
                 'count' => $ticketsPerDay->get($date)['count'] ?? 0
             ];
         });
+        
+        // Données pour le graphique des tickets actifs (statuts 1, 2 et 3)
+        $activeTicketsPerDay = [];
+        
+        // Pour chaque jour des 30 derniers jours
+        for ($i = 0; $i <= 29; $i++) {
+            $date = $thirtyDaysAgo->copy()->addDays($i);
+            $nextDate = $date->copy()->addDay();
+            
+            // Compter les tickets actifs à cette date (créés avant ou ce jour-là, et avec statut 1, 2 ou 3)
+            $count = Ticket::where('created_at', '<=', $nextDate->startOfDay())
+                ->whereIn('status_id', [1, 2, 3]) // Nouveau, En cours, En attente
+                ->where(function ($query) use ($date) {
+                    // Soit pas de mise à jour de statut, soit dernière mise à jour avant cette date
+                    $query->whereNull('updated_at')
+                          ->orWhere('updated_at', '<=', $date->endOfDay());
+                })
+                ->count();
+            
+            $activeTicketsPerDay[] = [
+                'date' => $date->format('Y-m-d'),
+                'count' => $count
+            ];
+        }
 
         return Inertia::render('Dashboard', [
             'equipmentCount' => $equipmentCount,
@@ -172,6 +196,7 @@ class DashboardController extends Controller
             'leastTickets' => $leastTickets,
             'ticketStats' => $ticketStats,
             'chartData' => $chartData,
+            'activeTicketsData' => $activeTicketsPerDay,
             'usersWithMostAssignedTickets' => $usersWithMostAssignedTickets,
             'usersWithMostCreatedTickets' => $usersWithMostCreatedTickets,
             'usersWithMostResolvedTickets' => $usersWithMostResolvedTickets,

@@ -4,6 +4,7 @@ import { Head } from '@inertiajs/vue3';
 import { getPriorityColor } from '@/Utils/ticketPriorityColors';
 import { getStatusColor } from '@/Utils/ticketStatusColors';
 import TicketsChart from '@/Components/Dashboard/TicketsChart.vue';
+import ActiveTicketsChart from '@/Components/Dashboard/ActiveTicketsChart.vue';
 import { useToast } from 'vue-toastification';
 import { ref } from 'vue';
 
@@ -48,6 +49,10 @@ defineProps({
         required: true
     },
     chartData: {
+        type: Array,
+        required: true
+    },
+    activeTicketsData: {
         type: Array,
         required: true
     },
@@ -377,6 +382,14 @@ const formatTime = (minutes) => {
                         </div>
                     </div>
                 </div>
+                <!-- Graphique des tickets actifs -->
+                <div class="mt-6 overflow-hidden bg-white shadow-lg rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Nombre de tickets actifs</h3>
+                        <ActiveTicketsChart :data="activeTicketsData" />
+                    </div>
+                </div>
+                
                 <!-- Graphique des tickets -->
                 <div class="mt-6 overflow-hidden bg-white shadow-lg rounded-lg">
                     <div class="p-6">
