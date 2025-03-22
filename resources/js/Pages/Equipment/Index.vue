@@ -60,57 +60,28 @@
                                 </button>
                             </div>
                         </div>
-                        <!-- Section de débogage -->
-                        <div v-if="$page.props.search" class="mb-4 p-4 bg-gray-100 rounded-md">
-                            <h3 class="text-lg font-semibold mb-2">Débogage de recherche</h3>
-                            <div class="text-sm">
-                                <p><strong>Terme recherché:</strong> {{ $page.props.search }}</p>
-                                <p><strong>Nombre d'équipements de premier niveau:</strong> {{ treeData.length }}</p>
-                                <div v-if="allEquipment">
-                                    <p><strong>Nombre total d'équipements:</strong> {{ allEquipment.length }}</p>
-                                    <p><strong>Équipements correspondants:</strong> {{ allEquipment.filter(e => e.matches_search === true).length }}</p>
-                                    <p><strong>Parents d'équipements correspondants:</strong> {{ allEquipment.filter(e => e.is_parent === true).length }}</p>
-                                    <div class="mt-2 max-h-40 overflow-y-auto">
-                                        <p class="font-semibold">Détails des correspondances:</p>
-                                        <ul class="list-disc pl-5">
-                                            <li v-for="item in allEquipment.filter(e => e.matches_search === true)" :key="item.id">
-                                                {{ item.designation }} (ID: {{ item.id }}, Parent ID: {{ item.parent_id || 'Aucun' }})
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="mt-2">
-                                        <p class="font-semibold">Parents:</p>
-                                        <ul class="list-disc pl-5">
-                                            <li v-for="item in allEquipment.filter(e => e.is_parent === true)" :key="item.id">
-                                                {{ item.designation }} (ID: {{ item.id }}, Parent ID: {{ item.parent_id || 'Aucun' }})
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="mt-4 flex space-x-2">
-                                        <button 
-                                            type="button" 
-                                            @click="forceRefresh" 
-                                            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                        >
-                                            Forcer le rafraîchissement
-                                        </button>
-                                        <button 
-                                            type="button" 
-                                            @click="toggleAllNodes(true)" 
-                                            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                        >
-                                            Ouvrir tous les nœuds
-                                        </button>
-                                        <button 
-                                            type="button" 
-                                            @click="toggleAllNodes(false)" 
-                                            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-                                        >
-                                            Fermer tous les nœuds
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- Boutons de contrôle de l'arborescence -->
+                        <div class="mb-4 flex justify-end space-x-2">
+                            <button 
+                                type="button" 
+                                @click="toggleAllNodes(true)" 
+                                class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                                </svg>
+                                Déployer tout
+                            </button>
+                            <button 
+                                type="button" 
+                                @click="toggleAllNodes(false)" 
+                                class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
+                                </svg>
+                                Replier tout
+                            </button>
                         </div>
                         
                         <div class="space-y-4">
@@ -192,7 +163,6 @@ function performSearch() {
                 setTimeout(() => {
                     // Si la recherche n'est pas vide, envoyer un événement pour ouvrir uniquement les nœuds pertinents
                     if (searchQuery.value && searchQuery.value.trim() !== '') {
-                        console.log('Ouverture sélective des nœuds après recherche');
                         // Créer un événement personnalisé pour ouvrir uniquement les nœuds pertinents
                         const event = new CustomEvent('open-relevant-nodes');
                         document.dispatchEvent(event);
@@ -220,16 +190,13 @@ const deleteEquipment = (id) => {
     }
 };
 
-// Fonction pour forcer un rafraîchissement de l'arborescence
+// Fonction pour forcer un rafraîchissement de l'arborescence (conservée mais non utilisée dans l'interface)
 const forceRefresh = () => {
-    console.log('Forçage du rafraîchissement de l\'arborescence');
-    // Utiliser router.visit au lieu de router.reload pour conserver l'état de la recherche
     router.visit(route('equipment.index'), {
         data: { search: searchQuery.value },
         preserveState: false,  // Ne pas préserver l'état pour forcer un rechargement complet
         replace: true,
         onSuccess: () => {
-            console.log('Rafraîchissement réussi');
             // Forcer l'ouverture des nœuds après un court délai
             setTimeout(() => {
                 toggleAllNodes(true);
@@ -241,15 +208,12 @@ const forceRefresh = () => {
 // Fonction pour ouvrir ou fermer tous les nœuds
 const treeComponent = ref(null);
 const toggleAllNodes = (open) => {
-    console.log(`${open ? 'Ouverture' : 'Fermeture'} de tous les nœuds`);
     if (treeComponent.value) {
         if (open) {
             treeComponent.value.expandAll();
         } else {
             treeComponent.value.collapseAll();
         }
-    } else {
-        console.log('Référence au composant d\'arbre non disponible');
     }
 };
 </script>
