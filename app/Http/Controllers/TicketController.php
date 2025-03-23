@@ -265,7 +265,7 @@ class TicketController extends Controller
                     'status_id' => $newStatus->id
                 ]);
 
-                $ticket->addLog('status_changed', "Statut changé de {$oldStatus->name} à {$newStatus->name}");
+                $ticket->addLog('status_changed', "Statut changé de {$oldStatus->name} à {$newStatus->name}", [], $oldStatus->id, $newStatus->id);
                 
                 \Log::info('Statut du ticket mis à jour:', [
                     'ticket_id' => $ticket->id,

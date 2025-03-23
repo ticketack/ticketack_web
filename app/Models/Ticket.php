@@ -80,13 +80,15 @@ class Ticket extends Model
         return $this->hasMany(TicketLog::class)->with('user')->latest();
     }
 
-    public function addLog(string $type, string $message, array $properties = []): void
+    public function addLog(string $type, string $message, array $properties = [], ?int $oldStatusId = null, ?int $newStatusId = null): void
     {
         $this->logs()->create([
             'user_id' => auth()->id(),
             'type' => $type,
             'message' => $message,
-            'properties' => $properties
+            'properties' => $properties,
+            'old_status_id' => $oldStatusId,
+            'new_status_id' => $newStatusId
         ]);
     }
 

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\TicketLog;
+use App\Observers\TicketLogObserver;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\File;
@@ -45,5 +47,8 @@ class AppServiceProvider extends ServiceProvider
             'translations' => $translations,
             'locale' => $locale,
         ]);
+        
+        // Enregistrement des observateurs
+        TicketLog::observe(TicketLogObserver::class);
     }
 }

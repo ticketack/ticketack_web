@@ -16,6 +16,8 @@ class TicketLog extends Model
         'type',
         'message',
         'properties',
+        'old_status_id',
+        'new_status_id',
     ];
 
     protected $casts = [
