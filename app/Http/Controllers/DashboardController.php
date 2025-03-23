@@ -167,6 +167,7 @@ class DashboardController extends Controller
         
         // Données pour le graphique des tickets actifs (statuts 1, 2 et 3)
         $activeTicketsPerDay = [];
+        $resolvedTicketsPerDay = [];
         
         // Pour chaque jour des 30 derniers jours
         for ($i = 0; $i <= 29; $i++) {
@@ -174,8 +175,18 @@ class DashboardController extends Controller
             $nextDate = $date->copy()->addDay();
             
             // Compter les tickets actifs à cette date (créés avant ou ce jour-là, et avec statut 1, 2 ou 3)
-            $count = Ticket::where('created_at', '<=', $nextDate->startOfDay())
+            $activeCount = Ticket::where('created_at', '<=', $nextDate->startOfDay())
                 ->whereIn('status_id', [1, 2, 3]) // Nouveau, En cours, En attente
+                ->where(function ($query) use ($date) {
+                    // Soit pas de mise à jour de statut, soit dernière mise à jour avant cette date
+                    $query->whereNull('updated_at')
+                          ->orWhere('updated_at', '<=', $date->endOfDay());
+                })
+                ->count();
+            
+            // Compter les tickets résolus et fermés à cette date (créés avant ou ce jour-là, et avec statut 4 ou 5)
+            $resolvedCount = Ticket::where('created_at', '<=', $nextDate->startOfDay())
+                ->whereIn('status_id', [4, 5]) // Résolu, Fermé
                 ->where(function ($query) use ($date) {
                     // Soit pas de mise à jour de statut, soit dernière mise à jour avant cette date
                     $query->whereNull('updated_at')
@@ -185,7 +196,12 @@ class DashboardController extends Controller
             
             $activeTicketsPerDay[] = [
                 'date' => $date->format('Y-m-d'),
-                'count' => $count
+                'count' => $activeCount
+            ];
+            
+            $resolvedTicketsPerDay[] = [
+                'date' => $date->format('Y-m-d'),
+                'count' => $resolvedCount
             ];
         }
 
@@ -197,6 +213,7 @@ class DashboardController extends Controller
             'ticketStats' => $ticketStats,
             'chartData' => $chartData,
             'activeTicketsData' => $activeTicketsPerDay,
+            'resolvedTicketsData' => $resolvedTicketsPerDay,
             'usersWithMostAssignedTickets' => $usersWithMostAssignedTickets,
             'usersWithMostCreatedTickets' => $usersWithMostCreatedTickets,
             'usersWithMostResolvedTickets' => $usersWithMostResolvedTickets,

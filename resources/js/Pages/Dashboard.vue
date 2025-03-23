@@ -3,8 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { getPriorityColor } from '@/Utils/ticketPriorityColors';
 import { getStatusColor } from '@/Utils/ticketStatusColors';
-import TicketsChart from '@/Components/Dashboard/TicketsChart.vue';
-import ActiveTicketsChart from '@/Components/Dashboard/ActiveTicketsChart.vue';
+import CombinedTicketsChart from '@/Components/Dashboard/CombinedTicketsChart.vue';
 import { useToast } from 'vue-toastification';
 import { ref } from 'vue';
 
@@ -53,6 +52,10 @@ defineProps({
         required: true
     },
     activeTicketsData: {
+        type: Array,
+        required: true
+    },
+    resolvedTicketsData: {
         type: Array,
         required: true
     },
@@ -382,19 +385,15 @@ const formatTime = (minutes) => {
                         </div>
                     </div>
                 </div>
-                <!-- Graphique des tickets actifs -->
+                <!-- Graphique combiné des tickets -->
                 <div class="mt-6 overflow-hidden bg-white shadow-lg rounded-lg">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.dashboard.active_tickets_over_time }}</h3>
-                        <ActiveTicketsChart :data="activeTicketsData" />
-                    </div>
-                </div>
-                
-                <!-- Graphique des tickets -->
-                <div class="mt-6 overflow-hidden bg-white shadow-lg rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.dashboard.tickets_over_time }}</h3>
-                        <TicketsChart :data="chartData" />
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ $page.props.translations.dashboard.combined_tickets_over_time }}</h3>
+                        <CombinedTicketsChart 
+                            :new-tickets-data="chartData" 
+                            :active-tickets-data="activeTicketsData" 
+                            :resolved-tickets-data="resolvedTicketsData" 
+                        />
                     </div>
                 </div>
             </div>
