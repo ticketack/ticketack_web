@@ -52,8 +52,16 @@ class UpdateTicketLogsStatusIds extends Command
         $errorCount = 0;
         
         foreach ($logs as $log) {
-            // Extraire les noms de statut du message
-            if (preg_match('/Statut chang[^ ]+ de ([^?]+) [?à] ([^?]+)/', $log->message, $matches)) {
+            // Vérifier si le message concerne un changement de statut
+            if (!str_contains($log->message, 'Statut chang') && !str_contains($log->message, 'Status chang')) {
+                $this->warn("Message non lié à un changement de statut: {$log->message}");
+                continue;
+            }
+            
+            // Extraire les noms de statut du message avec différents patterns pour gérer les encodages
+            if (preg_match('/Statut chang[^ ]+ de ([^à]+) à ([^$]+)/u', $log->message, $matches) || 
+                preg_match('/Statut chang[^ ]+ de ([^?]+) [?à] ([^$]+)/u', $log->message, $matches) ||
+                preg_match('/Status chang[^ ]+ from ([^t]+) to ([^$]+)/u', $log->message, $matches)) {
                 $oldStatusName = trim($matches[1]);
                 $newStatusName = trim($matches[2]);
                 
@@ -94,9 +102,16 @@ class UpdateTicketLogsStatusIds extends Command
     private function normalizeStatusName(string $name): string
     {
         // Remplacer les caractères problématiques
-        $normalized = str_replace(['?', '�'], ['é', 'é'], $name);
+        $normalized = str_replace(
+            ['?', '�', 'Ã©', 'Ã¨', 'Ã ', 'Ã¢', 'Ã®', 'Ã´', 'Ã»', 'Ã§'], 
+            ['é', 'é', 'é', 'è', 'à', 'â', 'î', 'ô', 'û', 'ç'], 
+            $name
+        );
         
-        // Convertir en minuscules et supprimer les espaces
+        // Nettoyer le nom (enlever les espaces en début/fin)
+        $normalized = trim($normalized);
+        
+        // Convertir en minuscules et supprimer les espaces internes
         return strtolower(preg_replace('/\s+/', '', $normalized));
     }
 }
