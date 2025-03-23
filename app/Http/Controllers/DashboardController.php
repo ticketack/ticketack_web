@@ -184,16 +184,20 @@ class DashboardController extends Controller
                 })
                 ->count();
             
-            // Compter les tickets qui ont été résolus ou fermés ce jour-là (en utilisant les logs)
+            // Compter les tickets qui ont été résolus ou fermés ce jour-là (en utilisant les nouveaux champs de logs)
             $resolvedCount = DB::table('ticket_logs')
                 ->whereDate('created_at', $date->format('Y-m-d'))
                 ->where('type', 'status_changed')
-                ->whereIn('new_status_id', [4, 5]) // Résolu, Fermé
+                ->where(function($query) {
+                    // Soit le ticket est passé directement à Résolu ou Fermé
+                    $query->whereIn('new_status_id', [4, 5])  // Résolu (4) ou Fermé (5)
+                          ->whereNotIn('old_status_id', [4, 5]); // N'était pas déjà Résolu ou Fermé
+                })
                 ->distinct('ticket_id')
                 ->count('ticket_id');
                 
             // Note: Cette requête compte les tickets dont le statut a été changé vers Résolu ou Fermé
-            // à cette date spécifique, en utilisant les logs de changement de statut.
+            // à cette date spécifique, en excluant les tickets qui étaient déjà résolus ou fermés.
             
             $activeTicketsPerDay[] = [
                 'date' => $date->format('Y-m-d'),
