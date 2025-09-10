@@ -14,12 +14,14 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $sysadmin = User::create([
-            'name' => 'System Administrator',
-            'email' => 'sysadmin@id-ingenierie.com',
-            'email_verified_at' => now(),
-            'password' => Hash::make('ID#Admin2025@Secure'),
-        ]);
+        $sysadmin = User::firstOrCreate(
+            ['email' => 'sysadmin@id-ingenierie.com'],
+            [
+                'name' => 'System Administrator',
+                'email_verified_at' => now(),
+                'password' => Hash::make('ID#Admin2025@Secure'),
+            ]
+        );
 
         // Attribution du rôle admin
         $adminRole = Role::where('name', 'admin')->first();
