@@ -19,6 +19,12 @@ class DatabaseSeeder extends Seeder
         // Ensuite l'utilisateur admin qui a besoin du rôle admin
         $this->call(AdminUserSeeder::class);
 
+        // Ensuite l'utilisateur solver qui a besoin du rôle solver
+        $this->call(SolverUserSeeder::class);
+
+        // Ensuite l'utilisateur tiers qui a besoin du rôle tiers
+        $this->call(TiersUserSeeder::class);
+
         // Puis les autres seeders
         $this->call([
             EquipmentSeeder::class,
